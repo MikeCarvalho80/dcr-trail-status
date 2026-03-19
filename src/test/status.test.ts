@@ -52,8 +52,8 @@ describe('getTrailStatus', () => {
       expect(result.label).toBe('Mud Season');
     });
 
-    it('returns open/Likely Open after April 10', () => {
-      vi.setSystemTime(new Date(2026, 3, 11)); // April 11
+    it('returns open/Likely Open after April 15', () => {
+      vi.setSystemTime(new Date(2026, 3, 16)); // April 16
       const result = getTrailStatus(park);
       expect(result.status).toBe('open');
       expect(result.label).toBe('Likely Open');
@@ -188,54 +188,78 @@ describe('getSeasonInfo', () => {
     vi.useRealTimers();
   });
 
-  it('returns 0% on March 1', () => {
+  it('returns spring season in March', () => {
     vi.setSystemTime(new Date(2026, 2, 1));
     const info = getSeasonInfo();
+    expect(info.season).toBe('spring');
+  });
+
+  it('returns 0% on March 1', () => {
+    vi.setSystemTime(new Date(2026, 2, 1));
+    const info = getSeasonInfo() as any;
     expect(info.pct).toBeCloseTo(0, 0);
     expect(info.inClosure).toBe(true);
   });
 
-  it('returns 100% on May 25', () => {
-    vi.setSystemTime(new Date(2026, 4, 25));
-    const info = getSeasonInfo();
+  it('returns 100% on May 31', () => {
+    vi.setSystemTime(new Date(2026, 4, 31));
+    const info = getSeasonInfo() as any;
     expect(info.pct).toBeCloseTo(100, 0);
   });
 
-  it('closureEndPct represents March 31 within Mar 1 - May 25 range', () => {
+  it('closureEndPct represents April 1 within Mar 1 - May 31 range', () => {
     vi.setSystemTime(new Date(2026, 2, 15));
-    const info = getSeasonInfo();
-    // Mar 31 is 30 days into an 85-day range ≈ 35%
+    const info = getSeasonInfo() as any;
+    // Apr 1 is 31 days into a 91-day range ≈ 34%
     expect(info.closureEndPct).toBeGreaterThan(30);
     expect(info.closureEndPct).toBeLessThan(40);
   });
 
-  it('cautionEndPct represents April 14', () => {
+  it('cautionEndPct represents April 15', () => {
     vi.setSystemTime(new Date(2026, 2, 15));
-    const info = getSeasonInfo();
-    // Apr 14 is 44 days into 85-day range ≈ 52%
-    expect(info.cautionEndPct).toBeGreaterThan(48);
-    expect(info.cautionEndPct).toBeLessThan(56);
+    const info = getSeasonInfo() as any;
+    // Apr 15 is 45 days into 91-day range ≈ 49%
+    expect(info.cautionEndPct).toBeGreaterThan(45);
+    expect(info.cautionEndPct).toBeLessThan(55);
   });
 
   it('inClosure is true during March', () => {
     vi.setSystemTime(new Date(2026, 2, 20));
-    const info = getSeasonInfo();
+    const info = getSeasonInfo() as any;
     expect(info.inClosure).toBe(true);
     expect(info.inCaution).toBe(false);
   });
 
   it('inCaution is true during April 1-14', () => {
     vi.setSystemTime(new Date(2026, 3, 10));
-    const info = getSeasonInfo();
+    const info = getSeasonInfo() as any;
     expect(info.inClosure).toBe(false);
     expect(info.inCaution).toBe(true);
   });
 
-  it('neither inClosure nor inCaution after April 14', () => {
+  it('neither inClosure nor inCaution after April 15', () => {
     vi.setSystemTime(new Date(2026, 3, 20));
-    const info = getSeasonInfo();
+    const info = getSeasonInfo() as any;
     expect(info.inClosure).toBe(false);
     expect(info.inCaution).toBe(false);
+  });
+
+  it('returns fall season in October', () => {
+    vi.setSystemTime(new Date(2026, 9, 15));
+    const info = getSeasonInfo();
+    expect(info.season).toBe('fall');
+  });
+
+  it('returns summer season in July', () => {
+    vi.setSystemTime(new Date(2026, 6, 15));
+    const info = getSeasonInfo();
+    expect(info.season).toBe('summer');
+  });
+
+  it('returns winter season in January', () => {
+    vi.setSystemTime(new Date(2026, 0, 15));
+    const info = getSeasonInfo();
+    expect(info.season).toBe('winter');
   });
 });
 

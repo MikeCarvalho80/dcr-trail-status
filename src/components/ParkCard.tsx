@@ -170,6 +170,15 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                 <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
                   {park.closureRule}
                 </p>
+                {park.additionalClosures && park.additionalClosures.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {park.additionalClosures.map((c, i) => (
+                      <p key={i} className="font-mono text-[12px] text-text-secondary leading-relaxed">
+                        <span className="text-status-caution font-semibold">{c.label}:</span> {c.rule} ({c.start.month}/{c.start.day}–{c.end.month}/{c.end.day})
+                      </p>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Why this status */}

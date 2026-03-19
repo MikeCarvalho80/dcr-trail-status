@@ -38,6 +38,11 @@ const REGION_ORDER: Region[] = [
   'Southern Maine',
   'Midcoast Maine',
   'Western Maine',
+  'Hudson Valley',
+  'NYC & Long Island',
+  'Northern NJ',
+  'Central NJ',
+  'Eastern PA',
 ];
 
 // Read URL params once on load
