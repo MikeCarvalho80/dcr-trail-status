@@ -1,4 +1,4 @@
-import { useMemo, useState, lazy, Suspense } from 'react';
+import { useEffect, useMemo, useRef, useState, lazy, Suspense } from 'react';
 import { SummaryStats } from './components/SummaryStats';
 import { SeasonTimeline } from './components/SeasonTimeline';
 import { RegionFilters } from './components/RegionFilters';
@@ -7,8 +7,11 @@ import { DistanceControls } from './components/DistanceControls';
 import { DifficultyFilters, TrailLengthFilters, RideableToggle } from './components/TrailFilters';
 import { SearchBox } from './components/SearchBox';
 import { ParkCard } from './components/ParkCard';
+import { SuggestedRides } from './components/SuggestedRides';
+import { StatusChangeBanner } from './components/StatusChangeBanner';
+import { ClosureCalendar } from './components/ClosureCalendar';
 import { PARKS } from './data/parks';
-import type { Region } from './data/parks';
+import type { Region, TrailStatus } from './data/parks';
 import { getZipCoords } from './data/zipcodes';
 import { getTrailStatus, sortByStatusAndDistance } from './lib/status';
 import { haversineDistance, estimateDriveMinutes } from './lib/geo';
@@ -17,44 +20,33 @@ import { useDailyRefresh } from './lib/useDailyRefresh';
 import type { DifficultyFilter, TrailLengthFilter } from './lib/parks-utils';
 import { parseMiles, matchesLengthRange } from './lib/parks-utils';
 import { readUrlState, useUrlSync } from './lib/useUrlState';
-import { MapIcon, ListIcon } from 'lucide-react';
+import { loadSnapshot, saveSnapshot, getChangedParks } from './lib/statusChanges';
+import { getSuggestedRides } from './lib/recommendations';
+import { MapIcon, ListIcon, CalendarIcon } from 'lucide-react';
 
 const TrailMap = lazy(() => import('./components/TrailMap').then((m) => ({ default: m.TrailMap })));
 
 // Stable region display order
 const REGION_ORDER: Region[] = [
-  'Greater Boston',
-  'South Shore',
-  'North Shore',
-  'MetroWest',
-  'Central MA',
-  'Pioneer Valley',
-  'Berkshires',
-  'Cape & Islands',
-  'Southern NH',
-  'Rhode Island',
-  'Connecticut',
-  'Southern VT',
-  'Southern Maine',
-  'Midcoast Maine',
-  'Western Maine',
-  'Hudson Valley',
-  'NYC & Long Island',
-  'Northern NJ',
-  'Central NJ',
-  'Eastern PA',
+  'Greater Boston', 'South Shore', 'North Shore', 'MetroWest',
+  'Central MA', 'Pioneer Valley', 'Berkshires', 'Cape & Islands',
+  'Southern NH', 'Rhode Island', 'Connecticut', 'Southern VT',
+  'Southern Maine', 'Midcoast Maine', 'Western Maine',
+  'Hudson Valley', 'NYC & Long Island', 'Northern NJ', 'Central NJ', 'Eastern PA',
 ];
 
 // Read URL params once on load
 const initialUrl = readUrlState();
 
 export function App() {
-  const { prefs, setZipCode, setRadius, toggleFavorite, setShowRideableOnly } = useUserPrefs();
+  const { prefs, setZipCode, setRadius, toggleFavorite, setShowRideableOnly, toggleVisited } = useUserPrefs();
   const [activeRegion, setActiveRegion] = useState<FilterOption>(initialUrl.region ?? 'All');
   const [activeDifficulty, setActiveDifficulty] = useState<DifficultyFilter>(initialUrl.difficulty ?? 'All');
   const [activeTrailLength, setActiveTrailLength] = useState<TrailLengthFilter>(initialUrl.length ?? 'All');
   const [searchQuery, setSearchQuery] = useState(initialUrl.search ?? '');
   const [showMap, setShowMap] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   // Apply URL overrides on first load
   useState(() => {
@@ -62,6 +54,46 @@ export function App() {
     if (initialUrl.radius) setRadius(initialUrl.radius);
     if (initialUrl.rideable) setShowRideableOnly(true);
   });
+
+  // Status change detection
+  const [statusChanges, setStatusChanges] = useState<Map<string, { from: TrailStatus; to: TrailStatus }>>(new Map());
+  useEffect(() => {
+    const previous = loadSnapshot();
+    const current: Record<string, TrailStatus> = {};
+    for (const park of PARKS) {
+      current[park.id] = getTrailStatus(park).status;
+    }
+    const changes = getChangedParks(previous, current);
+    if (changes.size > 0) setStatusChanges(changes);
+    saveSnapshot(current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === '/' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+      if (e.key === 'm' && !e.metaKey && !e.ctrlKey) {
+        setShowMap((v) => !v);
+      }
+      if (e.key === 'r' && !e.metaKey && !e.ctrlKey) {
+        setShowRideableOnly(!prefs.showRideableOnly);
+      }
+      if (e.key === 'Escape') {
+        if (searchQuery) { setSearchQuery(''); }
+        else { (document.activeElement as HTMLElement)?.blur(); }
+      }
+      if (e.key === 'c' && !e.metaKey && !e.ctrlKey) {
+        setShowCalendar((v) => !v);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [searchQuery, prefs.showRideableOnly, setShowRideableOnly]);
 
   const now = useDailyRefresh(6, 'America/New_York');
   const dateStr = now.toLocaleDateString('en-US', {
@@ -94,7 +126,7 @@ export function App() {
 
   // Filter by distance radius
   const parksInRange = useMemo(() => {
-    if (!origin) return PARKS; // show all if ZIP invalid
+    if (!origin) return PARKS;
     return PARKS.filter((p) => (distances.get(p.id) ?? Infinity) <= prefs.radiusMiles);
   }, [origin, distances, prefs.radiusMiles]);
 
@@ -104,19 +136,18 @@ export function App() {
     return REGION_ORDER.filter((r) => regionSet.has(r));
   }, [parksInRange]);
 
-  // Reset region filter if current selection is no longer available
   const effectiveRegion: FilterOption =
     activeRegion !== 'All' && !availableRegions.includes(activeRegion as Region)
       ? 'All'
       : activeRegion;
 
   const favoritesSet = useMemo(() => new Set(prefs.favorites), [prefs.favorites]);
+  const visitedSet = useMemo(() => new Set(prefs.visited), [prefs.visited]);
 
-  // Full filter pipeline: search → region → difficulty → trail length → rideable only → sort
+  // Full filter pipeline
   const filteredParks = useMemo(() => {
     let filtered = [...parksInRange];
 
-    // Text search
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter((p) =>
@@ -130,15 +161,12 @@ export function App() {
     if (effectiveRegion !== 'All') {
       filtered = filtered.filter((p) => p.region === effectiveRegion);
     }
-
     if (activeDifficulty !== 'All') {
       filtered = filtered.filter((p) => p.difficulty.includes(activeDifficulty));
     }
-
     if (activeTrailLength !== 'All') {
       filtered = filtered.filter((p) => matchesLengthRange(parseMiles(p.miles), activeTrailLength));
     }
-
     if (prefs.showRideableOnly) {
       filtered = filtered.filter((p) => getTrailStatus(p).status !== 'closed');
     }
@@ -150,12 +178,22 @@ export function App() {
   // Status counts
   const counts = useMemo(() => {
     const c = { open: 0, caution: 0, closed: 0 };
-    filteredParks.forEach((p) => {
-      c[getTrailStatus(p).status]++;
-    });
+    filteredParks.forEach((p) => { c[getTrailStatus(p).status]++; });
     return c;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredParks, now]);
+
+  // Suggested rides
+  const suggestedRides = useMemo(
+    () => getSuggestedRides(parksInRange, distances, 5),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [parksInRange, distances, now],
+  );
+
+  function scrollToPark(parkId: string) {
+    const el = document.getElementById(`park-${parkId}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 
   return (
     <main className="min-h-screen bg-bg-primary">
@@ -167,8 +205,17 @@ export function App() {
           </h1>
           <p className="font-mono text-[13px] text-text-secondary mt-1 uppercase tracking-[0.05em]">
             {dateStr} · {PARKS.length} trails across the Northeast
+            {visitedSet.size > 0 && (
+              <span className="text-status-open"> · {visitedSet.size} visited</span>
+            )}
           </p>
         </header>
+
+        {/* Status change banner */}
+        <StatusChangeBanner
+          changes={statusChanges}
+          onDismiss={() => setStatusChanges(new Map())}
+        />
 
         {/* Disclaimer */}
         <div className="bg-bg-secondary border border-bg-elevated rounded-xl px-4 py-3 mb-5">
@@ -189,6 +236,13 @@ export function App() {
           />
         </div>
 
+        {/* Suggested Rides */}
+        <SuggestedRides
+          parks={suggestedRides}
+          distances={distances}
+          onParkClick={scrollToPark}
+        />
+
         {/* Summary Stats */}
         <div className="mb-5">
           <SummaryStats counts={counts} />
@@ -199,25 +253,25 @@ export function App() {
           <SeasonTimeline />
         </div>
 
-        {/* Search + View Toggle */}
+        {/* Search + View Toggles */}
         <div className="flex gap-2 mb-4">
           <div className="flex-1">
-            <SearchBox value={searchQuery} onChange={setSearchQuery} />
+            <SearchBox value={searchQuery} onChange={setSearchQuery} ref={searchRef} />
           </div>
           <button
             onClick={() => setShowMap(!showMap)}
-            className={`
-              flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em]
-              px-3 py-2 rounded-lg border transition-colors duration-200
-              focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30
-              ${showMap
-                ? 'bg-bg-elevated text-text-primary border-text-muted'
-                : 'bg-bg-secondary text-text-secondary border-bg-elevated hover:text-text-primary'}
-            `}
+            className={`flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-2 rounded-lg border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30 ${showMap ? 'bg-bg-elevated text-text-primary border-text-muted' : 'bg-bg-secondary text-text-secondary border-bg-elevated hover:text-text-primary'}`}
             aria-label={showMap ? 'Show list view' : 'Show map view'}
           >
             {showMap ? <ListIcon className="w-4 h-4" /> : <MapIcon className="w-4 h-4" />}
             {showMap ? 'List' : 'Map'}
+          </button>
+          <button
+            onClick={() => setShowCalendar(!showCalendar)}
+            className={`flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-2 rounded-lg border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30 ${showCalendar ? 'bg-bg-elevated text-text-primary border-text-muted' : 'bg-bg-secondary text-text-secondary border-bg-elevated hover:text-text-primary'}`}
+            aria-label={showCalendar ? 'Hide calendar' : 'Show closure calendar'}
+          >
+            <CalendarIcon className="w-4 h-4" />
           </button>
         </div>
 
@@ -234,6 +288,13 @@ export function App() {
           </div>
         )}
 
+        {/* Closure Calendar */}
+        {showCalendar && (
+          <div className="mb-5">
+            <ClosureCalendar />
+          </div>
+        )}
+
         {/* Filters */}
         <div className="space-y-3 mb-4">
           <RegionFilters
@@ -241,33 +302,34 @@ export function App() {
             onRegionChange={setActiveRegion}
             availableRegions={availableRegions}
           />
-          <DifficultyFilters
-            active={activeDifficulty}
-            onChange={setActiveDifficulty}
-          />
-          <TrailLengthFilters
-            active={activeTrailLength}
-            onChange={setActiveTrailLength}
-          />
-          <RideableToggle
-            enabled={prefs.showRideableOnly}
-            onToggle={setShowRideableOnly}
-          />
+          <DifficultyFilters active={activeDifficulty} onChange={setActiveDifficulty} />
+          <TrailLengthFilters active={activeTrailLength} onChange={setActiveTrailLength} />
+          <RideableToggle enabled={prefs.showRideableOnly} onToggle={setShowRideableOnly} />
+        </div>
+
+        {/* Keyboard shortcuts hint */}
+        <div className="font-mono text-[11px] text-text-muted/50 mb-3 hidden sm:block">
+          <kbd className="border border-bg-elevated rounded px-1">/</kbd> search · <kbd className="border border-bg-elevated rounded px-1">m</kbd> map · <kbd className="border border-bg-elevated rounded px-1">c</kbd> calendar · <kbd className="border border-bg-elevated rounded px-1">r</kbd> rideable · <kbd className="border border-bg-elevated rounded px-1">esc</kbd> clear
         </div>
 
         {/* Park Cards */}
         <section aria-label="Trail list" className="space-y-2.5">
           {filteredParks.map((park) => {
             const d = distances.get(park.id);
+            const change = statusChanges.get(park.id);
             return (
-              <ParkCard
-                key={park.id}
-                park={park}
-                distanceMiles={d != null ? Math.round(d) : undefined}
-                driveMinutes={d != null ? estimateDriveMinutes(d) : undefined}
-                isFavorite={favoritesSet.has(park.id)}
-                onToggleFavorite={() => toggleFavorite(park.id)}
-              />
+              <div key={park.id} id={`park-${park.id}`}>
+                <ParkCard
+                  park={park}
+                  distanceMiles={d != null ? Math.round(d) : undefined}
+                  driveMinutes={d != null ? estimateDriveMinutes(d) : undefined}
+                  isFavorite={favoritesSet.has(park.id)}
+                  onToggleFavorite={() => toggleFavorite(park.id)}
+                  isVisited={visitedSet.has(park.id)}
+                  onToggleVisited={() => toggleVisited(park.id)}
+                  statusChanged={change ? { from: change.from, to: change.to } : undefined}
+                />
+              </div>
             );
           })}
 
@@ -286,14 +348,14 @@ export function App() {
             Status Logic
           </div>
           <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
-            Parks with formal closures follow calendar-based mandatory rules. "Or as posted" means staff can extend beyond posted dates. Advisory parks have no formal closure but riders should avoid wet trails during mud season (March–early April). Drive times are estimates based on straight-line distance.
+            Parks with formal closures follow calendar-based mandatory rules. "Or as posted" means staff can extend beyond posted dates. Advisory parks have no formal closure but riders should avoid wet trails during mud season. Hunting seasons are tracked where documented. Drive times are estimates based on straight-line distance.
           </p>
         </div>
 
         {/* Footer */}
         <footer className="mt-8 pt-4 border-t border-bg-elevated">
           <p className="font-mono text-[11px] text-text-muted text-center">
-            Ride responsibly · Respect mud season · Stay off wet trails · Support NEMBA
+            Ride responsibly · Respect closures · Stay off wet trails · Support your local trail org
           </p>
         </footer>
       </div>

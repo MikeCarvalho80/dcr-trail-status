@@ -5,6 +5,7 @@ export interface UserPrefs {
   radiusMiles: number;
   favorites: string[];
   showRideableOnly: boolean;
+  visited: string[];
 }
 
 const STORAGE_KEY = 'dcr-trail-prefs';
@@ -14,6 +15,7 @@ const DEFAULTS: UserPrefs = {
   radiusMiles: 60,
   favorites: [],
   showRideableOnly: false,
+  visited: [],
 };
 
 function load(): UserPrefs {
@@ -51,6 +53,13 @@ export function useUserPrefs() {
     }));
   const setShowRideableOnly = (showRideableOnly: boolean) =>
     setPrefs((p) => ({ ...p, showRideableOnly }));
+  const toggleVisited = (parkId: string) =>
+    setPrefs((p) => ({
+      ...p,
+      visited: p.visited.includes(parkId)
+        ? p.visited.filter((id) => id !== parkId)
+        : [...p.visited, parkId],
+    }));
 
-  return { prefs, setZipCode, setRadius, toggleFavorite, setShowRideableOnly };
+  return { prefs, setZipCode, setRadius, toggleFavorite, setShowRideableOnly, toggleVisited };
 }
