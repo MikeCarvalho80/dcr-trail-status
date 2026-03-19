@@ -22,6 +22,7 @@ import { parseMiles, matchesLengthRange } from './lib/parks-utils';
 import { readUrlState, useUrlSync } from './lib/useUrlState';
 import { loadSnapshot, saveSnapshot, getChangedParks } from './lib/statusChanges';
 import { getSuggestedRides } from './lib/recommendations';
+import { ShareQR } from './components/ShareQR';
 import { MapIcon, ListIcon, CalendarIcon } from 'lucide-react';
 
 const TrailMap = lazy(() => import('./components/TrailMap').then((m) => ({ default: m.TrailMap })));
@@ -273,6 +274,7 @@ export function App() {
           >
             <CalendarIcon className="w-4 h-4" />
           </button>
+          <ShareQR />
         </div>
 
         {/* Map View */}
