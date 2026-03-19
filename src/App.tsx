@@ -162,14 +162,11 @@ export function App() {
       <div className="max-w-[640px] mx-auto px-4 py-6">
         {/* Header */}
         <header className="mb-6">
-          <div className="font-mono text-[12px] text-text-muted uppercase tracking-[0.15em] mb-1">
-            MTB Trail Status
-          </div>
           <h1 className="font-mono text-[26px] font-bold text-text-primary leading-tight">
-            Spring Restriction Monitor
+            MTB Trail Status
           </h1>
           <p className="font-mono text-[13px] text-text-secondary mt-1 uppercase tracking-[0.05em]">
-            {dateStr} · {PARKS.length} trails across New England
+            {dateStr} · {PARKS.length} trails across the Northeast
           </p>
         </header>
 

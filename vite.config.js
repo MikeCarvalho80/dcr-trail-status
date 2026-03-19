@@ -15,9 +15,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon.svg', 'icon-maskable.svg'],
       manifest: {
-        name: 'Trail Status — New England MTB',
-        short_name: 'Trail Status',
-        description: 'Mountain bike trail closures and mud season advisories across New England',
+        name: 'MTB Trail Status — Northeast US',
+        short_name: 'MTB Trail Status',
+        description: 'Mountain bike trail closures, mud season advisories, and hunting season alerts across the Northeast',
         theme_color: '#0d0c0a',
         background_color: '#0d0c0a',
         display: 'standalone',
