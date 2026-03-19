@@ -298,15 +298,26 @@ export function App() {
         )}
 
         {/* Filters */}
-        <div className="space-y-3 mb-4">
+        <div className="bg-bg-secondary border border-bg-elevated rounded-xl px-4 py-3 mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-secondary">
+              Filters
+            </div>
+            <RideableToggle enabled={prefs.showRideableOnly} onToggle={setShowRideableOnly} />
+          </div>
+
           <RegionFilters
             activeRegion={effectiveRegion}
             onRegionChange={setActiveRegion}
             availableRegions={availableRegions}
           />
-          <DifficultyFilters active={activeDifficulty} onChange={setActiveDifficulty} />
-          <TrailLengthFilters active={activeTrailLength} onChange={setActiveTrailLength} />
-          <RideableToggle enabled={prefs.showRideableOnly} onToggle={setShowRideableOnly} />
+
+          <div className="border-t border-bg-elevated my-3" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <DifficultyFilters active={activeDifficulty} onChange={setActiveDifficulty} />
+            <TrailLengthFilters active={activeTrailLength} onChange={setActiveTrailLength} />
+          </div>
         </div>
 
         {/* Keyboard shortcuts hint */}

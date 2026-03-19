@@ -13,6 +13,9 @@ export function RegionFilters({ activeRegion, onRegionChange, availableRegions }
 
   return (
     <section aria-label="Filter by region" className="overflow-x-auto scrollbar-hide">
+      <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1.5">
+        Region
+      </div>
       <div className="flex gap-1.5">
         {options.map((region) => {
           const isActive = activeRegion === region;
