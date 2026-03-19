@@ -25,10 +25,14 @@ const REGION_ORDER: Region[] = [
   'Central MA',
   'Pioneer Valley',
   'Berkshires',
+  'Cape & Islands',
   'Southern NH',
   'Rhode Island',
   'Connecticut',
   'Southern VT',
+  'Southern Maine',
+  'Midcoast Maine',
+  'Western Maine',
 ];
 
 export function App() {

@@ -3,8 +3,8 @@ import { PARKS } from '../data/parks';
 import type { Region } from '../data/parks';
 
 describe('Park data integrity', () => {
-  it('has at least 30 parks', () => {
-    expect(PARKS.length).toBeGreaterThanOrEqual(30);
+  it('has at least 50 parks', () => {
+    expect(PARKS.length).toBeGreaterThanOrEqual(50);
   });
 
   it('every park has all required fields', () => {
@@ -34,11 +34,11 @@ describe('Park data integrity', () => {
 
   it('every park has valid coordinates in New England range', () => {
     for (const park of PARKS) {
-      // New England roughly: lat 41-45, lng -73 to -69
+      // New England roughly: lat 41-46, lng -74 to -67
       expect(park.lat, `${park.id} lat out of range`).toBeGreaterThan(40);
       expect(park.lat, `${park.id} lat out of range`).toBeLessThan(46);
       expect(park.lng, `${park.id} lng out of range`).toBeGreaterThan(-74);
-      expect(park.lng, `${park.id} lng out of range`).toBeLessThan(-69);
+      expect(park.lng, `${park.id} lng out of range`).toBeLessThan(-67);
     }
   });
 
@@ -71,16 +71,12 @@ describe('Park data integrity', () => {
     }
   });
 
-  it('does not contain Cape & Islands region', () => {
-    const regions = new Set(PARKS.map((p) => p.region));
-    expect(regions.has('Cape & Islands' as Region)).toBe(false);
-  });
-
   it('every region has at least one park', () => {
     const allRegions: Region[] = [
       'Greater Boston', 'South Shore', 'North Shore', 'MetroWest',
-      'Central MA', 'Pioneer Valley', 'Berkshires',
+      'Central MA', 'Pioneer Valley', 'Berkshires', 'Cape & Islands',
       'Southern NH', 'Rhode Island', 'Connecticut', 'Southern VT',
+      'Southern Maine', 'Midcoast Maine', 'Western Maine',
     ];
     const parksPerRegion = new Map<string, number>();
     for (const park of PARKS) {
@@ -103,6 +99,16 @@ describe('Park data integrity', () => {
       const date = new Date(park.lastVerified);
       expect(date.toString(), `${park.id} has invalid lastVerified: ${park.lastVerified}`).not.toBe('Invalid Date');
     }
+  });
+
+  it('includes parks in Maine', () => {
+    const meParks = PARKS.filter((p) => p.state === 'ME');
+    expect(meParks.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('includes parks on Cape Cod & Islands', () => {
+    const capeParks = PARKS.filter((p) => p.region === 'Cape & Islands');
+    expect(capeParks.length).toBeGreaterThanOrEqual(5);
   });
 
   it('url starts with https://', () => {
