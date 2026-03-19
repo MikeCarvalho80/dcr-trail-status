@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Portfolio writeup (not part of the project)
+PORTFOLIO.md
