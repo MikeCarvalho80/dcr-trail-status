@@ -10,7 +10,7 @@ export function SeasonTimeline() {
 
   return (
     <section aria-label="Season timeline" className="space-y-2">
-      <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-text-secondary mb-2">
+      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-secondary mb-2">
         DCR Mandatory Closure Timeline
       </div>
 
@@ -47,7 +47,7 @@ export function SeasonTimeline() {
       </div>
 
       {/* Date labels */}
-      <div className="relative flex font-mono text-[9px] text-text-muted mt-1">
+      <div className="relative flex font-mono text-[11px] text-text-muted mt-1">
         <span className="absolute left-0">Mar 1</span>
         <span
           className="absolute -translate-x-1/2"
@@ -64,7 +64,7 @@ export function SeasonTimeline() {
       </div>
 
       {/* Today label */}
-      <div className="font-mono text-[9px] text-text-secondary mt-1">
+      <div className="font-mono text-[11px] text-text-secondary mt-1">
         <span className="text-text-primary font-semibold">Today</span> — {dateLabel} · {phase}
       </div>
     </section>

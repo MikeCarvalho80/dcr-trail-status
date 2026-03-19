@@ -13,10 +13,10 @@ interface ParkCardProps {
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="font-mono text-[9px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
+      <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
         {label}
       </div>
-      <div className="font-mono text-[11px] text-text-primary">{value}</div>
+      <div className="font-mono text-[13px] text-text-primary">{value}</div>
     </div>
   );
 }
@@ -53,13 +53,13 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
 
           {/* Status badge */}
           <span
-            className={`${config.badgeBg} ${config.text} font-mono text-[10px] font-semibold uppercase tracking-[0.05em] px-2 py-0.5 rounded`}
+            className={`${config.badgeBg} ${config.text} font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-2 py-0.5 rounded`}
           >
             {trail.label}
           </span>
 
           {/* Manager tag */}
-          <span className="bg-bg-elevated text-text-secondary font-mono text-[10px] font-semibold uppercase tracking-[0.05em] px-2 py-0.5 rounded">
+          <span className="bg-bg-elevated text-text-secondary font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-2 py-0.5 rounded">
             {park.manager}
           </span>
 
@@ -68,11 +68,11 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
           {/* Distance + miles */}
           <div className="flex items-center gap-2.5 flex-shrink-0">
             {distanceMiles != null && (
-              <span className="font-mono text-[10px] text-text-secondary">
+              <span className="font-mono text-[12px] text-text-secondary">
                 ~{driveMinutes} min
               </span>
             )}
-            <span className="font-mono text-[10px] text-text-muted">
+            <span className="font-mono text-[12px] text-text-muted">
               {park.miles} mi
             </span>
           </div>
@@ -83,17 +83,17 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
             transition={{ duration: 0.2 }}
             className="flex-shrink-0 ml-1"
           >
-            <ChevronDownIcon className="w-3.5 h-3.5 text-text-muted" />
+            <ChevronDownIcon className="w-4 h-4 text-text-muted" />
           </motion.span>
         </div>
 
         {/* Park name */}
-        <div className="font-mono text-[15px] font-bold text-text-primary mt-1.5 leading-tight">
+        <div className="font-mono text-[18px] font-bold text-text-primary mt-1.5 leading-tight">
           {park.name}
         </div>
 
         {/* Sublabel */}
-        <div className="font-mono text-[10px] text-text-muted mt-0.5">
+        <div className="font-mono text-[12px] text-text-muted mt-0.5">
           {trail.sublabel}
         </div>
       </button>
@@ -121,20 +121,20 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
 
               {/* Closure policy */}
               <div className="mt-3">
-                <div className="font-mono text-[9px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
+                <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
                   Closure Policy
                 </div>
-                <p className="font-mono text-[10px] text-text-secondary leading-relaxed">
+                <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
                   {park.closureRule}
                 </p>
               </div>
 
               {/* Notes */}
               <div className="mt-2">
-                <div className="font-mono text-[9px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
+                <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
                   Notes
                 </div>
-                <p className="font-mono text-[10px] text-text-secondary leading-relaxed">
+                <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
                   {park.notes}
                 </p>
               </div>
@@ -148,7 +148,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
                   onClick={(e) => e.stopPropagation()}
                   className={`
                     inline-flex items-center gap-1.5
-                    font-mono text-[10px] font-semibold uppercase tracking-[0.05em]
+                    font-mono text-[12px] font-semibold uppercase tracking-[0.05em]
                     px-3 py-1.5 rounded-md border
                     ${config.border} ${config.text}
                     transition-colors duration-200
@@ -157,7 +157,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
                   `}
                   aria-label={`Navigate to ${park.name} parking`}
                 >
-                  <NavigationIcon className="w-3 h-3" />
+                  <NavigationIcon className="w-4 h-4" />
                   Navigate
                 </a>
                 <a
@@ -167,7 +167,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
                   onClick={(e) => e.stopPropagation()}
                   className={`
                     inline-flex items-center gap-1.5
-                    font-mono text-[10px] font-semibold uppercase tracking-[0.05em]
+                    font-mono text-[12px] font-semibold uppercase tracking-[0.05em]
                     px-3 py-1.5 rounded-md border
                     border-bg-elevated text-text-secondary
                     transition-colors duration-200
@@ -176,7 +176,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
                   `}
                   aria-label={`View ${park.name} official page`}
                 >
-                  <ExternalLinkIcon className="w-3 h-3" />
+                  <ExternalLinkIcon className="w-4 h-4" />
                   Park Info
                 </a>
               </div>

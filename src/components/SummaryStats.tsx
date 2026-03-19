@@ -28,10 +28,10 @@ function StatBlock({ count, label, status }: StatBlockProps) {
   const colors = colorMap[status];
   return (
     <div className={`${colors.bg} ${colors.border} border rounded-lg px-3 py-3 text-center`}>
-      <div className={`${colors.text} font-mono text-[26px] font-bold leading-none`}>
+      <div className={`${colors.text} font-mono text-[32px] font-bold leading-none`}>
         {count}
       </div>
-      <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-text-secondary mt-1.5">
+      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-secondary mt-1.5">
         {label}
       </div>
     </div>

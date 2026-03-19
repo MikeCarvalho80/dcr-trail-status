@@ -93,13 +93,13 @@ export function App() {
       <div className="max-w-[640px] mx-auto px-4 py-6">
         {/* Header */}
         <header className="mb-6">
-          <div className="font-mono text-[9px] text-text-muted uppercase tracking-[0.15em] mb-1">
+          <div className="font-mono text-[12px] text-text-muted uppercase tracking-[0.15em] mb-1">
             MTB Trail Status
           </div>
-          <h1 className="font-mono text-[22px] font-bold text-text-primary leading-tight">
+          <h1 className="font-mono text-[26px] font-bold text-text-primary leading-tight">
             Spring Restriction Monitor
           </h1>
-          <p className="font-mono text-[10px] text-text-secondary mt-1 uppercase tracking-[0.05em]">
+          <p className="font-mono text-[13px] text-text-secondary mt-1 uppercase tracking-[0.05em]">
             {dateStr} · {PARKS.length} trails across New England
           </p>
         </header>
@@ -151,7 +151,7 @@ export function App() {
 
           {filteredParks.length === 0 && (
             <div className="text-center py-8">
-              <p className="font-mono text-[11px] text-text-muted">
+              <p className="font-mono text-[13px] text-text-muted">
                 No parks within {prefs.radiusMiles} miles. Try increasing the range.
               </p>
             </div>
@@ -160,17 +160,17 @@ export function App() {
 
         {/* Status Logic */}
         <div className="bg-bg-secondary border border-bg-elevated rounded-xl px-4 py-3 mt-5">
-          <div className="font-mono text-[9px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1">
+          <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1">
             Status Logic
           </div>
-          <p className="font-mono text-[10px] text-text-secondary leading-relaxed">
+          <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
             Parks with formal closures follow calendar-based mandatory rules. "Or as posted" means staff can extend beyond posted dates. Advisory parks have no formal closure but riders should avoid wet trails during mud season (March–early April). Drive times are estimates based on straight-line distance.
           </p>
         </div>
 
         {/* Footer */}
         <footer className="mt-8 pt-4 border-t border-bg-elevated">
-          <p className="font-mono text-[9px] text-text-muted text-center">
+          <p className="font-mono text-[11px] text-text-muted text-center">
             Ride responsibly · Respect mud season · Stay off wet trails · Support NEMBA
           </p>
         </footer>

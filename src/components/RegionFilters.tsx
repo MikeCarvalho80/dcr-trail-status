@@ -21,7 +21,7 @@ export function RegionFilters({ activeRegion, onRegionChange, availableRegions }
               key={region}
               onClick={() => onRegionChange(region)}
               className={`
-                font-mono text-[10px] font-semibold uppercase tracking-[0.05em]
+                font-mono text-[12px] font-semibold uppercase tracking-[0.05em]
                 py-1.5 px-3 rounded-full whitespace-nowrap
                 transition-colors duration-200
                 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/50

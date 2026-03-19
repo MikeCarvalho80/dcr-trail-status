@@ -31,7 +31,7 @@ export function DistanceControls({
 
   return (
     <section aria-label="Distance filter" className="space-y-3">
-      <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-text-secondary">
+      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-secondary">
         Location & Range
       </div>
 
@@ -40,7 +40,7 @@ export function DistanceControls({
         <div className="flex items-center gap-2">
           <label
             htmlFor="zip-input"
-            className="font-mono text-[10px] text-text-muted uppercase tracking-[0.05em]"
+            className="font-mono text-[12px] text-text-muted uppercase tracking-[0.05em]"
           >
             ZIP
           </label>
@@ -52,7 +52,7 @@ export function DistanceControls({
             onChange={(e) => handleInputChange(e.target.value)}
             className={`
               w-[72px] px-2 py-1.5 rounded-md
-              bg-bg-secondary border font-mono text-[12px] font-semibold text-text-primary
+              bg-bg-secondary border font-mono text-[14px] font-semibold text-text-primary
               focus:outline-none focus:ring-1 focus:ring-text-primary/30
               ${isValidZip ? 'border-bg-elevated' : 'border-status-closed/50'}
             `}
@@ -61,7 +61,7 @@ export function DistanceControls({
             aria-invalid={!isValidZip}
           />
           {!isValidZip && inputValue.length === 5 && (
-            <span className="font-mono text-[9px] text-status-closed">
+            <span className="font-mono text-[11px] text-status-closed">
               Unknown ZIP
             </span>
           )}
@@ -70,7 +70,7 @@ export function DistanceControls({
         <div className="flex-1" />
 
         {/* Park count */}
-        <div className="font-mono text-[10px] text-text-muted">
+        <div className="font-mono text-[12px] text-text-muted">
           <span className="text-text-primary font-semibold">{parkCount}</span> parks
         </div>
       </div>
@@ -84,7 +84,7 @@ export function DistanceControls({
               key={r}
               onClick={() => onRadiusChange(r)}
               className={`
-                font-mono text-[10px] font-semibold
+                font-mono text-[12px] font-semibold
                 py-1 px-2.5 rounded-full
                 transition-colors duration-200
                 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/50
