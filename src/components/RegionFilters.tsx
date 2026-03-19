@@ -1,0 +1,38 @@
+import type { Region } from '../data/parks';
+
+export type FilterOption = 'All' | Region;
+
+interface RegionFiltersProps {
+  activeRegion: FilterOption;
+  onRegionChange: (region: FilterOption) => void;
+}
+
+const regions: FilterOption[] = ['All', 'South', 'North', 'West', 'NW', 'SW'];
+
+export function RegionFilters({ activeRegion, onRegionChange }: RegionFiltersProps) {
+  return (
+    <section aria-label="Filter by region" className="overflow-x-auto scrollbar-hide">
+      <div className="flex gap-1.5">
+        {regions.map((region) => {
+          const isActive = activeRegion === region;
+          return (
+            <button
+              key={region}
+              onClick={() => onRegionChange(region)}
+              className={`
+                font-mono text-[10px] font-semibold uppercase tracking-[0.05em]
+                py-1.5 px-3 rounded-full whitespace-nowrap
+                transition-colors duration-200
+                focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/50
+                ${isActive ? 'bg-bg-elevated text-text-primary' : 'bg-transparent text-text-secondary hover:text-text-primary/70'}
+              `}
+              aria-pressed={isActive}
+            >
+              {region}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}

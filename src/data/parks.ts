@@ -1,0 +1,246 @@
+export type TrailStatus = 'open' | 'caution' | 'closed';
+
+export type Region = 'South' | 'North' | 'West' | 'NW' | 'SW';
+
+export interface ClosureDate {
+  month: number;
+  day: number;
+}
+
+export interface Park {
+  id: string;
+  name: string;
+  region: Region;
+  manager: string;
+  distance: string;
+  url: string;
+  lat: number;
+  lng: number;
+  parking: string;
+  closureType: 'formal' | 'seasonal' | 'advisory';
+  closureRule: string;
+  closureStart: ClosureDate | null;
+  closureEnd: ClosureDate | null;
+  notes: string;
+  difficulty: string;
+  miles: string;
+  nemba: string;
+}
+
+export interface TrailStatusResult {
+  status: TrailStatus;
+  label: string;
+  sublabel: string;
+}
+
+export const PARKS: Park[] = [
+  {
+    id: "neponset",
+    name: "Neponset River Reservation",
+    region: "South",
+    manager: "DCR",
+    distance: "5 min",
+    url: "https://www.mass.gov/locations/neponset-river-reservation",
+    lat: 42.2530,
+    lng: -71.1050,
+    parking: "Burma Trail Parking, 1339 Brush Hill Rd, Milton",
+    closureType: "advisory",
+    closureRule: "No formal closure — unmarked trails, ride at your own risk",
+    closureStart: null,
+    closureEnd: null,
+    notes: "Right in Hyde Park. Largely wild with tight, unmarked, highly technical trails. A fire road runs north-south as the spine. Not an official MTB destination but rideable.",
+    difficulty: "Intermediate-Advanced",
+    miles: "5+",
+    nemba: "N/A",
+  },
+  {
+    id: "blue-hills",
+    name: "Blue Hills Reservation",
+    region: "South",
+    manager: "DCR",
+    distance: "10 min",
+    url: "https://www.mass.gov/location-details/mountain-biking-in-blue-hills",
+    lat: 42.2163,
+    lng: -71.1086,
+    parking: "Houghton's Pond, 840 Hillside St, Milton",
+    closureType: "formal",
+    closureRule: "March 1 - March 31 (DCR mandate)",
+    closureStart: { month: 3, day: 1 },
+    closureEnd: { month: 3, day: 31 },
+    notes: "Trails east of Rte 28 permanently closed (endangered species). Sections: Great Blue Hill, Houghton's Pond, Ponkapoag, West St, Little Blue Hill, Fowl Meadow.",
+    difficulty: "Intermediate-Advanced",
+    miles: "35+",
+    nemba: "SE Mass",
+  },
+  {
+    id: "stony-brook",
+    name: "Stony Brook Reservation",
+    region: "South",
+    manager: "DCR",
+    distance: "15 min",
+    url: "https://www.mass.gov/locations/stony-brook-reservation",
+    lat: 42.2720,
+    lng: -71.1290,
+    parking: "Turtle Pond Pkwy, Hyde Park/Milton",
+    closureType: "advisory",
+    closureRule: "No formal spring closure",
+    closureStart: null,
+    closureEnd: null,
+    notes: "One of the most diverse riding areas near Boston. Something for every rider, excellent for first-timers. Milton/Hyde Park border.",
+    difficulty: "Beginner-Intermediate",
+    miles: "8+",
+    nemba: "Greater Boston",
+  },
+  {
+    id: "cutler",
+    name: "Cutler Park Reservation",
+    region: "West",
+    manager: "DCR",
+    distance: "25 min",
+    url: "https://www.mass.gov/locations/cutler-park-reservation",
+    lat: 42.2980,
+    lng: -71.2365,
+    parking: "84 Kendrick St, Needham",
+    closureType: "advisory",
+    closureRule: "No formal spring closure",
+    closureStart: null,
+    closureEnd: null,
+    notes: "700 acres in Needham/Dedham along Charles River. Singletrack, boardwalks through marshland, pump track. Connects to Riverdale Park, Millennium Park, Brook Farm. Boardwalks recently restored by NEMBA/DCR.",
+    difficulty: "Beginner-Intermediate",
+    miles: "9+",
+    nemba: "SE Mass / Greater Boston",
+  },
+  {
+    id: "needham-tf",
+    name: "Needham Town Forest (High Rock)",
+    region: "West",
+    manager: "Town of Needham",
+    distance: "30 min",
+    url: "https://www.trailforks.com/region/needham-town-forest/",
+    lat: 42.2780,
+    lng: -71.2540,
+    parking: "Charles River St trailhead, Needham",
+    closureType: "advisory",
+    closureRule: "No formal closure",
+    closureStart: null,
+    closureEnd: null,
+    notes: "11 miles of fun, challenging trails. Former Boston Cup MTB race site. No massive climbs, just technical fun in every direction. Pairs well with Cutler Park.",
+    difficulty: "Intermediate-Advanced",
+    miles: "11+",
+    nemba: "Greater Boston",
+  },
+  {
+    id: "fells",
+    name: "Middlesex Fells Reservation",
+    region: "North",
+    manager: "DCR",
+    distance: "30 min",
+    url: "https://www.mass.gov/location-details/mountain-biking-at-the-middlesex-fells",
+    lat: 42.4530,
+    lng: -71.1040,
+    parking: "Bellevue Pond parking, South Border Rd, Medford",
+    closureType: "formal",
+    closureRule: "March 1 - March 31 or as posted (DCR mandate)",
+    closureStart: { month: 3, day: 1 },
+    closureEnd: { month: 3, day: 31 },
+    notes: "Fire roads in Lawrence Woods and Eastern Fells. MTB Loop (green, 85% fire road) and Reservoir Trail (orange, 70% singletrack) in Western Fells. Long Pond and Virginia Wood always closed to bikes. 'Or as posted' means closure can extend.",
+    difficulty: "Easy-Moderate",
+    miles: "15+",
+    nemba: "Greater Boston",
+  },
+  {
+    id: "wompatuck",
+    name: "Wompatuck State Park",
+    region: "South",
+    manager: "DCR",
+    distance: "35 min",
+    url: "https://www.mass.gov/locations/wompatuck-state-park",
+    lat: 42.2270,
+    lng: -70.8610,
+    parking: "204 Union St, Hingham",
+    closureType: "advisory",
+    closureRule: "No formal spring closure — paved network year-round",
+    closureStart: null,
+    closureEnd: null,
+    notes: "Former WWII ammo depot in Hingham. 12 miles paved plus extensive singletrack. Paved network means you can always ride something even in mud season.",
+    difficulty: "Beginner-Intermediate",
+    miles: "12+ paved",
+    nemba: "SE Mass",
+  },
+  {
+    id: "lynn-woods",
+    name: "Lynn Woods Reservation",
+    region: "North",
+    manager: "City of Lynn",
+    distance: "35 min",
+    url: "https://visitlynnwoods.org/",
+    lat: 42.4850,
+    lng: -70.9830,
+    parking: "Main entrance, Pennybrook Rd, Lynn",
+    closureType: "formal",
+    closureRule: "No biking during winter (city rule) — reopens in spring",
+    closureStart: { month: 12, day: 1 },
+    closureEnd: { month: 3, day: 31 },
+    notes: "2,200 acres, 30+ miles. Second largest municipal park in the US. Terrain is ROCKS: slabs, boulders, ledge everywhere. Not for beginners. Check with rangers for exact reopening date. Not DCR managed.",
+    difficulty: "Advanced-Expert",
+    miles: "30+",
+    nemba: "North Shore",
+  },
+  {
+    id: "harold-parker",
+    name: "Harold Parker State Forest",
+    region: "North",
+    manager: "DCR",
+    distance: "45 min",
+    url: "https://www.mass.gov/locations/harold-parker-state-forest",
+    lat: 42.6130,
+    lng: -71.0540,
+    parking: "Jenkins Rd parking (Gate 13), Andover",
+    closureType: "advisory",
+    closureRule: "No formal spring closure",
+    closureStart: null,
+    closureEnd: null,
+    notes: "3,000+ acres in Andover. 35+ miles, 11 ponds. Yellow Diamond Trail is a standout. Ranges from buffed singletrack to very technical. Hunting allowed in season (not Sundays).",
+    difficulty: "Intermediate-Advanced",
+    miles: "35+",
+    nemba: "Merrimack Valley",
+  },
+  {
+    id: "great-brook",
+    name: "Great Brook Farm State Park",
+    region: "NW",
+    manager: "DCR",
+    distance: "50 min",
+    url: "https://www.mass.gov/locations/great-brook-farm-state-park",
+    lat: 42.5480,
+    lng: -71.3510,
+    parking: "984 Lowell Rd, Carlisle",
+    closureType: "seasonal",
+    closureRule: "Winter: trails for XC skiing (Dec-Mar). Biking resumes spring.",
+    closureStart: { month: 12, day: 1 },
+    closureEnd: { month: 3, day: 15 },
+    notes: "1,000 acres in Carlisle. Working dairy farm with ice cream stand. 20+ miles. Best family/beginner MTB in MA. Avoid nice summer weekends (very popular with families). Trails west of Lowell St open to non-skiers in winter.",
+    difficulty: "Beginner-Intermediate",
+    miles: "20+",
+    nemba: "Merrimack Valley",
+  },
+  {
+    id: "vietnam",
+    name: "Vietnam (Milford)",
+    region: "SW",
+    manager: "Town of Milford",
+    distance: "50 min",
+    url: "https://www.nemba.org/trails/massachusetts/vietnam",
+    lat: 42.1580,
+    lng: -71.5260,
+    parking: "Louisa Lake Rd trailhead, Milford",
+    closureType: "advisory",
+    closureRule: "Town land — no formal closure, self-policed mud season",
+    closureStart: null,
+    closureEnd: null,
+    notes: "NEMBA-managed. Rocky, technical, the real deal. Has a reputation among Boston riders. Check NEMBA forums for conditions before driving out.",
+    difficulty: "Intermediate-Expert",
+    miles: "20+",
+    nemba: "SE Mass",
+  },
+];
