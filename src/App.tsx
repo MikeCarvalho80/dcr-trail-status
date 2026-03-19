@@ -11,6 +11,7 @@ import { getZipCoords } from './data/zipcodes';
 import { getTrailStatus, sortByStatusAndDistance } from './lib/status';
 import { haversineDistance, estimateDriveMinutes } from './lib/geo';
 import { useUserPrefs } from './lib/useUserPrefs';
+import { useDailyRefresh } from './lib/useDailyRefresh';
 
 // Stable region display order
 const REGION_ORDER: Region[] = [
@@ -32,7 +33,7 @@ export function App() {
   const { prefs, setZipCode, setRadius } = useUserPrefs();
   const [activeRegion, setActiveRegion] = useState<FilterOption>('All');
 
-  const now = new Date();
+  const now = useDailyRefresh(6, 'America/New_York');
   const dateStr = now.toLocaleDateString('en-US', {
     weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
   });
@@ -75,7 +76,8 @@ export function App() {
         ? [...parksInRange]
         : parksInRange.filter((p) => p.region === effectiveRegion);
     return sortByStatusAndDistance(filtered, distances);
-  }, [effectiveRegion, parksInRange, distances]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effectiveRegion, parksInRange, distances, now]);
 
   // Status counts
   const counts = useMemo(() => {
@@ -84,7 +86,7 @@ export function App() {
       c[getTrailStatus(p).status]++;
     });
     return c;
-  }, [filteredParks]);
+  }, [filteredParks, now]);
 
   return (
     <main className="min-h-screen bg-bg-primary">
