@@ -1,0 +1,24 @@
+name: Data Correction
+description: Report inaccurate park info (wrong parking, URL, coordinates, etc.)
+title: "[Fix] "
+labels: ["data-fix"]
+body:
+  - type: input
+    id: park
+    attributes:
+      label: Park name
+      placeholder: "e.g. Lynn Woods Reservation"
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What's wrong?
+      placeholder: "e.g. Parking lot coordinates point to the wrong entrance"
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Correct information
+      placeholder: "e.g. Main MTB parking is at Pennybrook Rd gate: 42.485, -70.983"

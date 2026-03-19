@@ -1,16 +1,16 @@
-# DCR Trail Status
+# Trail Status — New England MTB
 
-A React dashboard for tracking mountain bike trail spring closures and mud season advisories across parks within one hour of Hyde Park, Boston.
+A PWA for tracking mountain bike trail closures and mud season advisories across New England. Set your ZIP code, pick a range, and see which trails are open before you ride.
 
 ## What it does
 
-DCR (Department of Conservation and Recreation) and other local agencies impose seasonal trail closures each spring to protect trails during mud season. This app monitors 11 parks and shows their current status in real time based on calendar-driven closure rules.
+State agencies (DCR, NH State Parks, CT DEEP) and municipalities impose seasonal trail closures each spring to protect trails during mud season. This app monitors **36 parks across 5 states** and shows their current status based on calendar-driven closure rules.
 
 **Status types:**
 
 | Status | Meaning |
 |--------|---------|
-| **Closed** | Mandatory closure in effect (formal DCR mandate or city rule) |
+| **Closed** | Mandatory closure in effect (formal mandate or city rule) |
 | **Caution** | Mud season advisory or recently reopened — ride with judgment |
 | **Open** | No active restrictions |
 
@@ -18,34 +18,24 @@ DCR (Department of Conservation and Recreation) and other local agencies impose 
 
 - Live status for each park based on today's date and known closure windows
 - Countdown timer showing days remaining in active closures
-- Season timeline visualization tracking progress through the March closure period
-- Region filters (South, North, West, NW, SW)
+- ZIP code input with configurable distance radius (15–150 mi)
+- Season timeline visualization tracking progress through closure season
+- Region filters (Greater Boston, South Shore, North Shore, MetroWest, Central MA, Pioneer Valley, Berkshires, Southern NH, Rhode Island, Connecticut, Southern VT)
 - Expandable park cards with closure policy, difficulty, NEMBA chapter, trail miles, and parking info
 - Google Maps navigation links to each park's primary MTB parking area
-- Direct links to official park pages
+- Installable as a PWA — works offline, add to home screen
 
 ## Parks covered
 
-| Park | Manager | Distance | Difficulty |
-|------|---------|----------|------------|
-| Neponset River Reservation | DCR | 5 min | Intermediate-Advanced |
-| Blue Hills Reservation | DCR | 10 min | Intermediate-Advanced |
-| Stony Brook Reservation | DCR | 15 min | Beginner-Intermediate |
-| Cutler Park Reservation | DCR | 25 min | Beginner-Intermediate |
-| Needham Town Forest | Town of Needham | 30 min | Intermediate-Advanced |
-| Middlesex Fells Reservation | DCR | 30 min | Easy-Moderate |
-| Wompatuck State Park | DCR | 35 min | Beginner-Intermediate |
-| Lynn Woods Reservation | City of Lynn | 35 min | Advanced-Expert |
-| Harold Parker State Forest | DCR | 45 min | Intermediate-Advanced |
-| Great Brook Farm State Park | DCR | 50 min | Beginner-Intermediate |
-| Vietnam (Milford) | Town of Milford | 50 min | Intermediate-Expert |
+**Massachusetts (25):** Neponset River, Blue Hills, Stony Brook, Cutler Park, Needham Town Forest, Middlesex Fells, Wompatuck, Lynn Woods, Harold Parker, Great Brook Farm, Vietnam (Milford), Ames Nowell, Borderland, F. Gilbert Hills, Massasoit, Upton, Leominster, Douglas, Russell Mill, Callahan, Rocky Woods, October Mountain, Brimfield, Groton Town Forest, Freetown-Fall River
 
-## Closure logic
+**New Hampshire (4):** Bear Brook, Mine Falls, Pawtuckaway, Fort Rock
 
-- **Blue Hills & Middlesex Fells** — Formal DCR closure March 1-31. The Fells carries an "or as posted" clause meaning staff can extend beyond 3/31.
-- **Lynn Woods** — City of Lynn bans biking Dec 1 - Mar 31. Check with rangers for exact reopening.
-- **Great Brook Farm** — Trails reserved for XC skiing Dec 1 - Mar 15.
-- **All others** — No formal closure. Mud season advisory runs through March and into early April.
+**Rhode Island (3):** Big River, Lincoln Woods, Arcadia
+
+**Connecticut (2):** Nassahegon, Case Mountain
+
+**Vermont (1):** Kingdom Trails
 
 ## Getting started
 
@@ -63,11 +53,24 @@ npm run build
 npm run preview
 ```
 
+## Contributing
+
+Know a park that's missing? See wrong closure dates? **[Read the contributing guide](CONTRIBUTING.md).**
+
+Ways to help:
+- **[Add a new park](../../issues/new?template=new-park.yml)** — fill out a form, no coding required
+- **[Report a closure update](../../issues/new?template=closure-update.yml)** — help keep dates accurate
+- **[Fix inaccurate data](../../issues/new?template=data-correction.yml)** — wrong parking lot, bad URL, etc.
+- **Submit a PR** — edit `src/data/parks.ts` directly
+
 ## Tech stack
 
-- [React](https://react.dev) 19
-- [Vite](https://vite.dev) 8
-- Zero external UI dependencies — all styling is inline
+- [React](https://react.dev) 18 + TypeScript
+- [Vite](https://vite.dev) 5 + [vite-plugin-pwa](https://vite-pwa-org.netlify.app/)
+- [Tailwind CSS](https://tailwindcss.com) 3
+- [Framer Motion](https://www.framer.com/motion/) for animations
+- [Lucide](https://lucide.dev/) icons
+- Zero backend — all data bundled, works offline
 
 ## License
 

@@ -1,0 +1,70 @@
+name: New Park / Trail System
+description: Suggest a park or trail system to add
+title: "[New Park] "
+labels: ["new-park"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new park! Fill in as much as you know — we'll research the rest.
+  - type: input
+    id: name
+    attributes:
+      label: Park name
+      placeholder: "e.g. Bear Brook State Park"
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      placeholder: "Town, State (e.g. Allenstown, NH)"
+    validations:
+      required: true
+  - type: input
+    id: manager
+    attributes:
+      label: Managing agency
+      placeholder: "e.g. DCR, Town of X, NH State Parks"
+  - type: input
+    id: miles
+    attributes:
+      label: Approximate trail miles
+      placeholder: "e.g. 20+"
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty
+      options:
+        - Beginner
+        - Beginner-Intermediate
+        - Intermediate
+        - Intermediate-Advanced
+        - Advanced-Expert
+        - Mixed / All levels
+  - type: textarea
+    id: closure
+    attributes:
+      label: Closure policy
+      description: Does the park have a formal spring closure? Seasonal restrictions? Or just mud season advisory?
+      placeholder: "e.g. No formal closure, self-policed mud season"
+  - type: input
+    id: parking
+    attributes:
+      label: Main MTB parking area
+      placeholder: "Lot name + address, or Google Maps link"
+  - type: input
+    id: url
+    attributes:
+      label: Official park page URL
+      placeholder: "https://..."
+  - type: input
+    id: nemba
+    attributes:
+      label: NEMBA chapter
+      placeholder: "e.g. Greater Boston, SE Mass, N/A"
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else riders should know?
+      placeholder: "Trail conditions, terrain type, local tips..."

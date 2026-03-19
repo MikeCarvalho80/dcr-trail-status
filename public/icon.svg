@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="64" ry="64" fill="#0d0c0a"/>
+  <!-- Mountain peaks -->
+  <path d="M100 380 L220 160 L280 240 L340 150 L440 380 Z" fill="none" stroke="#e8e6e1" stroke-width="28" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Status dot -->
+  <circle cx="410" cy="140" r="42" fill="#2ecc71"/>
+</svg>

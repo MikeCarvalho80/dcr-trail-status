@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Mountain peaks -->
+  <path d="M4 26 L12.5 8 L16 16 L20 7 L28 26 Z" fill="none" stroke="#e8e6e1" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Status dot -->
+  <circle cx="26" cy="7" r="3.5" fill="#2ecc71"/>
+</svg>

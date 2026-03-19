@@ -1,0 +1,34 @@
+name: Closure Date / Policy Update
+description: Report a change to a park's closure dates or policy
+title: "[Closure Update] "
+labels: ["closure-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us keep closure data accurate. If a park's dates or policy have changed, let us know.
+  - type: input
+    id: park
+    attributes:
+      label: Park name
+      placeholder: "e.g. Blue Hills Reservation"
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: What changed?
+      placeholder: "e.g. DCR extended closure through April 7 this year"
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Where did you learn about this change?
+      placeholder: "e.g. DCR website, posted sign at trailhead, ranger communication"
+  - type: input
+    id: dates
+    attributes:
+      label: New dates (if applicable)
+      placeholder: "e.g. March 1 - April 7"

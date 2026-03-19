@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#0d0c0a"/>
+  <!-- Maskable safe zone: content within center 80% (51.2 to 460.8) -->
+  <!-- Mountain peaks - scaled to fit safe zone -->
+  <path d="M130 390 L232 200 L282 268 L340 190 L420 390 Z" fill="none" stroke="#e8e6e1" stroke-width="26" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Status dot -->
+  <circle cx="395" cy="160" r="36" fill="#2ecc71"/>
+</svg>
