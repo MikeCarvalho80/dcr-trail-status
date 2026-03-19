@@ -8,7 +8,6 @@ export type Region =
   | 'Central MA'
   | 'Pioneer Valley'
   | 'Berkshires'
-  | 'Cape & Islands'
   | 'Southern NH'
   | 'Southern VT'
   | 'Rhode Island'
@@ -40,6 +39,7 @@ export interface Park {
   miles: string;
   nemba: string;
   source?: string;
+  lastVerified: string;
 }
 
 export interface TrailStatusResult {
@@ -71,6 +71,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "5+",
     nemba: "N/A",
+    lastVerified: "2026-03-19",
   },
   {
     id: "blue-hills",
@@ -91,6 +92,7 @@ export const PARKS: Park[] = [
     miles: "35+",
     nemba: "SE Mass",
     source: "DCR Mountain Biking in Blue Hills page (mass.gov)",
+    lastVerified: "2026-03-19",
   },
   {
     id: "stony-brook",
@@ -110,6 +112,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Intermediate",
     miles: "8+",
     nemba: "Greater Boston",
+    lastVerified: "2026-03-19",
   },
   {
     id: "cutler",
@@ -129,6 +132,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Intermediate",
     miles: "9+",
     nemba: "SE Mass / Greater Boston",
+    lastVerified: "2026-03-19",
   },
   {
     id: "needham-tf",
@@ -148,6 +152,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "11+",
     nemba: "Greater Boston",
+    lastVerified: "2026-03-19",
   },
   {
     id: "fells",
@@ -168,6 +173,7 @@ export const PARKS: Park[] = [
     miles: "15+",
     nemba: "Greater Boston",
     source: "DCR Mountain Biking at the Middlesex Fells page (mass.gov)",
+    lastVerified: "2026-03-19",
   },
   {
     id: "wompatuck",
@@ -187,6 +193,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Intermediate",
     miles: "12+ paved",
     nemba: "SE Mass",
+    lastVerified: "2026-03-19",
   },
   {
     id: "lynn-woods",
@@ -207,6 +214,7 @@ export const PARKS: Park[] = [
     miles: "30+",
     nemba: "North Shore",
     source: "City of Lynn / Lynn Woods rangers — check visitlynnwoods.org for exact reopening date",
+    lastVerified: "2026-03-19",
   },
   {
     id: "harold-parker",
@@ -226,6 +234,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "35+",
     nemba: "Merrimack Valley",
+    lastVerified: "2026-03-19",
   },
   {
     id: "great-brook",
@@ -246,6 +255,7 @@ export const PARKS: Park[] = [
     miles: "20+",
     nemba: "Merrimack Valley",
     source: "DCR Great Brook Farm State Park page (mass.gov) and local XC ski season practice",
+    lastVerified: "2026-03-19",
   },
   {
     id: "vietnam",
@@ -265,6 +275,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Expert",
     miles: "20+",
     nemba: "Blackstone Valley",
+    lastVerified: "2026-03-19",
   },
 
   // ─────────────────────────────────────────────
@@ -288,6 +299,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate",
     miles: "10+",
     nemba: "SE Mass",
+    lastVerified: "2026-03-19",
   },
   {
     id: "borderland",
@@ -307,6 +319,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Intermediate",
     miles: "20+",
     nemba: "SE Mass",
+    lastVerified: "2026-03-19",
   },
   {
     id: "f-gilbert-hills",
@@ -326,6 +339,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "23+",
     nemba: "SE Mass",
+    lastVerified: "2026-03-19",
   },
   {
     id: "massasoit",
@@ -345,6 +359,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate",
     miles: "24+",
     nemba: "SE Mass",
+    lastVerified: "2026-03-19",
   },
   {
     id: "upton",
@@ -364,6 +379,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "25+",
     nemba: "Blackstone Valley",
+    lastVerified: "2026-03-19",
   },
   {
     id: "leominster",
@@ -383,6 +399,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "20+",
     nemba: "Wachusett",
+    lastVerified: "2026-03-19",
   },
   {
     id: "douglas",
@@ -402,6 +419,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Expert",
     miles: "30+",
     nemba: "Blackstone Valley",
+    lastVerified: "2026-03-19",
   },
   {
     id: "russell-mill",
@@ -421,6 +439,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate",
     miles: "10+",
     nemba: "Merrimack Valley",
+    lastVerified: "2026-03-19",
   },
   {
     id: "callahan",
@@ -440,6 +459,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Intermediate",
     miles: "7+",
     nemba: "Greater Boston",
+    lastVerified: "2026-03-19",
   },
   {
     id: "rocky-woods",
@@ -460,6 +480,7 @@ export const PARKS: Park[] = [
     miles: "6.5",
     nemba: "Greater Boston",
     source: "The Trustees of Reservations Rocky Woods property page (thetrustees.org)",
+    lastVerified: "2026-03-19",
   },
   {
     id: "october-mountain",
@@ -479,6 +500,7 @@ export const PARKS: Park[] = [
     difficulty: "Advanced-Expert",
     miles: "27+",
     nemba: "Berkshire NEMBA",
+    lastVerified: "2026-03-19",
   },
   {
     id: "brimfield",
@@ -498,6 +520,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "25+",
     nemba: "South Central MA",
+    lastVerified: "2026-03-19",
   },
   {
     id: "groton-town-forest",
@@ -517,6 +540,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Intermediate",
     miles: "16+",
     nemba: "Wachusett",
+    lastVerified: "2026-03-19",
   },
   {
     id: "freetown-fall-river",
@@ -536,6 +560,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "50+",
     nemba: "SE Mass",
+    lastVerified: "2026-03-19",
   },
 
   // ─────────────────────────────────────────────
@@ -560,6 +585,7 @@ export const PARKS: Park[] = [
     miles: "60+",
     nemba: "Southern NH",
     source: "NH State Parks Bear Brook page (nhstateparks.org)",
+    lastVerified: "2026-03-19",
   },
   {
     id: "mine-falls",
@@ -579,6 +605,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner",
     miles: "8+",
     nemba: "Southern NH",
+    lastVerified: "2026-03-19",
   },
   {
     id: "pawtuckaway",
@@ -599,6 +626,7 @@ export const PARKS: Park[] = [
     miles: "21+",
     nemba: "Southern NH",
     source: "NH State Parks Pawtuckaway page (nhstateparks.org)",
+    lastVerified: "2026-03-19",
   },
   {
     id: "fort-rock",
@@ -618,6 +646,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "12+",
     nemba: "Southern NH",
+    lastVerified: "2026-03-19",
   },
 
   // ─────────────────────────────────────────────
@@ -641,6 +670,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Advanced",
     miles: "30+",
     nemba: "Rhode Island",
+    lastVerified: "2026-03-19",
   },
   {
     id: "lincoln-woods",
@@ -660,6 +690,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "16+",
     nemba: "Rhode Island",
+    lastVerified: "2026-03-19",
   },
   {
     id: "arcadia",
@@ -679,6 +710,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Advanced",
     miles: "40+",
     nemba: "Rhode Island",
+    lastVerified: "2026-03-19",
   },
 
   // ─────────────────────────────────────────────
@@ -702,6 +734,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Advanced",
     miles: "40+",
     nemba: "Central CT",
+    lastVerified: "2026-03-19",
   },
   {
     id: "case-mountain",
@@ -721,6 +754,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "33+",
     nemba: "Central CT",
+    lastVerified: "2026-03-19",
   },
 
   // ─────────────────────────────────────────────
@@ -745,5 +779,6 @@ export const PARKS: Park[] = [
     miles: "100+",
     nemba: "Kingdom Trails (independent)",
     source: "Kingdom Trail Association (kingdomtrails.org) — opening dates posted annually",
+    lastVerified: "2026-03-19",
   },
 ];

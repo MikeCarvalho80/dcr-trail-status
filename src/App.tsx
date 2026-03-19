@@ -4,6 +4,7 @@ import { SeasonTimeline } from './components/SeasonTimeline';
 import { RegionFilters } from './components/RegionFilters';
 import type { FilterOption } from './components/RegionFilters';
 import { DistanceControls } from './components/DistanceControls';
+import { DifficultyFilters, TrailLengthFilters, RideableToggle } from './components/TrailFilters';
 import { ParkCard } from './components/ParkCard';
 import { PARKS } from './data/parks';
 import type { Region } from './data/parks';
@@ -12,6 +13,8 @@ import { getTrailStatus, sortByStatusAndDistance } from './lib/status';
 import { haversineDistance, estimateDriveMinutes } from './lib/geo';
 import { useUserPrefs } from './lib/useUserPrefs';
 import { useDailyRefresh } from './lib/useDailyRefresh';
+import type { DifficultyFilter, TrailLengthFilter } from './lib/parks-utils';
+import { parseMiles, matchesLengthRange } from './lib/parks-utils';
 
 // Stable region display order
 const REGION_ORDER: Region[] = [
@@ -22,7 +25,6 @@ const REGION_ORDER: Region[] = [
   'Central MA',
   'Pioneer Valley',
   'Berkshires',
-  'Cape & Islands',
   'Southern NH',
   'Rhode Island',
   'Connecticut',
@@ -30,8 +32,10 @@ const REGION_ORDER: Region[] = [
 ];
 
 export function App() {
-  const { prefs, setZipCode, setRadius } = useUserPrefs();
+  const { prefs, setZipCode, setRadius, toggleFavorite, setShowRideableOnly } = useUserPrefs();
   const [activeRegion, setActiveRegion] = useState<FilterOption>('All');
+  const [activeDifficulty, setActiveDifficulty] = useState<DifficultyFilter>('All');
+  const [activeTrailLength, setActiveTrailLength] = useState<TrailLengthFilter>('All');
 
   const now = useDailyRefresh(6, 'America/New_York');
   const dateStr = now.toLocaleDateString('en-US', {
@@ -69,15 +73,30 @@ export function App() {
       ? 'All'
       : activeRegion;
 
-  // Filter by region, then sort by status + distance
+  const favoritesSet = useMemo(() => new Set(prefs.favorites), [prefs.favorites]);
+
+  // Full filter pipeline: region → difficulty → trail length → rideable only → sort
   const filteredParks = useMemo(() => {
-    const filtered =
+    let filtered =
       effectiveRegion === 'All'
         ? [...parksInRange]
         : parksInRange.filter((p) => p.region === effectiveRegion);
-    return sortByStatusAndDistance(filtered, distances);
+
+    if (activeDifficulty !== 'All') {
+      filtered = filtered.filter((p) => p.difficulty.includes(activeDifficulty));
+    }
+
+    if (activeTrailLength !== 'All') {
+      filtered = filtered.filter((p) => matchesLengthRange(parseMiles(p.miles), activeTrailLength));
+    }
+
+    if (prefs.showRideableOnly) {
+      filtered = filtered.filter((p) => getTrailStatus(p).status !== 'closed');
+    }
+
+    return sortByStatusAndDistance(filtered, distances, favoritesSet);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectiveRegion, parksInRange, distances, now]);
+  }, [effectiveRegion, parksInRange, distances, now, activeDifficulty, activeTrailLength, prefs.showRideableOnly, favoritesSet]);
 
   // Status counts
   const counts = useMemo(() => {
@@ -86,6 +105,7 @@ export function App() {
       c[getTrailStatus(p).status]++;
     });
     return c;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredParks, now]);
 
   return (
@@ -133,12 +153,24 @@ export function App() {
           <SeasonTimeline />
         </div>
 
-        {/* Region Filters */}
-        <div className="mb-4">
+        {/* Filters */}
+        <div className="space-y-3 mb-4">
           <RegionFilters
             activeRegion={effectiveRegion}
             onRegionChange={setActiveRegion}
             availableRegions={availableRegions}
+          />
+          <DifficultyFilters
+            active={activeDifficulty}
+            onChange={setActiveDifficulty}
+          />
+          <TrailLengthFilters
+            active={activeTrailLength}
+            onChange={setActiveTrailLength}
+          />
+          <RideableToggle
+            enabled={prefs.showRideableOnly}
+            onToggle={setShowRideableOnly}
           />
         </div>
 
@@ -152,6 +184,8 @@ export function App() {
                 park={park}
                 distanceMiles={d != null ? Math.round(d) : undefined}
                 driveMinutes={d != null ? estimateDriveMinutes(d) : undefined}
+                isFavorite={favoritesSet.has(park.id)}
+                onToggleFavorite={() => toggleFavorite(park.id)}
               />
             );
           })}
@@ -159,7 +193,7 @@ export function App() {
           {filteredParks.length === 0 && (
             <div className="text-center py-8">
               <p className="font-mono text-[13px] text-text-muted">
-                No parks within {prefs.radiusMiles} miles. Try increasing the range.
+                No parks match your filters. Try adjusting distance, difficulty, or trail length.
               </p>
             </div>
           )}

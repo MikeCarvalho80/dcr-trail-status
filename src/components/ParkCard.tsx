@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDownIcon, ExternalLinkIcon, NavigationIcon } from 'lucide-react';
+import { ChevronDownIcon, ExternalLinkIcon, NavigationIcon, StarIcon, Share2Icon, CloudSunIcon } from 'lucide-react';
 import type { Park } from '../data/parks';
 import { getTrailStatus, getNavUrl, STATUS_CONFIG } from '../lib/status';
 
@@ -8,6 +8,8 @@ interface ParkCardProps {
   park: Park;
   distanceMiles?: number;
   driveMinutes?: number;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 }
 
 function DetailItem({ label, value }: { label: string; value: string }) {
@@ -21,10 +23,36 @@ function DetailItem({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
+function formatVerifiedDate(iso: string): string {
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function getWeatherUrl(park: Park): string {
+  return `https://forecast.weather.gov/MapClick.php?lat=${park.lat}&lon=${park.lng}`;
+}
+
+export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onToggleFavorite }: ParkCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [shareMsg, setShareMsg] = useState('');
   const trail = getTrailStatus(park);
   const config = STATUS_CONFIG[trail.status];
+
+  async function handleShare(e: React.MouseEvent) {
+    e.stopPropagation();
+    const text = `${park.name} — ${trail.label}\n${trail.sublabel}\n${park.miles} mi · ${park.difficulty}\n${park.url}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: park.name, text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        setShareMsg('Copied!');
+        setTimeout(() => setShareMsg(''), 2000);
+      }
+    } catch {
+      // user cancelled share
+    }
+  }
 
   return (
     <div
@@ -77,11 +105,25 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
             </span>
           </div>
 
+          {/* Favorite star */}
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onToggleFavorite(); } }}
+            className="flex-shrink-0 ml-0.5 cursor-pointer"
+            aria-label={isFavorite ? `Remove ${park.name} from favorites` : `Add ${park.name} to favorites`}
+          >
+            <StarIcon
+              className={`w-4 h-4 transition-colors duration-200 ${isFavorite ? 'text-amber-400 fill-amber-400' : 'text-text-muted hover:text-amber-400/60'}`}
+            />
+          </span>
+
           {/* Chevron */}
           <motion.span
             animate={{ rotate: isExpanded ? 180 : 0 }}
             transition={{ duration: 0.2 }}
-            className="flex-shrink-0 ml-1"
+            className="flex-shrink-0 ml-0.5"
           >
             <ChevronDownIcon className="w-4 h-4 text-text-muted" />
           </motion.span>
@@ -117,6 +159,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
                 <DetailItem label="NEMBA Chapter" value={park.nemba} />
                 <DetailItem label="Trail Miles" value={park.miles} />
                 <DetailItem label="Parking" value={park.parking} />
+                <DetailItem label="Last Verified" value={formatVerifiedDate(park.lastVerified)} />
               </div>
 
               {/* Closure policy */}
@@ -162,7 +205,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
               </div>
 
               {/* Action buttons */}
-              <div className="flex gap-2 mt-3">
+              <div className="flex flex-wrap gap-2 mt-3">
                 <a
                   href={getNavUrl(park)}
                   target="_blank"
@@ -201,6 +244,41 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
                   <ExternalLinkIcon className="w-4 h-4" />
                   Park Info
                 </a>
+                <a
+                  href={getWeatherUrl(park)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className={`
+                    inline-flex items-center gap-1.5
+                    font-mono text-[12px] font-semibold uppercase tracking-[0.05em]
+                    px-3 py-1.5 rounded-md border
+                    border-bg-elevated text-text-secondary
+                    transition-colors duration-200
+                    hover:text-text-primary hover:border-text-muted
+                    focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30
+                  `}
+                  aria-label={`Weather forecast for ${park.name}`}
+                >
+                  <CloudSunIcon className="w-4 h-4" />
+                  Weather
+                </a>
+                <button
+                  onClick={handleShare}
+                  className={`
+                    inline-flex items-center gap-1.5
+                    font-mono text-[12px] font-semibold uppercase tracking-[0.05em]
+                    px-3 py-1.5 rounded-md border
+                    border-bg-elevated text-text-secondary
+                    transition-colors duration-200
+                    hover:text-text-primary hover:border-text-muted
+                    focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30
+                  `}
+                  aria-label={`Share ${park.name} status`}
+                >
+                  <Share2Icon className="w-4 h-4" />
+                  {shareMsg || 'Share'}
+                </button>
               </div>
             </div>
           </motion.div>

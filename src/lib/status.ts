@@ -92,14 +92,17 @@ export function getSeasonInfo() {
   const mar1 = new Date(year, 2, 1);
   const mar31 = new Date(year, 2, 31);
   const apr14 = new Date(year, 3, 14);
-  const total = apr14.getTime() - mar1.getTime();
+  const may25 = new Date(year, 4, 25);
+  const total = may25.getTime() - mar1.getTime();
   const elapsed = Math.max(0, Math.min(now.getTime() - mar1.getTime(), total));
   const pct = (elapsed / total) * 100;
   const closureEndPct = ((mar31.getTime() - mar1.getTime()) / total) * 100;
+  const cautionEndPct = ((apr14.getTime() - mar1.getTime()) / total) * 100;
 
   const inClosure = pct <= closureEndPct;
+  const inCaution = !inClosure && pct <= cautionEndPct;
 
-  return { pct, closureEndPct, inClosure };
+  return { pct, closureEndPct, cautionEndPct, inClosure, inCaution };
 }
 
 const STATUS_ORDER: Record<TrailStatus, number> = { closed: 0, caution: 1, open: 2 };
@@ -117,8 +120,14 @@ export function sortByStatus(parks: Park[]): Park[] {
 export function sortByStatusAndDistance(
   parks: Park[],
   distances: Map<string, number>,
+  favorites?: Set<string>,
 ): Park[] {
   return [...parks].sort((a, b) => {
+    if (favorites && favorites.size > 0) {
+      const aFav = favorites.has(a.id) ? 0 : 1;
+      const bFav = favorites.has(b.id) ? 0 : 1;
+      if (aFav !== bFav) return aFav - bFav;
+    }
     const statusDiff =
       STATUS_ORDER[getTrailStatus(a).status] - STATUS_ORDER[getTrailStatus(b).status];
     if (statusDiff !== 0) return statusDiff;

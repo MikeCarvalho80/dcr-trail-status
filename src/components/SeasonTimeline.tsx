@@ -1,17 +1,16 @@
 import { getSeasonInfo } from '../lib/status';
 
 export function SeasonTimeline() {
-  const { pct, closureEndPct, inClosure } = getSeasonInfo();
-  const cautionEndPct = closureEndPct + (14 / 45) * 100; // Apr 1–14 as fraction of Mar 1–Apr 14
+  const { pct, closureEndPct, cautionEndPct, inClosure, inCaution } = getSeasonInfo();
 
   const now = new Date();
   const dateLabel = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const phase = inClosure ? 'Closed season' : pct <= cautionEndPct ? 'Caution period' : 'Open season';
+  const phase = inClosure ? 'Closed season' : inCaution ? 'Caution period' : 'Open season';
 
   return (
     <section aria-label="Season timeline" className="space-y-2">
       <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-secondary mb-2">
-        DCR Mandatory Closure Timeline
+        New England Closure Timeline
       </div>
 
       <div className="relative">
@@ -25,12 +24,12 @@ export function SeasonTimeline() {
           <div
             className="bg-status-caution/60"
             style={{ width: `${cautionEndPct - closureEndPct}%` }}
-            aria-label="Caution season: April 1 to April 14"
+            aria-label="Caution period: April 1 to April 14"
           />
           <div
             className="bg-status-open/60"
             style={{ width: `${100 - cautionEndPct}%` }}
-            aria-label="Open season: April 15 onward"
+            aria-label="Open season: April 15 to May 25"
           />
         </div>
 
@@ -47,7 +46,7 @@ export function SeasonTimeline() {
       </div>
 
       {/* Date labels */}
-      <div className="relative flex font-mono text-[11px] text-text-muted mt-1">
+      <div className="relative flex font-mono text-[11px] text-text-muted mt-1 h-4">
         <span className="absolute left-0">Mar 1</span>
         <span
           className="absolute -translate-x-1/2"
@@ -61,6 +60,7 @@ export function SeasonTimeline() {
         >
           Apr 14
         </span>
+        <span className="absolute right-0">May 25</span>
       </div>
 
       {/* Today label */}
