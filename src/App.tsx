@@ -3,11 +3,33 @@ import { SummaryStats } from './components/SummaryStats';
 import { SeasonTimeline } from './components/SeasonTimeline';
 import { RegionFilters } from './components/RegionFilters';
 import type { FilterOption } from './components/RegionFilters';
+import { DistanceControls } from './components/DistanceControls';
 import { ParkCard } from './components/ParkCard';
 import { PARKS } from './data/parks';
-import { getTrailStatus, sortByStatus } from './lib/status';
+import type { Region } from './data/parks';
+import { getZipCoords } from './data/zipcodes';
+import { getTrailStatus, sortByStatusAndDistance } from './lib/status';
+import { haversineDistance, estimateDriveMinutes } from './lib/geo';
+import { useUserPrefs } from './lib/useUserPrefs';
+
+// Stable region display order
+const REGION_ORDER: Region[] = [
+  'Greater Boston',
+  'South Shore',
+  'North Shore',
+  'MetroWest',
+  'Central MA',
+  'Pioneer Valley',
+  'Berkshires',
+  'Cape & Islands',
+  'Southern NH',
+  'Rhode Island',
+  'Connecticut',
+  'Southern VT',
+];
 
 export function App() {
+  const { prefs, setZipCode, setRadius } = useUserPrefs();
   const [activeRegion, setActiveRegion] = useState<FilterOption>('All');
 
   const now = new Date();
@@ -15,19 +37,51 @@ export function App() {
     weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
   });
 
+  const origin = getZipCoords(prefs.zipCode);
+  const isValidZip = origin !== null;
+
+  // Compute distances for all parks from origin
+  const distances = useMemo(() => {
+    const map = new Map<string, number>();
+    if (!origin) return map;
+    for (const park of PARKS) {
+      map.set(park.id, haversineDistance(origin.lat, origin.lng, park.lat, park.lng));
+    }
+    return map;
+  }, [origin]);
+
+  // Filter by distance radius
+  const parksInRange = useMemo(() => {
+    if (!origin) return PARKS; // show all if ZIP invalid
+    return PARKS.filter((p) => (distances.get(p.id) ?? Infinity) <= prefs.radiusMiles);
+  }, [origin, distances, prefs.radiusMiles]);
+
+  // Derive available regions from distance-filtered parks
+  const availableRegions = useMemo(() => {
+    const regionSet = new Set(parksInRange.map((p) => p.region));
+    return REGION_ORDER.filter((r) => regionSet.has(r));
+  }, [parksInRange]);
+
+  // Reset region filter if current selection is no longer available
+  const effectiveRegion: FilterOption =
+    activeRegion !== 'All' && !availableRegions.includes(activeRegion as Region)
+      ? 'All'
+      : activeRegion;
+
+  // Filter by region, then sort by status + distance
   const filteredParks = useMemo(() => {
     const filtered =
-      activeRegion === 'All'
-        ? [...PARKS]
-        : PARKS.filter((p) => p.region === activeRegion);
-    return sortByStatus(filtered);
-  }, [activeRegion]);
+      effectiveRegion === 'All'
+        ? [...parksInRange]
+        : parksInRange.filter((p) => p.region === effectiveRegion);
+    return sortByStatusAndDistance(filtered, distances);
+  }, [effectiveRegion, parksInRange, distances]);
 
+  // Status counts
   const counts = useMemo(() => {
     const c = { open: 0, caution: 0, closed: 0 };
     filteredParks.forEach((p) => {
-      const s = getTrailStatus(p).status;
-      c[s]++;
+      c[getTrailStatus(p).status]++;
     });
     return c;
   }, [filteredParks]);
@@ -44,9 +98,21 @@ export function App() {
             Spring Restriction Monitor
           </h1>
           <p className="font-mono text-[10px] text-text-secondary mt-1 uppercase tracking-[0.05em]">
-            {dateStr} · {PARKS.length} parks within 1hr of Hyde Park
+            {dateStr} · {PARKS.length} trails across New England
           </p>
         </header>
+
+        {/* Distance Controls */}
+        <div className="mb-5">
+          <DistanceControls
+            zipCode={prefs.zipCode}
+            radiusMiles={prefs.radiusMiles}
+            onZipChange={setZipCode}
+            onRadiusChange={setRadius}
+            parkCount={filteredParks.length}
+            isValidZip={isValidZip}
+          />
+        </div>
 
         {/* Summary Stats */}
         <div className="mb-5">
@@ -61,21 +127,30 @@ export function App() {
         {/* Region Filters */}
         <div className="mb-4">
           <RegionFilters
-            activeRegion={activeRegion}
+            activeRegion={effectiveRegion}
             onRegionChange={setActiveRegion}
+            availableRegions={availableRegions}
           />
         </div>
 
         {/* Park Cards */}
         <section aria-label="Trail list" className="space-y-2.5">
-          {filteredParks.map((park) => (
-            <ParkCard key={park.id} park={park} />
-          ))}
+          {filteredParks.map((park) => {
+            const d = distances.get(park.id);
+            return (
+              <ParkCard
+                key={park.id}
+                park={park}
+                distanceMiles={d != null ? Math.round(d) : undefined}
+                driveMinutes={d != null ? estimateDriveMinutes(d) : undefined}
+              />
+            );
+          })}
 
           {filteredParks.length === 0 && (
             <div className="text-center py-8">
               <p className="font-mono text-[11px] text-text-muted">
-                No parks in this region.
+                No parks within {prefs.radiusMiles} miles. Try increasing the range.
               </p>
             </div>
           )}
@@ -87,7 +162,7 @@ export function App() {
             Status Logic
           </div>
           <p className="font-mono text-[10px] text-text-secondary leading-relaxed">
-            DCR parks with formal March closures (Blue Hills, Fells): calendar-based, mandatory. "Or as posted" at the Fells means staff can extend past 3/31. Lynn Woods: City of Lynn bans winter biking, reopens in spring. Great Brook: winter XC ski operations close trails to bikes. All others: mud season advisory March through early April.
+            Parks with formal closures follow calendar-based mandatory rules. "Or as posted" means staff can extend beyond posted dates. Advisory parks have no formal closure but riders should avoid wet trails during mud season (March–early April). Drive times are estimates based on straight-line distance.
           </p>
         </div>
 

@@ -79,6 +79,22 @@ export function sortByStatus(parks: Park[]): Park[] {
   );
 }
 
+/**
+ * Sort by status first (closed → caution → open), then by distance (nearest first).
+ * `distances` maps park.id → miles from user's origin.
+ */
+export function sortByStatusAndDistance(
+  parks: Park[],
+  distances: Map<string, number>,
+): Park[] {
+  return [...parks].sort((a, b) => {
+    const statusDiff =
+      STATUS_ORDER[getTrailStatus(a).status] - STATUS_ORDER[getTrailStatus(b).status];
+    if (statusDiff !== 0) return statusDiff;
+    return (distances.get(a.id) ?? Infinity) - (distances.get(b.id) ?? Infinity);
+  });
+}
+
 export const STATUS_CONFIG: Record<TrailStatus, {
   text: string;
   bg: string;

@@ -5,15 +5,16 @@ export type FilterOption = 'All' | Region;
 interface RegionFiltersProps {
   activeRegion: FilterOption;
   onRegionChange: (region: FilterOption) => void;
+  availableRegions: Region[];
 }
 
-const regions: FilterOption[] = ['All', 'South', 'North', 'West', 'NW', 'SW'];
+export function RegionFilters({ activeRegion, onRegionChange, availableRegions }: RegionFiltersProps) {
+  const options: FilterOption[] = ['All', ...availableRegions];
 
-export function RegionFilters({ activeRegion, onRegionChange }: RegionFiltersProps) {
   return (
     <section aria-label="Filter by region" className="overflow-x-auto scrollbar-hide">
       <div className="flex gap-1.5">
-        {regions.map((region) => {
+        {options.map((region) => {
           const isActive = activeRegion === region;
           return (
             <button

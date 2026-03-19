@@ -6,6 +6,8 @@ import { getTrailStatus, getNavUrl, STATUS_CONFIG } from '../lib/status';
 
 interface ParkCardProps {
   park: Park;
+  distanceMiles?: number;
+  driveMinutes?: number;
 }
 
 function DetailItem({ label, value }: { label: string; value: string }) {
@@ -19,7 +21,7 @@ function DetailItem({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function ParkCard({ park }: ParkCardProps) {
+export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const trail = getTrailStatus(park);
   const config = STATUS_CONFIG[trail.status];
@@ -65,9 +67,11 @@ export function ParkCard({ park }: ParkCardProps) {
 
           {/* Distance + miles */}
           <div className="flex items-center gap-2.5 flex-shrink-0">
-            <span className="font-mono text-[10px] text-text-secondary">
-              {park.distance}
-            </span>
+            {distanceMiles != null && (
+              <span className="font-mono text-[10px] text-text-secondary">
+                ~{driveMinutes} min
+              </span>
+            )}
             <span className="font-mono text-[10px] text-text-muted">
               {park.miles} mi
             </span>
