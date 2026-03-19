@@ -11,9 +11,19 @@ export function getTrailStatus(park: Park): TrailStatusResult {
 
   if (!park.closureStart || !park.closureEnd) {
     if (month === 3 || (month === 4 && day <= 10)) {
-      return { status: "caution", label: "Mud Season", sublabel: "No formal closure — use judgment on wet trails" };
+      return {
+        status: "caution",
+        label: "Mud Season",
+        sublabel: "No formal closure — use judgment on wet trails",
+        reason: "This park has no posted closure dates. It is March–early April (mud season), so we flag it as caution. Conditions vary — always check with the land manager before riding.",
+      };
     }
-    return { status: "open", label: "Likely Open", sublabel: "No formal spring closure" };
+    return {
+      status: "open",
+      label: "Likely Open",
+      sublabel: "No formal spring closure",
+      reason: "This park has no posted closure dates and we are outside the typical mud season window (March–early April). Confirm current conditions locally before riding.",
+    };
   }
 
   let inClosure = false;
@@ -39,7 +49,13 @@ export function getTrailStatus(park: Park): TrailStatusResult {
     if (park.closureType === "formal") sublabel += " (mandatory)";
     if (park.closureType === "seasonal") sublabel += " (seasonal use)";
     if (park.closureRule.includes("as posted")) sublabel += " — may extend";
-    return { status: "closed", label: "Closed", sublabel };
+    const endStr = `${park.closureEnd.month}/${park.closureEnd.day}`;
+    return {
+      status: "closed",
+      label: "Closed",
+      sublabel,
+      reason: `Today falls within the posted closure window (${park.closureStart.month}/${park.closureStart.day}–${endStr}). This is based on published dates — verify with the land manager as dates can change.`,
+    };
   }
 
   if (
@@ -47,12 +63,27 @@ export function getTrailStatus(park: Park): TrailStatusResult {
     (month === park.closureEnd.month + 1 && day <= 14)
   ) {
     if (park.closureType === "formal") {
-      return { status: "caution", label: "Recently Reopened", sublabel: "Check for posted extensions before riding" };
+      return {
+        status: "caution",
+        label: "Recently Reopened",
+        sublabel: "Check for posted extensions before riding",
+        reason: `The posted closure ended on ${park.closureEnd.month}/${park.closureEnd.day}, but we are within two weeks of that date. Formal closures can be extended — check on-site signage or the land manager's website before riding.`,
+      };
     }
-    return { status: "open", label: "Open", sublabel: "Season underway" };
+    return {
+      status: "open",
+      label: "Open",
+      sublabel: "Season underway",
+      reason: `The posted closure ended on ${park.closureEnd.month}/${park.closureEnd.day} and we are past that date. Trail conditions may still be wet — use your judgment and confirm locally.`,
+    };
   }
 
-  return { status: "open", label: "Open", sublabel: "No active restrictions" };
+  return {
+    status: "open",
+    label: "Open",
+    sublabel: "No active restrictions",
+    reason: "We are well outside the posted closure window. Conditions can still change — always verify before riding.",
+  };
 }
 
 export function getSeasonInfo() {

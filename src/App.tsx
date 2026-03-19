@@ -104,6 +104,13 @@ export function App() {
           </p>
         </header>
 
+        {/* Disclaimer */}
+        <div className="bg-bg-secondary border border-bg-elevated rounded-xl px-4 py-3 mb-5">
+          <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
+            Trail status information is derived from publicly available sources and may not reflect real-time conditions. Always verify closures with local land managers before riding. Use at your own risk.
+          </p>
+        </div>
+
         {/* Distance Controls */}
         <div className="mb-5">
           <DistanceControls

@@ -39,12 +39,14 @@ export interface Park {
   difficulty: string;
   miles: string;
   nemba: string;
+  source?: string;
 }
 
 export interface TrailStatusResult {
   status: TrailStatus;
   label: string;
   sublabel: string;
+  reason: string;
 }
 
 export const PARKS: Park[] = [
@@ -88,6 +90,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "35+",
     nemba: "SE Mass",
+    source: "DCR Mountain Biking in Blue Hills page (mass.gov)",
   },
   {
     id: "stony-brook",
@@ -164,6 +167,7 @@ export const PARKS: Park[] = [
     difficulty: "Easy-Moderate",
     miles: "15+",
     nemba: "Greater Boston",
+    source: "DCR Mountain Biking at the Middlesex Fells page (mass.gov)",
   },
   {
     id: "wompatuck",
@@ -202,6 +206,7 @@ export const PARKS: Park[] = [
     difficulty: "Advanced-Expert",
     miles: "30+",
     nemba: "North Shore",
+    source: "City of Lynn / Lynn Woods rangers — check visitlynnwoods.org for exact reopening date",
   },
   {
     id: "harold-parker",
@@ -240,6 +245,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Intermediate",
     miles: "20+",
     nemba: "Merrimack Valley",
+    source: "DCR Great Brook Farm State Park page (mass.gov) and local XC ski season practice",
   },
   {
     id: "vietnam",
@@ -453,6 +459,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner",
     miles: "6.5",
     nemba: "Greater Boston",
+    source: "The Trustees of Reservations Rocky Woods property page (thetrustees.org)",
   },
   {
     id: "october-mountain",
@@ -552,6 +559,7 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Expert",
     miles: "60+",
     nemba: "Southern NH",
+    source: "NH State Parks Bear Brook page (nhstateparks.org)",
   },
   {
     id: "mine-falls",
@@ -590,6 +598,7 @@ export const PARKS: Park[] = [
     difficulty: "Intermediate-Advanced",
     miles: "21+",
     nemba: "Southern NH",
+    source: "NH State Parks Pawtuckaway page (nhstateparks.org)",
   },
   {
     id: "fort-rock",
@@ -735,5 +744,6 @@ export const PARKS: Park[] = [
     difficulty: "Beginner-Expert",
     miles: "100+",
     nemba: "Kingdom Trails (independent)",
+    source: "Kingdom Trail Association (kingdomtrails.org) — opening dates posted annually",
   },
 ];

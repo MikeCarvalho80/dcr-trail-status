@@ -129,6 +129,28 @@ export function ParkCard({ park, distanceMiles, driveMinutes }: ParkCardProps) {
                 </p>
               </div>
 
+              {/* Why this status */}
+              <div className="mt-3">
+                <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
+                  Why This Status
+                </div>
+                <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
+                  {trail.reason}
+                </p>
+              </div>
+
+              {/* Source */}
+              {park.source && (
+                <div className="mt-2">
+                  <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
+                    Source
+                  </div>
+                  <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
+                    {park.source}
+                  </p>
+                </div>
+              )}
+
               {/* Notes */}
               <div className="mt-2">
                 <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
