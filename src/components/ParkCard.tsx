@@ -195,115 +195,125 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
             transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-3">
+            <div className="px-4 pb-4">
               <div className="border-t border-bg-elevated my-2.5" />
 
-              {/* Details grid */}
-              <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
-                <DetailItem label="Difficulty" value={park.difficulty} />
-                <DetailItem label="NEMBA Chapter" value={park.nemba} />
-                <DetailItem label="Trail Miles" value={park.miles} />
-                <DetailItem label="Parking" value={park.parking} />
-                <DetailItem label="Last Verified" value={formatVerifiedDate(park.lastVerified)} />
-                <div>
-                  <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                    Daylight
-                  </div>
-                  <div className="flex items-center gap-2 font-mono text-[13px] text-text-primary">
-                    <SunriseIcon className="w-3.5 h-3.5 text-status-caution" />
-                    {sunTimes.sunrise}
-                    <SunsetIcon className="w-3.5 h-3.5 text-status-closed ml-1" />
-                    {sunTimes.sunset}
+              {/* ── Section 1: At a Glance ── */}
+              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                  <DetailItem label="Difficulty" value={park.difficulty} />
+                  <DetailItem label="Trail Miles" value={park.miles} />
+                  <DetailItem label="NEMBA Chapter" value={park.nemba} />
+                  <div>
+                    <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
+                      Daylight
+                    </div>
+                    <div className="flex items-center gap-2 font-mono text-[13px] text-text-primary">
+                      <SunriseIcon className="w-3.5 h-3.5 text-status-caution" />
+                      {sunTimes.sunrise}
+                      <SunsetIcon className="w-3.5 h-3.5 text-status-closed ml-1" />
+                      {sunTimes.sunset}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Connected trails */}
-              {connectedParks.length > 0 && (
-                <div className="mt-3">
-                  <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                    <LinkIcon className="w-3 h-3 inline mr-1" />Connects To
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {connectedParks.map((cp) => {
-                      const cpTrail = getTrailStatus(cp);
-                      const cpConfig = STATUS_CONFIG[cpTrail.status];
-                      return (
-                        <span key={cp.id} className={`${cpConfig.badgeBg} ${cpConfig.text} font-mono text-[11px] font-semibold px-2 py-0.5 rounded`}>
-                          {cp.name}
-                        </span>
-                      );
-                    })}
-                  </div>
+              {/* ── Section 2: Getting There ── */}
+              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
+                <div className="grid grid-cols-1 gap-y-2">
+                  <DetailItem label="Parking" value={park.parking} />
+                  <DetailItem label="Last Verified" value={formatVerifiedDate(park.lastVerified)} />
+                </div>
+              </div>
+
+              {/* ── Section 3: Nearby & Connected (conditional) ── */}
+              {(connectedParks.length > 0 || nearbyParks.length > 0) && (
+                <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
+                  {connectedParks.length > 0 && (
+                    <div className={nearbyParks.length > 0 ? 'mb-2.5' : ''}>
+                      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1">
+                        <LinkIcon className="w-3 h-3 inline mr-1" />Connects To
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {connectedParks.map((cp) => {
+                          const cpTrail = getTrailStatus(cp);
+                          const cpConfig = STATUS_CONFIG[cpTrail.status];
+                          return (
+                            <span key={cp.id} className={`${cpConfig.badgeBg} ${cpConfig.text} font-mono text-[11px] font-semibold px-2 py-0.5 rounded`}>
+                              {cp.name}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  {nearbyParks.length > 0 && (
+                    <div>
+                      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1">
+                        Nearby Parks
+                      </div>
+                      <div className="space-y-0.5">
+                        {nearbyParks.map(({ park: np, dist }) => {
+                          const npTrail = getTrailStatus(np);
+                          const npConfig = STATUS_CONFIG[npTrail.status];
+                          return (
+                            <div key={np.id} className="flex items-center gap-2 font-mono text-[12px]">
+                              <span className={`w-1.5 h-1.5 rounded-full ${npConfig.dot}`} />
+                              <span className="text-text-primary">{np.name}</span>
+                              <span className="text-text-muted">~{Math.round(dist)} mi · ~{estimateDriveMinutes(dist)} min</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {/* Nearby parks */}
-              {nearbyParks.length > 0 && (
-                <div className="mt-3">
-                  <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                    Nearby Parks
+              {/* ── Section 4: Status & Closures ── */}
+              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3 space-y-2.5">
+                <div>
+                  <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
+                    Why This Status
                   </div>
-                  <div className="space-y-0.5">
-                    {nearbyParks.map(({ park: np, dist }) => {
-                      const npTrail = getTrailStatus(np);
-                      const npConfig = STATUS_CONFIG[npTrail.status];
-                      return (
-                        <div key={np.id} className="flex items-center gap-2 font-mono text-[12px]">
-                          <span className={`w-1.5 h-1.5 rounded-full ${npConfig.dot}`} />
-                          <span className="text-text-primary">{np.name}</span>
-                          <span className="text-text-muted">~{Math.round(dist)} mi · ~{estimateDriveMinutes(dist)} min</span>
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
+                    {trail.reason}
+                  </p>
                 </div>
-              )}
 
-              {/* Closure policy */}
-              <div className="mt-3">
-                <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                  Closure Policy
+                <div className="border-t border-bg-elevated/50 pt-2">
+                  <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
+                    Closure Policy
+                  </div>
+                  <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
+                    {park.closureRule}
+                  </p>
+                  {park.additionalClosures && park.additionalClosures.length > 0 && (
+                    <div className="mt-1.5 space-y-1">
+                      {park.additionalClosures.map((c, i) => (
+                        <p key={i} className="font-mono text-[12px] text-text-secondary leading-relaxed">
+                          <span className="text-status-caution font-semibold">{c.label}:</span> {c.rule} ({c.start.month}/{c.start.day}–{c.end.month}/{c.end.day})
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
-                  {park.closureRule}
-                </p>
-                {park.additionalClosures && park.additionalClosures.length > 0 && (
-                  <div className="mt-2 space-y-1">
-                    {park.additionalClosures.map((c, i) => (
-                      <p key={i} className="font-mono text-[12px] text-text-secondary leading-relaxed">
-                        <span className="text-status-caution font-semibold">{c.label}:</span> {c.rule} ({c.start.month}/{c.start.day}–{c.end.month}/{c.end.day})
-                      </p>
-                    ))}
+
+                {park.source && (
+                  <div className="border-t border-bg-elevated/50 pt-2">
+                    <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
+                      Source
+                    </div>
+                    <p className="font-mono text-[11px] text-text-muted leading-relaxed">
+                      {park.source}
+                    </p>
                   </div>
                 )}
               </div>
 
-              {/* Why this status */}
-              <div className="mt-3">
-                <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                  Why This Status
-                </div>
-                <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
-                  {trail.reason}
-                </p>
-              </div>
-
-              {/* Source */}
-              {park.source && (
-                <div className="mt-2">
-                  <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                    Source
-                  </div>
-                  <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
-                    {park.source}
-                  </p>
-                </div>
-              )}
-
-              {/* Notes */}
-              <div className="mt-2">
-                <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
+              {/* ── Section 5: Notes ── */}
+              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
+                <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
                   Notes
                 </div>
                 <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
@@ -311,8 +321,8 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                 </p>
               </div>
 
-              {/* Action buttons */}
-              <div className="flex flex-wrap gap-2 mt-3">
+              {/* ── Section 6: Actions ── */}
+              <div className="flex flex-wrap gap-2">
                 <a
                   href={getNavUrl(park)}
                   target="_blank"
