@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDownIcon, ExternalLinkIcon, NavigationIcon, StarIcon,
   Share2Icon, CloudSunIcon, CheckCircleIcon, SunriseIcon, SunsetIcon, LinkIcon, BugIcon,
+  ThumbsUpIcon, ThumbsDownIcon, MessageCircleIcon,
 } from 'lucide-react';
 import type { Park } from '../data/parks';
 import { PARKS } from '../data/parks';
@@ -30,6 +31,10 @@ interface ParkCardProps {
   forceExpanded?: boolean;
   onExpanded?: () => void;
   onNavigateToPark?: (parkId: string) => void;
+  reportCount?: number;
+  likes?: { up: number; down: number };
+  myVote?: 1 | -1 | null;
+  onVote?: (parkId: string, vote: 1 | -1) => void;
 }
 
 function DetailItem({ label, value }: { label: string; value: string }) {
@@ -52,7 +57,7 @@ function getWeatherUrl(park: Park): string {
   return `https://forecast.weather.gov/MapClick.php?lat=${park.lat}&lon=${park.lng}`;
 }
 
-export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onToggleFavorite, isVisited, onToggleVisited, statusChanged, forceExpanded, onExpanded, onNavigateToPark }: ParkCardProps) {
+export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onToggleFavorite, isVisited, onToggleVisited, statusChanged, forceExpanded, onExpanded, onNavigateToPark, reportCount, likes, myVote, onVote }: ParkCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [shareMsg, setShareMsg] = useState('');
 
@@ -197,6 +202,24 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
           {distanceMiles != null && (
             <span className="font-mono text-[12px] text-text-secondary">
               ~{distanceMiles} mi · ~{driveMinutes} min
+            </span>
+          )}
+          {/* Report count badge */}
+          {reportCount != null && reportCount > 0 && (
+            <span className="flex items-center gap-1 font-mono text-[11px] text-text-muted">
+              <MessageCircleIcon className="w-3 h-3" />{reportCount}
+            </span>
+          )}
+          {reportCount === 0 && (
+            <span className="font-mono text-[11px] text-text-muted/50 italic">
+              Be first to report
+            </span>
+          )}
+          {/* Thumbs up/down */}
+          {likes && (likes.up > 0 || likes.down > 0) && (
+            <span className="flex items-center gap-1.5 font-mono text-[11px] text-text-muted">
+              <span className="flex items-center gap-0.5"><ThumbsUpIcon className="w-3 h-3" />{likes.up}</span>
+              <span className="flex items-center gap-0.5"><ThumbsDownIcon className="w-3 h-3" />{likes.down}</span>
             </span>
           )}
         </div>
@@ -454,7 +477,38 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                 </div>
               </div>
 
-              {/* ── Section 7: Community Condition Reports ── */}
+              {/* ── Section 7: Rate this park ── */}
+              {onVote && (
+                <div className="flex items-center gap-3 mt-3 mb-1">
+                  <span className="font-mono text-[12px] text-text-muted uppercase tracking-[0.05em] font-semibold">
+                    Rate
+                  </span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onVote(park.id, 1); }}
+                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg border font-mono text-[12px] font-semibold transition-all ${
+                      myVote === 1
+                        ? 'bg-status-open/20 text-status-open border-status-open/40'
+                        : 'text-text-muted border-bg-elevated hover:border-text-muted/30 hover:text-text-primary'
+                    }`}
+                  >
+                    <ThumbsUpIcon className={`w-4 h-4 ${myVote === 1 ? 'fill-status-open' : ''}`} />
+                    {likes?.up ?? 0}
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onVote(park.id, -1); }}
+                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg border font-mono text-[12px] font-semibold transition-all ${
+                      myVote === -1
+                        ? 'bg-status-closed/20 text-status-closed border-status-closed/40'
+                        : 'text-text-muted border-bg-elevated hover:border-text-muted/30 hover:text-text-primary'
+                    }`}
+                  >
+                    <ThumbsDownIcon className={`w-4 h-4 ${myVote === -1 ? 'fill-status-closed' : ''}`} />
+                    {likes?.down ?? 0}
+                  </button>
+                </div>
+              )}
+
+              {/* ── Section 8: Community Condition Reports ── */}
               <ConditionReporter parkId={park.id} parkName={park.name} />
             </div>
           </motion.div>

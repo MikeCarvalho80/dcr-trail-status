@@ -82,9 +82,18 @@ export function ConditionReporter({ parkId, parkName }: ConditionReporterProps) 
 
     if (result.ok) {
       setSubmitted(true);
+      const submittedStatus = selectedStatus;
+      const submittedNote = note.trim();
       setNote('');
       setSelectedStatus(null);
-      setTimeout(() => setSubmitted(false), 3000);
+      // After a brief delay, offer share
+      setTimeout(() => {
+        if (navigator.share) {
+          const shareText = `Just reported ${parkName} as ${submittedStatus} on TrailClear${submittedNote ? ` — ${submittedNote}` : ''}`;
+          navigator.share({ title: 'TrailClear Report', text: shareText }).catch(() => {});
+        }
+        setSubmitted(false);
+      }, 2000);
     } else if (result.rateLimited) {
       setSessionRateLimited(true);
       setErrorMsg(result.error ?? 'Please wait ~4 hours before reporting again.');
