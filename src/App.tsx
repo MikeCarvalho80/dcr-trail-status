@@ -91,7 +91,7 @@ export function App() {
   const [activeDifficulty, setActiveDifficulty] = useState<DifficultyFilter>(initialUrl.difficulty ?? 'All');
   const [activeTrailLength, setActiveTrailLength] = useState<TrailLengthFilter>(initialUrl.length ?? 'All');
   const [searchQuery, setSearchQuery] = useState(initialUrl.search ?? '');
-  const [showMap, setShowMap] = useState(false);
+  const [showMap, setShowMap] = useState(true);
   const [showCalendar, setShowCalendar] = useState(false);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialUrl.status ?? null);
   const [geoDetecting, setGeoDetecting] = useState(false);
@@ -306,7 +306,7 @@ export function App() {
 
   return (
     <main className="min-h-screen bg-bg-primary">
-      <div className="max-w-[640px] mx-auto px-4 py-6">
+      <div className="max-w-[640px] lg:max-w-[820px] mx-auto px-4 py-6 desktop-scale">
         {/* Header */}
         <header className="mb-6">
           <h1 className="font-mono text-[26px] font-bold text-text-primary leading-tight">

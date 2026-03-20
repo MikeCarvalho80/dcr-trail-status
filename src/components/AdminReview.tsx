@@ -40,7 +40,7 @@ export function AdminReview() {
 
   return (
     <div className="min-h-screen bg-bg-primary">
-      <div className="max-w-[800px] mx-auto px-4 py-6">
+      <div className="max-w-[800px] lg:max-w-[960px] mx-auto px-4 py-6 desktop-scale">
         <header className="mb-6">
           <h1 className="font-mono text-[22px] font-bold text-text-primary">
             Review Submissions

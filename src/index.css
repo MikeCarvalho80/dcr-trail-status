@@ -8,8 +8,8 @@
 
 /* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
 
-/* Leaflet map CSS — imported globally to avoid lazy-load CSS issues */
-@import 'leaflet/dist/leaflet.css';
+/* MapLibre GL CSS — imported globally to avoid lazy-load CSS issues */
+@import 'maplibre-gl/dist/maplibre-gl.css';
 
 :root {
   --bg-primary: #0d0c0a;
@@ -59,4 +59,11 @@ body {
 }
 .animate-highlight-card {
   animation: highlight-card 1.5s ease-out;
+}
+
+/* Desktop: scale up UI for larger screens */
+@media (min-width: 1024px) {
+  .desktop-scale {
+    zoom: 1.15;
+  }
 }
