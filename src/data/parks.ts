@@ -288,7 +288,7 @@ export const PARKS: Park[] = [
     name: "Vietnam (Milford)",
     region: "Central MA",
     state: "MA",
-    manager: "Town of Milford / Town of Holliston / Town of Hopkinton / Blackston Valley NEMBA",
+    manager: "Town of Milford / Town of Holliston / Town of Hopkinton / Blackstone Valley NEMBA",
     url: "https://www.trailforks.com/region/vietnam-trail-network/",
     lat: 42.1748,
     lng: -71.4971,
