@@ -26,7 +26,10 @@ import { loadSnapshot, saveSnapshot, getChangedParks } from './lib/statusChanges
 import { getSuggestedRides } from './lib/recommendations';
 import { ShareQR } from './components/ShareQR';
 import { getLastScrapedAt, hasAnyConditions } from './lib/conditions';
+import { getNewParkCount } from './lib/whatsNew';
 import { MapIcon, ListIcon, CalendarIcon } from 'lucide-react';
+
+import { EmbedCard } from './components/EmbedCard';
 
 const TrailMap = lazy(() => import('./components/TrailMap').then((m) => ({ default: m.TrailMap })));
 
@@ -47,6 +50,10 @@ const REGION_ORDER: Region[] = [
 const initialUrl = readUrlState();
 
 export function App() {
+  // Embed mode: ?embed=parkId renders a standalone card
+  const embedId = new URLSearchParams(window.location.search).get('embed');
+  if (embedId) return <EmbedCard parkId={embedId} />;
+
   const { prefs, setZipCode, setRadius, toggleFavorite, setShowRideableOnly, toggleVisited } = useUserPrefs();
   const [activeRegion, setActiveRegion] = useState<FilterOption>(initialUrl.region ?? 'All');
   const [activeDifficulty, setActiveDifficulty] = useState<DifficultyFilter>(initialUrl.difficulty ?? 'All');
@@ -236,6 +243,9 @@ export function App() {
             {dateStr} · {PARKS.length} trails across the Northeast
             {visitedSet.size > 0 && (
               <span className="text-status-open"> · {visitedSet.size} visited</span>
+            )}
+            {getNewParkCount() > 0 && (
+              <span className="text-status-caution"> · {getNewParkCount()} new</span>
             )}
           </p>
         </header>

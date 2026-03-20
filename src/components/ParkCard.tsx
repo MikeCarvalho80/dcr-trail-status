@@ -2,16 +2,18 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDownIcon, ExternalLinkIcon, NavigationIcon, StarIcon,
-  Share2Icon, CloudSunIcon, CheckCircleIcon, SunriseIcon, SunsetIcon, LinkIcon,
+  Share2Icon, CloudSunIcon, CheckCircleIcon, SunriseIcon, SunsetIcon, LinkIcon, BugIcon,
 } from 'lucide-react';
 import type { Park } from '../data/parks';
 import { PARKS } from '../data/parks';
 import { getTrailStatus, getNavUrl, STATUS_CONFIG } from '../lib/status';
 import { getSunTimes } from '../lib/sun';
 import { getConnectedParks } from '../lib/connectivity';
-import { haversineDistance, estimateDriveMinutes } from '../lib/geo';
+import { estimateDriveMinutes } from '../lib/geo';
+import { getNearbyParks } from '../lib/proximityCache';
 import { getParkConditions } from '../lib/conditions';
 import { isParkStale, isParkUrlBroken } from '../lib/dataHealth';
+import { isParkNew } from '../lib/whatsNew';
 
 interface ParkCardProps {
   park: Park;
@@ -58,13 +60,12 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
 
   const conditionReports = getParkConditions(park.id);
 
-  // Nearby parks (within 15 miles, excluding self and connected)
-  const nearbyParks = PARKS
-    .filter((p) => p.id !== park.id && !connectedIds.includes(p.id))
-    .map((p) => ({ park: p, dist: haversineDistance(park.lat, park.lng, p.lat, p.lng) }))
-    .filter((p) => p.dist <= 15)
-    .sort((a, b) => a.dist - b.dist)
-    .slice(0, 3);
+  // Nearby parks from precomputed cache (excludes connected)
+  const nearbyParks = getNearbyParks(park.id)
+    .filter((n) => !connectedIds.includes(n.parkId))
+    .slice(0, 3)
+    .map((n) => ({ park: PARKS.find((p) => p.id === n.parkId)!, dist: n.dist }))
+    .filter((n) => n.park);
 
   async function handleShare(e: React.MouseEvent) {
     e.stopPropagation();
@@ -106,8 +107,11 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
         {/* Row 1: Park name + action icons */}
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
-            <div className="font-mono text-[17px] font-bold text-text-primary leading-tight">
+            <div className="font-mono text-[17px] font-bold text-text-primary leading-tight flex items-center gap-2">
               {park.name}
+              {isParkNew(park.id) && (
+                <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.05em] bg-status-open-bg text-status-open px-1.5 py-0.5 rounded flex-shrink-0">New</span>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-0.5 flex-shrink-0 mt-0.5">
@@ -402,6 +406,17 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                   <Share2Icon className="w-4 h-4" />
                   {shareMsg || 'Share'}
                 </button>
+                <a
+                  href={`https://github.com/zeesalt/dcr-trail-status/issues/new?title=${encodeURIComponent(`[${park.name}] Data correction`)}&body=${encodeURIComponent(`**Park:** ${park.name}\n**Current data:** ${park.closureRule}\n**What's wrong:**\n\n**Source:**\n`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-1.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                  aria-label={`Report issue with ${park.name} data`}
+                >
+                  <BugIcon className="w-4 h-4" />
+                  Report
+                </a>
               </div>
             </div>
           </motion.div>
