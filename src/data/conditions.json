@@ -1,0 +1,38 @@
+[
+  {
+    "parkId": "blue-hills",
+    "source": "mass.gov",
+    "title": "Ponkapoag Boardwalk is closed until further notice",
+    "body": "DCR has temporarily closed the Ponkapoag Boardwalk in the Blue Hills Reservation.",
+    "date": "Jun. 3, 2025, 10:18 am",
+    "severity": "notice",
+    "scrapedAt": "2026-03-20T11:34:27.093Z"
+  },
+  {
+    "parkId": "october-mountain",
+    "source": "mass.gov",
+    "title": "DCR Recreational Advisory: Western Mass Snowmobile Trail Closures",
+    "body": "Effective immediately for the remainder of the season, or unless snow conditions become acceptable again",
+    "date": "Mar. 12, 2026, 10:58 am",
+    "severity": "notice",
+    "scrapedAt": "2026-03-20T11:34:41.258Z"
+  },
+  {
+    "parkId": "brimfield",
+    "source": "mass.gov",
+    "title": "DCR Recreational Advisory: Western Mass Snowmobile Trail Closures",
+    "body": "Effective immediately for the remainder of the season, or unless snow conditions become acceptable again",
+    "date": "Mar. 12, 2026, 10:58 am",
+    "severity": "notice",
+    "scrapedAt": "2026-03-20T11:34:42.274Z"
+  },
+  {
+    "parkId": "pittsfield-sf",
+    "source": "mass.gov",
+    "title": "DCR Recreational Advisory: Western Mass Snowmobile Trail Closures",
+    "body": "Effective immediately for the remainder of the season, or unless snow conditions become acceptable again",
+    "date": "Mar. 12, 2026, 10:58 am",
+    "severity": "notice",
+    "scrapedAt": "2026-03-20T11:34:44.071Z"
+  }
+]

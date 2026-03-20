@@ -23,6 +23,7 @@ import { readUrlState, useUrlSync } from './lib/useUrlState';
 import { loadSnapshot, saveSnapshot, getChangedParks } from './lib/statusChanges';
 import { getSuggestedRides } from './lib/recommendations';
 import { ShareQR } from './components/ShareQR';
+import { getLastScrapedAt, hasAnyConditions } from './lib/conditions';
 import { MapIcon, ListIcon, CalendarIcon } from 'lucide-react';
 
 const TrailMap = lazy(() => import('./components/TrailMap').then((m) => ({ default: m.TrailMap })));
@@ -374,6 +375,11 @@ export function App() {
           <p className="font-mono text-[11px] text-text-muted text-center">
             Ride responsibly · Respect closures · Stay off wet trails · Support your local trail org
           </p>
+          {hasAnyConditions() && (
+            <p className="font-mono text-[10px] text-text-muted/50 text-center mt-1">
+              Conditions last updated: {new Date(getLastScrapedAt()!).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+            </p>
+          )}
         </footer>
       </div>
     </main>

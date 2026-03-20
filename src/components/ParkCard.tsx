@@ -10,6 +10,8 @@ import { getTrailStatus, getNavUrl, STATUS_CONFIG } from '../lib/status';
 import { getSunTimes } from '../lib/sun';
 import { getConnectedParks } from '../lib/connectivity';
 import { haversineDistance, estimateDriveMinutes } from '../lib/geo';
+import { getParkConditions } from '../lib/conditions';
+import type { ConditionReport } from '../lib/conditions';
 
 interface ParkCardProps {
   park: Park;
@@ -53,6 +55,8 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
   const connectedParks = connectedIds
     .map((id) => PARKS.find((p) => p.id === id))
     .filter(Boolean) as Park[];
+
+  const conditionReports = getParkConditions(park.id);
 
   // Nearby parks (within 15 miles, excluding self and connected)
   const nearbyParks = PARKS
@@ -211,6 +215,32 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                   </div>
                 </div>
               </div>
+
+              {/* ── Condition Reports (scraped) ── */}
+              {conditionReports.length > 0 && (
+                <div className="bg-status-caution-bg/50 border border-status-caution/20 rounded-lg px-3 py-2.5 mb-3">
+                  <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-status-caution mb-1.5">
+                    Active Alerts ({conditionReports.length})
+                  </div>
+                  <div className="space-y-2">
+                    {conditionReports.map((report, i) => (
+                      <div key={i}>
+                        <p className="font-mono text-[12px] text-text-primary font-semibold leading-tight">
+                          {report.title}
+                        </p>
+                        {report.body && (
+                          <p className="font-mono text-[11px] text-text-secondary leading-relaxed mt-0.5">
+                            {report.body.length > 200 ? report.body.slice(0, 200) + '...' : report.body}
+                          </p>
+                        )}
+                        <p className="font-mono text-[10px] text-text-muted mt-0.5">
+                          {report.date} · via {report.source}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* ── Section 2: Getting There ── */}
               <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
