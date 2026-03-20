@@ -170,7 +170,45 @@ create policy "Admins can update submissions"
   using (auth.uid() is not null);
 
 -- ═══════════════════════════════════════════════
--- 6. Realtime (requires paid plan)
+-- 6. Park Likes (thumbs up / thumbs down)
+-- ═══════════════════════════════════════════════
+
+create table if not exists park_likes (
+  id uuid default gen_random_uuid() primary key,
+  park_id text not null,
+  user_id uuid references auth.users(id),
+  vote smallint not null check (vote in (1, -1)),
+  created_at timestamptz default now(),
+  unique(park_id, user_id)
+);
+
+create index if not exists idx_park_likes_park on park_likes (park_id);
+create index if not exists idx_park_likes_user on park_likes (user_id);
+
+alter table park_likes enable row level security;
+
+drop policy if exists "Anyone can read park likes" on park_likes;
+create policy "Anyone can read park likes"
+  on park_likes for select
+  using (true);
+
+drop policy if exists "Authenticated users can vote" on park_likes;
+create policy "Authenticated users can vote"
+  on park_likes for insert
+  with check (auth.uid() = user_id);
+
+drop policy if exists "Users can update own votes" on park_likes;
+create policy "Users can update own votes"
+  on park_likes for update
+  using (auth.uid() = user_id);
+
+drop policy if exists "Users can delete own votes" on park_likes;
+create policy "Users can delete own votes"
+  on park_likes for delete
+  using (auth.uid() = user_id);
+
+-- ═══════════════════════════════════════════════
+-- 7. Realtime (requires paid plan)
 -- ═══════════════════════════════════════════════
 -- Realtime subscriptions on condition_reports require a paid Supabase plan.
 -- The app detects this gracefully — if Realtime is unavailable, new reports
