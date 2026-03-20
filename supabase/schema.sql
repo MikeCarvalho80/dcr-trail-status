@@ -208,7 +208,39 @@ create policy "Users can delete own votes"
   using (auth.uid() = user_id);
 
 -- ═══════════════════════════════════════════════
--- 7. Realtime (requires paid plan)
+-- 7. Riding Today (daily ride signals)
+-- ═══════════════════════════════════════════════
+
+create table if not exists riding_today (
+  id uuid default gen_random_uuid() primary key,
+  park_id text not null,
+  user_id uuid references auth.users(id),
+  ride_date date default current_date,
+  created_at timestamptz default now(),
+  unique(park_id, user_id, ride_date)
+);
+
+create index if not exists idx_riding_today_date on riding_today (ride_date, park_id);
+
+alter table riding_today enable row level security;
+
+drop policy if exists "Anyone can read riding today" on riding_today;
+create policy "Anyone can read riding today"
+  on riding_today for select
+  using (true);
+
+drop policy if exists "Authenticated users can signal rides" on riding_today;
+create policy "Authenticated users can signal rides"
+  on riding_today for insert
+  with check (auth.uid() = user_id);
+
+drop policy if exists "Users can remove own rides" on riding_today;
+create policy "Users can remove own rides"
+  on riding_today for delete
+  using (auth.uid() = user_id);
+
+-- ═══════════════════════════════════════════════
+-- 8. Realtime (requires paid plan)
 -- ═══════════════════════════════════════════════
 -- Realtime subscriptions on condition_reports require a paid Supabase plan.
 -- The app detects this gracefully — if Realtime is unavailable, new reports
