@@ -1,1 +1,17 @@
-{}
+{
+  "vietnam": {
+    "url": "https://www.nemba.org/trails/massachusetts/vietnam",
+    "status": 404,
+    "checkedAt": "2026-03-20T18:54:20.536Z"
+  },
+  "mt-agamenticus": {
+    "url": "https://agamenticus.org/planning-your-visit/trails",
+    "status": 403,
+    "checkedAt": "2026-03-20T18:54:50.113Z"
+  },
+  "thunder-mountain": {
+    "url": "https://www.thundermountainbikepark.com/",
+    "status": 405,
+    "checkedAt": "2026-03-20T18:55:46.175Z"
+  }
+}
