@@ -1,5 +1,6 @@
-import { useMemo, useState, useCallback } from 'react';
-import Map, { Marker, Popup, NavigationControl } from 'react-map-gl/mapbox';
+import { useMemo, useState, useCallback, useEffect } from 'react';
+import Map, { Marker, Popup, NavigationControl, FullscreenControl } from 'react-map-gl/mapbox';
+import { MaximizeIcon, MinimizeIcon } from 'lucide-react';
 import type { Park } from '../data/parks';
 import { getTrailStatus } from '../lib/status';
 import { estimateDriveMinutes } from '../lib/geo';
@@ -20,6 +21,22 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
 export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
   const [popupPark, setPopupPark] = useState<Park | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Close fullscreen on Escape
+  useEffect(() => {
+    if (!isFullscreen) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setIsFullscreen(false);
+    }
+    document.addEventListener('keydown', handleKey);
+    // Prevent body scroll while fullscreen
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      document.body.style.overflow = '';
+    };
+  }, [isFullscreen]);
 
   const initialViewState = useMemo(() => {
     if (parks.length === 0) return { longitude: -71.06, latitude: 42.36, zoom: 8 };
@@ -44,8 +61,24 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
     );
   }
 
+  const containerClass = isFullscreen
+    ? 'fixed inset-0 z-50'
+    : 'rounded-xl overflow-hidden border border-bg-elevated';
+
   return (
-    <div className="rounded-xl overflow-hidden border border-bg-elevated" style={{ height: 350 }}>
+    <div className={containerClass} style={isFullscreen ? undefined : { height: 350 }}>
+      {/* Fullscreen toggle button */}
+      <button
+        onClick={() => setIsFullscreen(!isFullscreen)}
+        className="absolute top-3 left-3 z-10 bg-white/90 hover:bg-white border border-black/10 rounded-md p-1.5 shadow-sm transition-colors"
+        aria-label={isFullscreen ? 'Exit fullscreen map' : 'Fullscreen map'}
+      >
+        {isFullscreen
+          ? <MinimizeIcon className="w-4 h-4 text-gray-700" />
+          : <MaximizeIcon className="w-4 h-4 text-gray-700" />
+        }
+      </button>
+
       <Map
         initialViewState={initialViewState}
         style={{ width: '100%', height: '100%' }}
