@@ -3,8 +3,8 @@ import { PARKS } from '../data/parks';
 import type { Region } from '../data/parks';
 
 describe('Park data integrity', () => {
-  it('has at least 80 parks', () => {
-    expect(PARKS.length).toBeGreaterThanOrEqual(80);
+  it('has at least 119 parks', () => {
+    expect(PARKS.length).toBeGreaterThanOrEqual(119);
   });
 
   it('every park has all required fields', () => {
@@ -34,10 +34,10 @@ describe('Park data integrity', () => {
 
   it('every park has valid coordinates in New England range', () => {
     for (const park of PARKS) {
-      // Northeast US roughly: lat 39-46, lng -77 to -67
-      expect(park.lat, `${park.id} lat out of range`).toBeGreaterThan(39);
+      // Northeast US roughly: lat 38-46, lng -79 to -67
+      expect(park.lat, `${park.id} lat out of range`).toBeGreaterThan(38);
       expect(park.lat, `${park.id} lat out of range`).toBeLessThan(46);
-      expect(park.lng, `${park.id} lng out of range`).toBeGreaterThan(-77);
+      expect(park.lng, `${park.id} lng out of range`).toBeGreaterThan(-79);
       expect(park.lng, `${park.id} lng out of range`).toBeLessThan(-67);
     }
   });
@@ -77,7 +77,11 @@ describe('Park data integrity', () => {
       'Central MA', 'Pioneer Valley', 'Berkshires', 'Cape & Islands',
       'Southern NH', 'Rhode Island', 'Connecticut', 'Southern VT',
       'Southern Maine', 'Midcoast Maine', 'Western Maine',
-      'Hudson Valley', 'NYC & Long Island', 'Northern NJ', 'Central NJ', 'Eastern PA',
+      'Central VT', 'Central NH', 'Western NH',
+      'Hudson Valley', 'Upstate NY', 'NYC & Long Island',
+      'Northern NJ', 'Central NJ',
+      'Eastern PA', 'Central PA', 'Poconos',
+      'Maryland', 'Delaware',
     ];
     const parksPerRegion = new Map<string, number>();
     for (const park of PARKS) {

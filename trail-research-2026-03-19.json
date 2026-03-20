@@ -1,0 +1,583 @@
+{
+  "research_date": "2026-03-19",
+  "researcher": "Claude Code",
+  "summary": "Found 40+ new trail systems across 7 creative data source categories. These trails span MD, VA, WV, DE, and expand coverage in NY, VT, NH, NJ, PA. Requires adding new states (MD, VA, WV) and regions to the app type system.",
+  "type_changes_needed": {
+    "new_states": ["MD", "VA", "WV"],
+    "new_regions": [
+      "Central MD",
+      "Western MD",
+      "Northern VA",
+      "Roanoke VA",
+      "Eastern WV",
+      "Catskills",
+      "Long Island",
+      "Central VT",
+      "Poconos"
+    ]
+  },
+  "trails": [
+    {
+      "category": "IMBA Ride Centers",
+      "trails": [
+        {
+          "name": "Carvins Cove Natural Reserve",
+          "id": "carvins-cove",
+          "state": "VA",
+          "region": "Roanoke VA",
+          "manager": "Western Virginia Water Authority / Roanoke Parks",
+          "lat": 37.4325,
+          "lng": -79.9586,
+          "url": "https://www.visitroanokeva.com/biking/mountain-biking/carvins-cove/",
+          "miles": "60+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "No formal closure. Open year-round. $3 daily parking fee.",
+          "seasonal_notes": "Trails can be muddy in spring. Check Roanoke Parks trail conditions page.",
+          "why_reliable": "IMBA Silver-Level Ride Center — the ONLY Silver Ride Center on the East Coast. Managed by Western Virginia Water Authority with documented trail conditions. 32 miles of dedicated singletrack plus fire roads.",
+          "parking": "4944 Carvins Cove Rd, Roanoke, VA (Boat Landing parking, $3/day)"
+        },
+        {
+          "name": "Blue Marsh Lake",
+          "id": "blue-marsh",
+          "note": "ALREADY IN APP — Blue Marsh is also a Bronze IMBA Ride Center via BAMBA partnership with Army Corps of Engineers. Data quality validated by IMBA designation."
+        }
+      ]
+    },
+    {
+      "category": "Maryland State Parks & Trail Systems",
+      "trails": [
+        {
+          "name": "Patapsco Valley State Park",
+          "id": "patapsco",
+          "state": "MD",
+          "region": "Central MD",
+          "manager": "Maryland DNR",
+          "lat": 39.2534,
+          "lng": -76.7477,
+          "url": "https://dnr.maryland.gov/publiclands/pages/central/patapsco.aspx",
+          "miles": "70+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "No formal MTB closure. Trails may close after major storms. Check MD DNR alerts.",
+          "seasonal_notes": "Open year-round. Some sections flood after heavy rain. Avalon area is most popular.",
+          "why_reliable": "Maryland DNR managed state park with 200+ miles of total trails (70+ MTB-designated). One of MD's largest riding areas, less than 20 min from Baltimore. Trail conditions posted by MD DNR.",
+          "parking": "Multiple areas: Avalon (8020 Southwestern Blvd, Ellicott City), McKeldin (11676 Marriottsville Rd)"
+        },
+        {
+          "name": "Schaeffer Farms (Seneca Creek State Park)",
+          "id": "schaeffer-farms",
+          "state": "MD",
+          "region": "Central MD",
+          "manager": "Maryland DNR / MORE (Mid-Atlantic Off-Road Enthusiasts)",
+          "lat": 39.143,
+          "lng": -77.311,
+          "url": "https://more-mtb.org/products/schaeffer-arms",
+          "miles": "12+",
+          "difficulty": "Beginner-Intermediate",
+          "closure_info": "No formal closure. MORE posts trail conditions. Avoid when saturated.",
+          "seasonal_notes": "Open year-round. Yellow, Blue, and White loops. Well-marked and maintained by MORE since 1994.",
+          "why_reliable": "Part of Seneca Creek State Park (MD DNR). Trail system built and maintained by MORE — one of the largest regional MTB advocacy organizations in the US. First MTB trail system developed by MORE. Documented on MORE website with maps.",
+          "parking": "13710 Schaeffer Rd, Germantown, MD (off Rte 118/Clopper Rd)"
+        },
+        {
+          "name": "Gambrill State Park",
+          "id": "gambrill",
+          "state": "MD",
+          "region": "Western MD",
+          "manager": "Maryland DNR / MORE",
+          "lat": 39.4742,
+          "lng": -77.4828,
+          "url": "https://dnr.maryland.gov/publiclands/pages/western/gambrill/trails-and-trail-maps.aspx",
+          "miles": "16+",
+          "difficulty": "Intermediate-Advanced",
+          "closure_info": "No formal MTB closure. Check MD DNR trail conditions.",
+          "seasonal_notes": "On Catoctin Mountain ridge. Tough climbs and complex rock gardens. 14+ miles of loop trails.",
+          "why_reliable": "Maryland DNR state park with official trail maps. MORE maintains the MTB trails. Documented on both MD DNR and MORE websites.",
+          "parking": "Gambrill State Park, off Gambrill Park Rd, Frederick, MD"
+        },
+        {
+          "name": "Fair Hill Natural Resources Management Area",
+          "id": "fair-hill",
+          "state": "MD",
+          "region": "Central MD",
+          "manager": "Maryland DNR",
+          "lat": 39.7077,
+          "lng": -75.8346,
+          "url": "https://dnr.maryland.gov/publiclands/Pages/central/FairHill/Trails.aspx",
+          "miles": "80+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "No formal MTB closure. Shared with equestrians — yield to horses.",
+          "seasonal_notes": "5 major trail loops interconnect. Mix of singletrack, fields, and fire roads. 80-mile trail system is one of the largest in MD.",
+          "why_reliable": "Maryland DNR managed with official trail map PDF available. Near MD/DE/PA border (Cecil County). Well-documented multi-use trail system.",
+          "parking": "Fair Hill NRMA, off Rte 273, Elkton, MD"
+        },
+        {
+          "name": "Rosaryville State Park",
+          "id": "rosaryville",
+          "state": "MD",
+          "region": "Central MD",
+          "manager": "Maryland DNR / MORE",
+          "lat": 38.7744,
+          "lng": -76.8003,
+          "url": "https://more-mtb.org/products/rosaryville-state-park",
+          "miles": "16+",
+          "difficulty": "Intermediate",
+          "closure_info": "No formal MTB closure. Call 301-888-1410 for trail conditions.",
+          "seasonal_notes": "9-mile perimeter loop (fast, flowy) plus 2-mile inner loop (technical features, drops, skinnies). Bi-directional system.",
+          "why_reliable": "Maryland DNR state park. Trail designed in cooperation with IMBA trail building expert Rich Edwards. Maintained by MORE. Official MD DNR trail map available.",
+          "parking": "10400 Rosaryville Rd, Upper Marlboro, MD"
+        },
+        {
+          "name": "Rockburn Branch Park",
+          "id": "rockburn-branch",
+          "state": "MD",
+          "region": "Central MD",
+          "manager": "Howard County Recreation & Parks / MORE / IMBA",
+          "lat": 39.2183,
+          "lng": -76.7686,
+          "url": "https://rockburnskillspark.org/",
+          "miles": "5+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "Call 410-313-4455 for mud closures. Helmet required.",
+          "seasonal_notes": "450 acres in Elkridge. 5,000 sq ft pump track, 3 flow lines (beginner/intermediate/advanced), wood wall ride, 40-ft wooden roller coaster. Adjacent to Patapsco Valley SP.",
+          "why_reliable": "Public-private partnership between MORE, Howard County, and IMBA. Award-winning skills park. Documented on official Rockburn Skills Park website and Howard County Parks.",
+          "parking": "6105 Landing Rd, Elkridge, MD"
+        }
+      ]
+    },
+    {
+      "category": "West Virginia State Parks & Bike Parks",
+      "trails": [
+        {
+          "name": "Snowshoe Bike Park",
+          "id": "snowshoe-bike-park",
+          "state": "WV",
+          "region": "Eastern WV",
+          "manager": "Snowshoe Mountain Resort",
+          "lat": 38.4098,
+          "lng": -79.9943,
+          "url": "https://www.snowshoemtn.com/things-to-do/activities/snowshoe-bike-park",
+          "miles": "100+ (40 downhill + 32 backcountry + XC)",
+          "difficulty": "Beginner-Expert",
+          "closure_info": "Seasonal — bike park opens late May, closes mid-October. Lift-served.",
+          "seasonal_notes": "Nearly 40 downhill trails with 1,500 ft vertical. Lift-served via gondola. 32 miles of backcountry trails. One of the largest bike parks in the East. Day tickets required.",
+          "why_reliable": "Major commercial ski resort with dedicated bike park operations. Official website with trail reports, hours, and conditions. IMBA-recognized Snowshoe Highlands Ride Center.",
+          "parking": "10 Snowshoe Dr, Snowshoe, WV 26209"
+        },
+        {
+          "name": "Cacapon Resort State Park",
+          "id": "cacapon",
+          "state": "WV",
+          "region": "Eastern WV",
+          "manager": "WV State Parks / Cacapon Resort State Park Foundation",
+          "lat": 39.5233,
+          "lng": -78.2983,
+          "url": "https://wvstateparks.com/parks/cacapon-resort-state-park/trails/",
+          "miles": "38+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "No formal MTB closure. Trails open year-round.",
+          "seasonal_notes": "6,000+ acre park with 1,400 ft vertical. 38 miles of MTB trails including XC, downhill, enduro, and backcountry. 8+ miles of volunteer-built trail since 2018 (3,200+ hours). Growing destination.",
+          "why_reliable": "WV State Parks official. Trail system documented on WV State Parks website and Trailforks. Cacapon Resort State Park Foundation (CRSPF) maintains trail info.",
+          "parking": "818 Cacapon Lodge Dr, Berkeley Springs, WV 25411"
+        },
+        {
+          "name": "Kanawha State Forest",
+          "id": "kanawha-sf",
+          "state": "WV",
+          "region": "Eastern WV",
+          "manager": "WV Division of Forestry / WV Mountain Bike Association",
+          "lat": 38.3067,
+          "lng": -81.6845,
+          "url": "https://wvstateparks.com/parks/kanawha-state-forest/",
+          "miles": "25+",
+          "difficulty": "Intermediate-Advanced",
+          "closure_info": "No formal MTB closure. Open year-round.",
+          "seasonal_notes": "9,300 acres just 7 miles south of Charleston. 33 shared-use trails totaling 45 miles (25+ MTB-designated). Hilly, moderately difficult to challenging. Hosts annual WV Mountain Bike Association races.",
+          "why_reliable": "WV State Parks official. Documented on wvstateparks.com. Trail conditions available. Host venue for WV Mountain Bike Association races — active racing organization validates trail quality.",
+          "parking": "Kanawha State Forest, 7500 Kanawha State Forest Dr, Charleston, WV"
+        },
+        {
+          "name": "Coopers Rock State Forest",
+          "id": "coopers-rock",
+          "state": "WV",
+          "region": "Eastern WV",
+          "manager": "WV Division of Forestry",
+          "lat": 39.6533,
+          "lng": -79.7769,
+          "url": "https://wvstateparks.com/parks/coopers-rock-state-forest/",
+          "miles": "15+",
+          "difficulty": "Intermediate-Advanced",
+          "closure_info": "No formal MTB closure. Open year-round.",
+          "seasonal_notes": "50+ miles total trails, ~15 miles MTB. Rocky, technical terrain. 15 minutes outside Morgantown. Hosts annual races. Lucky Dog trail (5.6 mi) is a standout.",
+          "why_reliable": "WV State Parks official. Well-documented on wvstateparks.com. WVU DIY Outdoors provides detailed trail guides. Near WVU campus ensures active user base and trail maintenance.",
+          "parking": "61 County Line Dr, Bruceton Mills, WV 26525"
+        }
+      ]
+    },
+    {
+      "category": "Virginia Trails (near DC)",
+      "trails": [
+        {
+          "name": "Fountainhead Regional Park",
+          "id": "fountainhead",
+          "state": "VA",
+          "region": "Northern VA",
+          "manager": "NOVA Parks / MORE",
+          "lat": 38.7247,
+          "lng": -77.2372,
+          "url": "https://www.novaparks.com/parks/fountainhead-regional-park/things-to-do/mountain-bike-trail",
+          "miles": "15+",
+          "difficulty": "Intermediate-Expert",
+          "closure_info": "Open year-round weather permitting. Closed after dark. Call 703-250-9124 for trail status.",
+          "seasonal_notes": "1,993 acres on Occoquan Reservoir. Green/Blue/Black stacked loops. Green: rooty flow, 12-inch drops. Blue: bridges, drops, wooden features. Black: expert rock features, 4-ft drops. MORE and NOVA Parks partnership.",
+          "why_reliable": "Managed by Northern Virginia Regional Park Authority (NOVA Parks) — official government park authority. MORE (Mid-Atlantic Off-Road Enthusiasts) maintains trails. Trail status phone line and Facebook page provide real-time conditions.",
+          "parking": "10875 Hampton Rd, Fairfax Station, VA 22039"
+        },
+        {
+          "name": "Wakefield Park",
+          "id": "wakefield-park",
+          "state": "VA",
+          "region": "Northern VA",
+          "manager": "Fairfax County Park Authority / MORE",
+          "lat": 38.8083,
+          "lng": -77.2260,
+          "url": "https://more-mtb.org/products/wakefield-park",
+          "miles": "12+",
+          "difficulty": "Beginner-Intermediate",
+          "closure_info": "No formal closure. Night riding permitted Mon/Tue/Thu. Open year-round.",
+          "seasonal_notes": "7+ miles of trails around power lines and bowl, plus 5+ miles of tight singletrack on Lake Accotink side. Creek Trail (beginner), Racetrack/Power Line (intermediate), Bowl (technical). Right off the Capital Beltway.",
+          "why_reliable": "Fairfax County Park Authority managed. MORE maintains trails and posts conditions. Official Fairfax County Parks website documents bike trails.",
+          "parking": "8100 Braddock Rd, Annandale, VA 22003"
+        }
+      ]
+    },
+    {
+      "category": "Delaware State Parks",
+      "trails": [
+        {
+          "name": "White Clay Creek State Park",
+          "id": "white-clay-creek",
+          "state": "DE",
+          "region": "Northern DE",
+          "manager": "Delaware State Parks",
+          "lat": 39.7120,
+          "lng": -75.7540,
+          "url": "https://www.destateparks.com/park/white-clay-creek/",
+          "miles": "37+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "No formal MTB closure. Check Delaware State Parks for trail conditions.",
+          "seasonal_notes": "37+ miles of trails from creek edge to piedmont ridge. Chestnut Hill Trail is top-rated (3.5 mi). Two-State Breakfast Cruise route is 11 miles. Connected to Middle Run Valley Natural Area.",
+          "why_reliable": "Delaware State Parks official. 6,910 AllTrails reviews with 4.5-star average. Official Delaware State Parks website with trail maps and conditions.",
+          "parking": "750 Thompson Station Rd, Newark, DE 19711"
+        },
+        {
+          "name": "Brandywine Creek State Park",
+          "id": "brandywine-creek",
+          "state": "DE",
+          "region": "Northern DE",
+          "manager": "Delaware State Parks",
+          "lat": 39.8150,
+          "lng": -75.5750,
+          "url": "https://www.destateparks.com/park/brandywine-creek/",
+          "miles": "12+",
+          "difficulty": "Beginner-Intermediate",
+          "closure_info": "No formal MTB closure. Check Delaware State Parks for conditions.",
+          "seasonal_notes": "933 acres 3 miles north of Wilmington. Rocky Run Loop (3.2 mi) is top-rated. Brandywine Creek Long Loop is 11.7 miles. Good piedmont terrain riding.",
+          "why_reliable": "Delaware State Parks official. 2,491 AllTrails reviews with 4.5-star average. Official state park website.",
+          "parking": "41 Adams Dam Rd, Wilmington, DE 19807"
+        }
+      ]
+    },
+    {
+      "category": "Bike Parks / Lift-Served Operations",
+      "trails": [
+        {
+          "name": "Highland Mountain Bike Park",
+          "id": "highland-mountain",
+          "state": "NH",
+          "region": "Southern NH",
+          "manager": "Highland Mountain Bike Park",
+          "lat": 43.4435,
+          "lng": -71.5917,
+          "url": "https://highlandmountain.com/",
+          "miles": "15+",
+          "difficulty": "Beginner-Expert",
+          "closure_info": "Seasonal — opens early May, closes mid-November. Lift-served only during operating hours.",
+          "seasonal_notes": "44 trails on 600 ft vertical. One of the world's only lift-access mountains entirely dedicated to biking. 9,100 sq ft indoor training facility. 50'x50' Ayr Bag jump. 90 minutes north of Boston.",
+          "why_reliable": "Commercial bike park with dedicated operations, official website, and active social media. Operating since 2006. Well-documented on Trailforks (44 trails counted).",
+          "parking": "75 Ski Hill Dr, Northfield, NH 03276"
+        },
+        {
+          "name": "Thunder Mountain Bike Park (Berkshire East)",
+          "id": "thunder-mountain",
+          "state": "MA",
+          "region": "Berkshires",
+          "manager": "Berkshire East Mountain Resort",
+          "lat": 42.6325,
+          "lng": -72.8667,
+          "url": "https://berkshireeast.com/summer/thunder-mountain-bike-park",
+          "miles": "10+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "Seasonal — operates late May through mid-October. Lift-served.",
+          "seasonal_notes": "Lift-served downhill bike park in Charlemont, MA. Sugar Line (3.5 mi green) is standout beginner trail. Cat & Mouse (blue, 8+ min run). New England's fastest growing bike park.",
+          "why_reliable": "Commercial ski resort operation (Berkshire East). Official website with trail maps, ticket prices, and operating schedule. Well-documented on Trailforks and MTB Project.",
+          "parking": "66 Thunder Mountain Rd, Charlemont, MA 01339"
+        },
+        {
+          "name": "Killington Bike Park",
+          "id": "killington-bike-park",
+          "state": "VT",
+          "region": "Southern VT",
+          "manager": "Killington Resort",
+          "lat": 43.6045,
+          "lng": -72.7962,
+          "url": "https://www.killington.com/things-to-do/activities/bike-park/",
+          "miles": "30+",
+          "difficulty": "Beginner-Expert",
+          "closure_info": "Seasonal — approximately late May through late October (~80 days). Three high-speed lifts.",
+          "seasonal_notes": "30+ miles served by 3 high-speed lifts across 5 mountain areas. Nearly 2,000-ft vertical drop. Snowshed (beginner), Ramshead (freeride), Killington Peak (classic NE rock/roots). $30M expansion planned.",
+          "why_reliable": "Major commercial ski resort (Powdr Corp). Official website with detailed trail maps and operating schedule. Active VMBA partnership. 80+ operating days per season.",
+          "parking": "4763 Killington Rd, Killington, VT 05751"
+        },
+        {
+          "name": "Mount Snow Bike Park",
+          "id": "mount-snow-bike-park",
+          "state": "VT",
+          "region": "Southern VT",
+          "manager": "Mount Snow Resort (Vail Resorts)",
+          "lat": 42.9603,
+          "lng": -72.9209,
+          "url": "https://www.mountsnow.com/explore-the-resort/activities-and-events/summer-activities/mount-snow-bike-park.aspx",
+          "miles": "18+",
+          "difficulty": "Beginner-Expert",
+          "closure_info": "Seasonal — 2025 season: June 16 - October 9. Lift-served Fri-Sun.",
+          "seasonal_notes": "15 total trails (12 MTB + 4 e-bike). Canyon Express and Bluebird Express lifts. Gateway is one of the longest intro downhill trails in the East. $49/day ticket. Rentals available.",
+          "why_reliable": "Major commercial ski resort (Vail Resorts). Official website with specific season dates, pricing, and trail maps. Documented on VMBA and Trailforks.",
+          "parking": "39 Mount Snow Rd, West Dover, VT 05356"
+        },
+        {
+          "name": "Mountain Creek Bike Park",
+          "id": "mountain-creek-bike-park",
+          "state": "NJ",
+          "region": "Northern NJ",
+          "manager": "Mountain Creek Resort",
+          "lat": 41.1786,
+          "lng": -74.5043,
+          "url": "https://mountaincreek.com/bike-park/",
+          "miles": "40+",
+          "difficulty": "Beginner-Expert",
+          "closure_info": "Seasonal — opens late May, closes late October. Gondola-served.",
+          "seasonal_notes": "52 trails over 40+ miles. 1,040-ft vertical drop. Gondola to summit. Machine-groomed cruisers to fall-line DH. Full-day $64.99, twilight $44.99. Thursday Night Race League.",
+          "why_reliable": "Major commercial resort with dedicated bike park operations. Official website with trail reports and hours. 52 trails documented on Trailforks.",
+          "parking": "200 Route 94, Vernon, NJ 07462"
+        },
+        {
+          "name": "Blue Mountain Bike Park",
+          "id": "blue-mountain-bike-park",
+          "state": "PA",
+          "region": "Poconos",
+          "manager": "Blue Mountain Resort",
+          "lat": 40.8253,
+          "lng": -75.5128,
+          "url": "https://www.skibluemt.com/mountain-biking/",
+          "miles": "30 trails",
+          "difficulty": "Beginner-Expert",
+          "closure_info": "Seasonal — opens mid-May, closes mid-October. Lift-served via high-speed Comet Quad.",
+          "seasonal_notes": "30 lift-serviced downhill trails. Green/Blue/Black system. 99 miles west of NYC, 80 miles north of Philadelphia. Pocono Mountains region. Rentals and lessons available.",
+          "why_reliable": "Commercial ski resort with dedicated bike park. Official website with trail conditions. Documented on Singletracks and Trailforks.",
+          "parking": "1660 Blue Mountain Dr, Palmerton, PA 18071"
+        }
+      ],
+      "note_windham_closed": "Windham Mountain Bike Park (NY) has PERMANENTLY CLOSED. However, Elm Ridge Wild Forest trails nearby (25+ miles) remain open — see Catskills section below."
+    },
+    {
+      "category": "Municipal/County Trail Systems",
+      "trails": [
+        {
+          "name": "Sprain Ridge Park",
+          "id": "sprain-ridge",
+          "state": "NY",
+          "region": "Hudson Valley",
+          "manager": "Westchester County Parks / WMBA",
+          "lat": 40.9833,
+          "lng": -73.8500,
+          "url": "https://nycmtb.org/sprain-ridge-park",
+          "miles": "8+",
+          "difficulty": "Beginner-Expert",
+          "closure_info": "No formal closure. Open year-round 8am to dusk.",
+          "seasonal_notes": "278 acres between Yonkers and Greenburgh. 30% beginner, 30% intermediate, 40% expert. Some of the most technical riding in Westchester. WMBA Trail Hunt events hosted here.",
+          "why_reliable": "Westchester County Parks official. WMBA (Westchester Mountain Biking Association) maintains trails. Documented on NYCMTB and Trailforks.",
+          "parking": "Jackson Ave entrance, Yonkers, NY (between NYS Thruway and Sprain Brook Pkwy)"
+        },
+        {
+          "name": "Glacier Ridge",
+          "id": "glacier-ridge",
+          "state": "NY",
+          "region": "NYC & Long Island",
+          "manager": "Suffolk County Parks / CLIMB",
+          "lat": 40.8667,
+          "lng": -73.0000,
+          "url": "https://www.trailforks.com/region/glacier-ridge/",
+          "miles": "12+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "No formal closure. Open year-round.",
+          "seasonal_notes": "Top MTB spot on Long Island. 12 miles of speedy flow, tight turns, sandy sections. 26 trails. Connects to Overton Preserve and Cathedral Pines for 25+ mile rides (LI Triple Crown). Maintained by CLIMB.",
+          "why_reliable": "Suffolk County Parks official. Concerned Long Island Mountain Bicyclists (CLIMB) maintains trails since 1990. Well-documented on Trailforks (26 trails counted). Part of LI Triple Crown route.",
+          "parking": "Glacier Ridge, Middle Island, NY (off Rte 112)"
+        },
+        {
+          "name": "Cathedral Pines County Park",
+          "id": "cathedral-pines",
+          "state": "NY",
+          "region": "NYC & Long Island",
+          "manager": "Suffolk County Parks / CLIMB",
+          "lat": 40.8800,
+          "lng": -72.9500,
+          "url": "https://www.suffolkcountyny.gov/Departments/Parks/Activities-and-Attractions/Bicycling",
+          "miles": "6+",
+          "difficulty": "Beginner-Intermediate",
+          "closure_info": "No formal closure. Open year-round.",
+          "seasonal_notes": "6-mile loop through pine forest. Fast flowing sections and technical features. Connects to Overton and Glacier Ridge via Triple Crown Connector. Multi-use trails.",
+          "why_reliable": "Suffolk County Parks official. CLIMB maintains trails. Part of documented LI Triple Crown route.",
+          "parking": "Cathedral Pines County Park, Yaphank, NY"
+        },
+        {
+          "name": "Overton Preserve",
+          "id": "overton-preserve",
+          "state": "NY",
+          "region": "NYC & Long Island",
+          "manager": "Town of Brookhaven / CLIMB",
+          "lat": 40.8700,
+          "lng": -73.0200,
+          "url": "https://www.trailforks.com/region/overton-preserve-22694/",
+          "miles": "14+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "No formal closure. Open year-round.",
+          "seasonal_notes": "29 trails over 14 miles. Swoopy, fast singletrack — like a roller coaster. Connects to Glacier Ridge across Rte 112. Together 25+ miles. Connects east to Cathedral Pines.",
+          "why_reliable": "Town of Brookhaven preserve. CLIMB maintains trails since 1990. 29 trails documented on Trailforks. Part of LI Triple Crown.",
+          "parking": "David Overton Preserve, Coram, NY (off Rte 112)"
+        }
+      ]
+    },
+    {
+      "category": "Federal Lands / National Forests",
+      "trails": [
+        {
+          "name": "Green Mountain National Forest (MTB Trails)",
+          "id": "green-mountain-nf",
+          "state": "VT",
+          "region": "Central VT",
+          "manager": "USDA Forest Service / VMBA",
+          "lat": 43.9500,
+          "lng": -72.8500,
+          "url": "https://www.fs.usda.gov/r09/gmfl/recreation/opportunities/biking",
+          "miles": "150+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "Bicycles prohibited on Appalachian Trail, Long Trail, side trails, and Wilderness areas. Otherwise open.",
+          "seasonal_notes": "Nearly 150 miles managed for MTB plus open forest roads. 18 documented MTB trails. VMBA partnership for maintenance. Blueberry Lake trail system features gentle grades and flow. Silver Lake Trail is top-rated.",
+          "why_reliable": "USDA Forest Service official. Partnership with VMBA (28 chapters, 30,000+ volunteer hours annually). Forest Service website documents bicycle policies and trail access. AllTrails reviews confirm quality.",
+          "parking": "Multiple trailheads — see fs.usda.gov for specific locations"
+        },
+        {
+          "name": "White Mountain National Forest (MTB Trails)",
+          "id": "white-mountain-nf",
+          "state": "NH",
+          "region": "Southern NH",
+          "manager": "USDA Forest Service",
+          "lat": 44.0500,
+          "lng": -71.4000,
+          "url": "https://www.fs.usda.gov/r09/whitemountain/recreation/opportunities/biking",
+          "miles": "13+ trails (limited due to terrain)",
+          "difficulty": "Intermediate-Advanced",
+          "closure_info": "All trails open to bikes EXCEPT Wilderness areas, Appalachian Trail, and posted closures. No cross-country travel.",
+          "seasonal_notes": "Limited MTB opportunities due to steepness and natural obstacles, but legal on all non-wilderness trails and forest roads. Yellow Jacket XTC and Slippery Brook trails are popular. 13 documented MTB trails.",
+          "why_reliable": "USDA Forest Service official policy: 'All trails, roads, and travel corridors on the WMNF are open to mountain bikes except in Congressionally designated Wilderness areas, on the Appalachian Trail, or where otherwise posted.' Clear documented access policy.",
+          "parking": "Multiple trailheads — see fs.usda.gov for specific locations"
+        },
+        {
+          "name": "Elm Ridge Wild Forest",
+          "id": "elm-ridge",
+          "state": "NY",
+          "region": "Catskills",
+          "manager": "NYSDEC",
+          "lat": 42.3167,
+          "lng": -74.2500,
+          "url": "https://dec.ny.gov/places/elm-ridge-wild-forest",
+          "miles": "25+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "No formal closure. Open year-round. State land — free access.",
+          "seasonal_notes": "25+ miles on northern boundary of Catskill Park, 2 miles from Windham center. FUN Loop for beginners. Escarpment Trail and Elm Ridge Trail for advanced. 2 parking areas. Note: Windham Mountain Bike Park has permanently closed, but these state forest trails remain.",
+          "why_reliable": "NYSDEC (New York State Department of Environmental Conservation) official. Managed as Wild Forest land with documented trail maps. Windham Area Recreation Foundation (WARF) promotes and maintains trails.",
+          "parking": "NYS Route 23 parking area or end of Peck Road, Windham, NY"
+        }
+      ]
+    },
+    {
+      "category": "Vermont Trail Networks (VMBA)",
+      "trails": [
+        {
+          "name": "Cady Hill Forest",
+          "id": "cady-hill",
+          "state": "VT",
+          "region": "Central VT",
+          "manager": "Stowe Land Trust / Stowe Trails Partnership (VMBA chapter)",
+          "lat": 44.4644,
+          "lng": -72.6900,
+          "url": "https://stowetrails.org/cady-hill-forest/",
+          "miles": "11+",
+          "difficulty": "Beginner-Advanced",
+          "closure_info": "Closed during mud season (typically mid-April to late May). STP posts opening dates.",
+          "seasonal_notes": "320 acres with 23 trails. Machine-built flow (Bear's, Florence) plus hand-built classics (Bridgey, Zog's, Schween Haus). 750-1,200 ft elevation. Walking distance from Stowe village on Mountain Road.",
+          "why_reliable": "Stowe Land Trust conserved property. Stowe Trails Partnership (STP) is a VMBA chapter with official trail maps and conditions posting. 28 VMBA chapters maintain 1,000+ miles across Vermont.",
+          "parking": "Mountain Road parking (19 cars), across from Town & Country Resort, Stowe, VT"
+        }
+      ]
+    }
+  ],
+  "additional_findings": {
+    "windham_closed": "Windham Mountain Bike Park (NY) has PERMANENTLY CLOSED. Do NOT add to app. However, Elm Ridge Wild Forest (25+ miles, free, state land) is 2 miles away and active.",
+    "imba_program_changes": "IMBA has revamped Ride Center designations in 2025-2026. Old Bronze/Silver/Gold replaced with 'Ride Center' and 'Premier Ride Center' plus new 'Trail Town' designation. Virginia Blue Ridge (Roanoke/Carvins Cove) is the ONLY Silver/Premier Ride Center on the East Coast.",
+    "blue_marsh_imba": "Blue Marsh Lake (already in app) is an IMBA Bronze-level Ride Center via BAMBA partnership with Army Corps of Engineers. Consider noting this IMBA designation in the existing entry.",
+    "stowe_no_lift_park": "Stowe Mountain Resort does NOT have a lift-served bike park (Vail acquisition stalled it). But Cady Hill Forest and von Trapp trails provide 50+ miles of XC trails in Stowe area.",
+    "more_mtb_scope": "MORE (Mid-Atlantic Off-Road Enthusiasts) maintains trails in 60+ parks across DC/MD/VA region. Founded 1992. Key trails added: Schaeffer Farms, Fountainhead, Wakefield, Rosaryville, Gambrill, Rockburn.",
+    "climb_long_island": "CLIMB (Concerned Long Island Mountain Bicyclists) maintains Glacier Ridge, Overton, Cathedral Pines, and Stillwell Woods (already in app). LI Triple Crown connects 45+ miles.",
+    "wmba_westchester": "WMBA (Westchester Mountain Biking Association) maintains Graham Hills (already in app), Sprain Ridge, and Blue Mountain Reservation (already in app)."
+  },
+  "trails_not_added_insufficient_data": [
+    {
+      "name": "Canaan Valley Resort State Park",
+      "state": "WV",
+      "reason": "18 miles of trails documented but closure/access info incomplete. Needs verification of MTB-specific access vs hiking-only trails."
+    },
+    {
+      "name": "Pipestem Resort State Park",
+      "state": "WV",
+      "reason": "Guided bike trips only — not a documented self-guided trail system. Bike rentals available but trail access specifics unclear."
+    },
+    {
+      "name": "North Bend State Park",
+      "state": "WV",
+      "reason": "North Bend Rail Trail is crushed limestone — more of a rail-trail than MTB singletrack. Beginner-only."
+    },
+    {
+      "name": "von Trapp Family Lodge trails",
+      "state": "VT",
+      "reason": "Private resort — 2,600 acres with 20+ miles doubletrack and 8 miles singletrack. Requires resort access/fee. Not a public trail system."
+    },
+    {
+      "name": "Beltzville State Park",
+      "state": "PA",
+      "reason": "Army Corps project but MTB trail documentation insufficient. Needs field verification."
+    },
+    {
+      "name": "Montgomery County MD (beyond Schaeffer Farms)",
+      "reason": "Schaeffer Farms captures the main riding. Additional small county trails exist but lack documented MTB-specific info."
+    },
+    {
+      "name": "Burlington County NJ",
+      "reason": "No significant documented MTB trail systems found in web searches. Wharton State Forest has some riding but access/legality unclear."
+    }
+  ],
+  "total_new_trails_recommended": 28,
+  "total_new_states": 3,
+  "total_new_regions_needed": 9
+}

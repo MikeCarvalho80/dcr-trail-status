@@ -33,7 +33,11 @@ const REGION_ORDER: Region[] = [
   'Central MA', 'Pioneer Valley', 'Berkshires', 'Cape & Islands',
   'Southern NH', 'Rhode Island', 'Connecticut', 'Southern VT',
   'Southern Maine', 'Midcoast Maine', 'Western Maine',
-  'Hudson Valley', 'NYC & Long Island', 'Northern NJ', 'Central NJ', 'Eastern PA',
+  'Central VT', 'Central NH', 'Western NH',
+  'Hudson Valley', 'Upstate NY', 'NYC & Long Island',
+  'Northern NJ', 'Central NJ',
+  'Eastern PA', 'Central PA', 'Poconos',
+  'Maryland', 'Delaware',
 ];
 
 // Read URL params once on load
