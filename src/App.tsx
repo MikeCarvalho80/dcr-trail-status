@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, lazy, Suspense } from 'react';
 import { SummaryStats } from './components/SummaryStats';
+import type { StatusFilter } from './components/SummaryStats';
 import { SeasonTimeline } from './components/SeasonTimeline';
 import { RegionFilters } from './components/RegionFilters';
 import type { FilterOption } from './components/RegionFilters';
@@ -16,6 +17,7 @@ import { getZipCoords } from './data/zipcodes';
 import { getTrailStatus, sortByStatusAndDistance } from './lib/status';
 import { haversineDistance, estimateDriveMinutes } from './lib/geo';
 import { useUserPrefs } from './lib/useUserPrefs';
+import { useGeolocation } from './lib/useGeolocation';
 import { useDailyRefresh } from './lib/useDailyRefresh';
 import type { DifficultyFilter, TrailLengthFilter } from './lib/parks-utils';
 import { parseMiles, matchesLengthRange } from './lib/parks-utils';
@@ -52,7 +54,11 @@ export function App() {
   const [searchQuery, setSearchQuery] = useState(initialUrl.search ?? '');
   const [showMap, setShowMap] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  // Auto-detect device location on first load
+  useGeolocation(prefs.zipCode, '02136', setZipCode);
 
   // Apply URL overrides on first load
   useState(() => {
@@ -177,9 +183,13 @@ export function App() {
       filtered = filtered.filter((p) => getTrailStatus(p).status !== 'closed');
     }
 
+    if (statusFilter) {
+      filtered = filtered.filter((p) => getTrailStatus(p).status === statusFilter);
+    }
+
     return sortByStatusAndDistance(filtered, distances, favoritesSet);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectiveRegion, parksInRange, distances, now, activeDifficulty, activeTrailLength, prefs.showRideableOnly, favoritesSet, searchQuery]);
+  }, [effectiveRegion, parksInRange, distances, now, activeDifficulty, activeTrailLength, prefs.showRideableOnly, favoritesSet, searchQuery, statusFilter]);
 
   // Status counts
   const counts = useMemo(() => {
@@ -251,7 +261,7 @@ export function App() {
 
         {/* Summary Stats */}
         <div className="mb-5">
-          <SummaryStats counts={counts} />
+          <SummaryStats counts={counts} activeFilter={statusFilter} onFilterChange={setStatusFilter} />
         </div>
 
         {/* Season Timeline */}
@@ -290,7 +300,7 @@ export function App() {
                 <span className="font-mono text-[12px] text-text-muted">Loading map...</span>
               </div>
             }>
-              <TrailMap parks={filteredParks} distances={distances} />
+              <TrailMap parks={filteredParks} distances={distances} onParkClick={scrollToPark} />
             </Suspense>
           </div>
         )}

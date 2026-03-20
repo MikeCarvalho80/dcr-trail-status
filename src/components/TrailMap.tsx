@@ -2,11 +2,13 @@ import { useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
 import type { Park } from '../data/parks';
 import { getTrailStatus } from '../lib/status';
+import { estimateDriveMinutes } from '../lib/geo';
 import 'leaflet/dist/leaflet.css';
 
 interface TrailMapProps {
   parks: Park[];
   distances: Map<string, number>;
+  onParkClick: (parkId: string) => void;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -30,7 +32,7 @@ function FitBounds({ parks }: { parks: Park[] }) {
   return null;
 }
 
-export function TrailMap({ parks, distances }: TrailMapProps) {
+export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
   const defaultCenter: [number, number] = [42.36, -71.06];
 
   return (
@@ -67,8 +69,29 @@ export function TrailMap({ parks, distances }: TrailMapProps) {
                 <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12 }}>
                   <strong>{park.name}</strong>
                   <br />
-                  {trail.label} · {park.miles} mi · {park.difficulty}
-                  {dist != null && <><br />~{Math.round(dist)} mi away</>}
+                  {trail.label} · {park.miles} mi · {park.difficulty.split('-')[0]}
+                  {dist != null && <><br />~{Math.round(dist)} mi · ~{estimateDriveMinutes(dist)} min</>}
+                  <br />
+                  <button
+                    onClick={() => onParkClick(park.id)}
+                    style={{
+                      marginTop: 6,
+                      padding: '4px 10px',
+                      fontSize: 11,
+                      fontFamily: 'JetBrains Mono, monospace',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      background: color,
+                      color: '#0d0c0a',
+                      border: 'none',
+                      borderRadius: 4,
+                      cursor: 'pointer',
+                      width: '100%',
+                    }}
+                  >
+                    View Details
+                  </button>
                 </div>
               </Popup>
             </CircleMarker>
