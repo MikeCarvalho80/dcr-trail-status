@@ -26,6 +26,7 @@ interface ParkCardProps {
   statusChanged?: { from: string; to: string };
   forceExpanded?: boolean;
   onExpanded?: () => void;
+  onNavigateToPark?: (parkId: string) => void;
 }
 
 function DetailItem({ label, value }: { label: string; value: string }) {
@@ -48,7 +49,7 @@ function getWeatherUrl(park: Park): string {
   return `https://forecast.weather.gov/MapClick.php?lat=${park.lat}&lon=${park.lng}`;
 }
 
-export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onToggleFavorite, isVisited, onToggleVisited, statusChanged, forceExpanded, onExpanded }: ParkCardProps) {
+export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onToggleFavorite, isVisited, onToggleVisited, statusChanged, forceExpanded, onExpanded, onNavigateToPark }: ParkCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [shareMsg, setShareMsg] = useState('');
 
@@ -283,7 +284,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                 <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
                   {connectedParks.length > 0 && (
                     <div className={nearbyParks.length > 0 ? 'mb-2.5' : ''}>
-                      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1">
+                      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1.5">
                         <LinkIcon className="w-3 h-3 inline mr-1" />Connects To
                       </div>
                       <div className="flex flex-wrap gap-1.5">
@@ -291,9 +292,13 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                           const cpTrail = getTrailStatus(cp);
                           const cpConfig = STATUS_CONFIG[cpTrail.status];
                           return (
-                            <span key={cp.id} className={`${cpConfig.badgeBg} ${cpConfig.text} font-mono text-[11px] font-semibold px-2 py-0.5 rounded`}>
+                            <button
+                              key={cp.id}
+                              onClick={(e) => { e.stopPropagation(); onNavigateToPark?.(cp.id); }}
+                              className={`${cpConfig.badgeBg} ${cpConfig.text} font-mono text-[11px] font-semibold px-3 py-1.5 rounded cursor-pointer hover:opacity-80 transition-opacity duration-200`}
+                            >
                               {cp.name}
-                            </span>
+                            </button>
                           );
                         })}
                       </div>
@@ -301,19 +306,23 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                   )}
                   {nearbyParks.length > 0 && (
                     <div>
-                      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1">
+                      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1.5">
                         Nearby Parks
                       </div>
-                      <div className="space-y-0.5">
+                      <div className="space-y-1">
                         {nearbyParks.map(({ park: np, dist }) => {
                           const npTrail = getTrailStatus(np);
                           const npConfig = STATUS_CONFIG[npTrail.status];
                           return (
-                            <div key={np.id} className="flex items-center gap-2 font-mono text-[12px]">
-                              <span className={`w-1.5 h-1.5 rounded-full ${npConfig.dot}`} />
+                            <button
+                              key={np.id}
+                              onClick={(e) => { e.stopPropagation(); onNavigateToPark?.(np.id); }}
+                              className="flex items-center gap-2 font-mono text-[12px] w-full text-left py-1.5 px-2 -mx-2 rounded-md hover:bg-bg-elevated/50 transition-colors duration-200 cursor-pointer"
+                            >
+                              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${npConfig.dot}`} />
                               <span className="text-text-primary">{np.name}</span>
-                              <span className="text-text-muted">~{Math.round(dist)} mi · ~{estimateDriveMinutes(dist)} min</span>
-                            </div>
+                              <span className="text-text-muted ml-auto flex-shrink-0">~{Math.round(dist)} mi · ~{estimateDriveMinutes(dist)} min</span>
+                            </button>
                           );
                         })}
                       </div>

@@ -401,6 +401,7 @@ export function App() {
                   statusChanged={change ? { from: change.from, to: change.to } : undefined}
                   forceExpanded={expandedParkId === park.id}
                   onExpanded={() => { if (expandedParkId === park.id) setExpandedParkId(null); }}
+                  onNavigateToPark={scrollToPark}
                 />
               </div>
             );
