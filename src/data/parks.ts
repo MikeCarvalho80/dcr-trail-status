@@ -332,6 +332,27 @@ export const PARKS: Park[] = [
   // NEW MASSACHUSETTS PARKS
   // ─────────────────────────────────────────────
   {
+    id: "carolina-hill",
+    name: "Carolina Hill Reservation",
+    region: "South Shore",
+    state: "MA",
+    manager: "Town of Marshfield Conservation Commission",
+    url: "https://www.nsrwa.org/listing/carolina-hill-reservation/",
+    lat: 42.1163,
+    lng: -70.7362,
+    parking: "End of Eames Way (past Eames Way School), Marshfield (free, dawn to dusk)",
+    closureType: "advisory",
+    closureRule: "No formal closure — no hunting allowed on Marshfield conservation land",
+    closureStart: null,
+    closureEnd: null,
+    notes: "Marshfield's largest conservation property at 775+ acres. ~17 miles of trails including a popular 10-mile MTB loop. Hilly, sandy terrain with cross-country singletrack on both sides of Eames Way. SE Mass NEMBA hosts Monday night rides and the annual Carolina Hill MTB Classic race. Trails not consistently marked — bring a map. Additional access from 758 Main St and Ferry St.",
+    difficulty: "Beginner-Intermediate",
+    miles: "17+",
+    nemba: "SE Mass",
+    source: "NSRWA trail listing (nsrwa.org) and SE Mass NEMBA",
+    lastVerified: "2026-03-20",
+  },
+  {
     id: "ames-nowell",
     name: "Ames Nowell State Park",
     region: "South Shore",
