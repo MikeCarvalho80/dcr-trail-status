@@ -37,6 +37,8 @@ import { MapIcon, ListIcon, CalendarIcon } from 'lucide-react';
 
 import { EmbedCard } from './components/EmbedCard';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { StaleDataBanner } from './components/StaleDataBanner';
+import { useProgressiveRender } from './lib/useProgressiveRender';
 
 const TrailMap = lazy(() => import('./components/TrailMap').then((m) => ({ default: m.TrailMap })));
 const AdminForm = lazy(() => import('./components/AdminForm').then((m) => ({ default: m.AdminForm })));
@@ -289,19 +291,50 @@ export function App() {
   }, [parksInRange]);
 
   const [expandedParkId, setExpandedParkId] = useState<string | null>(null);
+  const [mapHighlightId, setMapHighlightId] = useState<string | null>(null);
+
+  // Progressive rendering for park list
+  const renderCount = useProgressiveRender(filteredParks.length, 20, 20);
+
+  // Deep link: ?park=blue-hills opens that card on load
+  useEffect(() => {
+    if (initialUrl.park) {
+      scrollToPark(initialUrl.park);
+    }
+    // Restore last-viewed park from session
+    const lastPark = sessionStorage.getItem('dcr-last-park');
+    if (lastPark && !initialUrl.park) {
+      setExpandedParkId(lastPark);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function scrollToPark(parkId: string) {
     setExpandedParkId(parkId);
+    setMapHighlightId(parkId);
+    // Persist for session restore
+    sessionStorage.setItem('dcr-last-park', parkId);
     setTimeout(() => {
       const el = document.getElementById(`park-${parkId}`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // Highlight the card briefly
         el.classList.remove('animate-highlight-card');
-        void el.offsetWidth; // force reflow
+        void el.offsetWidth;
         el.classList.add('animate-highlight-card');
       }
     }, 100);
+  }
+
+  // When a card is expanded from the list, highlight it on the map
+  function handleCardExpanded(parkId: string) {
+    if (expandedParkId === parkId) {
+      setExpandedParkId(null);
+      setMapHighlightId(null);
+      sessionStorage.removeItem('dcr-last-park');
+    } else {
+      setMapHighlightId(parkId);
+      sessionStorage.setItem('dcr-last-park', parkId);
+    }
   }
 
   return (
@@ -335,6 +368,9 @@ export function App() {
             Trail status information is derived from publicly available sources and may not reflect real-time conditions. Always verify closures with local land managers before riding. Use at your own risk.
           </p>
         </div>
+
+        {/* Stale data warning */}
+        <StaleDataBanner />
 
         {/* PWA install nudge */}
         {pwa.showNudge && (
@@ -413,7 +449,7 @@ export function App() {
                   <span className="font-mono text-[12px] text-text-muted">Loading map...</span>
                 </div>
               }>
-                <TrailMap parks={filteredParks} distances={distances} onParkClick={scrollToPark} />
+                <TrailMap parks={filteredParks} distances={distances} onParkClick={scrollToPark} highlightParkId={mapHighlightId} />
               </Suspense>
             </ErrorBoundary>
           </div>
@@ -497,7 +533,7 @@ export function App() {
 
         {/* Park Cards */}
         <section ref={listRef} aria-label="Trail list" className="space-y-2.5 min-h-[50vh]">
-          {filteredParks.map((park) => {
+          {filteredParks.slice(0, renderCount).map((park) => {
             const d = distances.get(park.id);
             const change = statusChanges.get(park.id);
             return (
@@ -512,12 +548,16 @@ export function App() {
                   onToggleVisited={() => toggleVisited(park.id)}
                   statusChanged={change ? { from: change.from, to: change.to } : undefined}
                   forceExpanded={expandedParkId === park.id}
-                  onExpanded={() => { if (expandedParkId === park.id) setExpandedParkId(null); }}
+                  onExpanded={() => handleCardExpanded(park.id)}
                   onNavigateToPark={scrollToPark}
                 />
               </div>
             );
           })}
+          {/* Sentinel for progressive rendering */}
+          {renderCount < filteredParks.length && (
+            <div id="progressive-render-sentinel" className="h-1" />
+          )}
 
           {filteredParks.length === 0 && (
             <div className="text-center py-8">

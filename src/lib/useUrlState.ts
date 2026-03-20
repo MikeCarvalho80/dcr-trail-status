@@ -13,6 +13,7 @@ interface UrlState {
   search?: string;
   rideable?: boolean;
   status?: StatusFilter;
+  park?: string;
 }
 
 export function readUrlState(): UrlState {
@@ -37,6 +38,8 @@ export function readUrlState(): UrlState {
   if (rideable === '1') state.rideable = true;
   const status = params.get('status');
   if (status && ['open', 'caution', 'closed'].includes(status)) state.status = status as TrailStatus;
+  const park = params.get('park');
+  if (park) state.park = park;
   return state;
 }
 
