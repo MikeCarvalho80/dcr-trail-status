@@ -1,5 +1,6 @@
-import { useMemo, useState, useCallback } from 'react';
-import Map, { Marker, Popup, NavigationControl, FullscreenControl, GeolocateControl, ScaleControl } from 'react-map-gl/mapbox';
+import { useMemo, useState, useCallback, useRef, useEffect } from 'react';
+import Map, { Marker, Popup, NavigationControl, FullscreenControl, GeolocateControl, ScaleControl, Source, Layer } from 'react-map-gl/mapbox';
+import type { MapRef } from 'react-map-gl/mapbox';
 import type { Park } from '../data/parks';
 import { getTrailStatus } from '../lib/status';
 import { estimateDriveMinutes } from '../lib/geo';
@@ -8,6 +9,7 @@ interface TrailMapProps {
   parks: Park[];
   distances: Map<string, number>;
   onParkClick: (parkId: string) => void;
+  highlightParkId?: string | null;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -18,22 +20,88 @@ const STATUS_COLORS: Record<string, string> = {
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
-export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
-  const [popupPark, setPopupPark] = useState<Park | null>(null);
+// Zoom threshold: above this, show individual markers; below, show clusters
+const CLUSTER_MAX_ZOOM = 12;
 
-  const initialViewState = useMemo(() => {
-    if (parks.length === 0) return { longitude: -71.06, latitude: 42.36, zoom: 8 };
+export function TrailMap({ parks, distances, onParkClick, highlightParkId }: TrailMapProps) {
+  const mapRef = useRef<MapRef>(null);
+  const [popupPark, setPopupPark] = useState<Park | null>(null);
+  const prevParksRef = useRef<string>('');
+
+  // Build GeoJSON for clustering
+  const geojson = useMemo(() => ({
+    type: 'FeatureCollection' as const,
+    features: parks.map((park) => {
+      const trail = getTrailStatus(park);
+      return {
+        type: 'Feature' as const,
+        geometry: {
+          type: 'Point' as const,
+          coordinates: [park.lng, park.lat],
+        },
+        properties: {
+          id: park.id,
+          name: park.name,
+          status: trail.status,
+          color: STATUS_COLORS[trail.status],
+        },
+      };
+    }),
+  }), [parks]);
+
+  // Fit bounds when filtered parks change
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || parks.length === 0) return;
+
+    // Only refit if the park set actually changed
+    const key = parks.map((p) => p.id).sort().join(',');
+    if (key === prevParksRef.current) return;
+    prevParksRef.current = key;
+
     const lats = parks.map((p) => p.lat);
     const lngs = parks.map((p) => p.lng);
-    return {
-      longitude: (Math.min(...lngs) + Math.max(...lngs)) / 2,
-      latitude: (Math.min(...lats) + Math.max(...lats)) / 2,
-      zoom: 7.5,
-    };
+
+    if (parks.length === 1) {
+      map.flyTo({ center: [lngs[0], lats[0]], zoom: 13, duration: 800 });
+    } else {
+      map.fitBounds(
+        [[Math.min(...lngs) - 0.1, Math.min(...lats) - 0.1],
+         [Math.max(...lngs) + 0.1, Math.max(...lats) + 0.1]],
+        { padding: 40, duration: 800 }
+      );
+    }
   }, [parks]);
+
+  // Fly to highlighted park (from list interaction)
+  useEffect(() => {
+    if (!highlightParkId || !mapRef.current) return;
+    const park = parks.find((p) => p.id === highlightParkId);
+    if (park) {
+      mapRef.current.flyTo({ center: [park.lng, park.lat], zoom: 13, duration: 600 });
+      setPopupPark(park);
+    }
+  }, [highlightParkId, parks]);
 
   const handleMarkerClick = useCallback((park: Park) => {
     setPopupPark(park);
+  }, []);
+
+  // Handle cluster click — zoom in
+  const handleClusterClick = useCallback((e: mapboxgl.MapMouseEvent) => {
+    const map = mapRef.current;
+    if (!map) return;
+    const features = map.queryRenderedFeatures(e.point, { layers: ['cluster-circles'] });
+    if (!features.length) return;
+
+    const clusterId = features[0].properties?.cluster_id;
+    const source = map.getSource('parks') as mapboxgl.GeoJSONSource;
+    if (!source || !clusterId) return;
+
+    source.getClusterExpansionZoom(clusterId).then((zoom) => {
+      const coords = (features[0].geometry as GeoJSON.Point).coordinates;
+      map.flyTo({ center: [coords[0], coords[1]], zoom: zoom + 1, duration: 500 });
+    });
   }, []);
 
   if (!MAPBOX_TOKEN) {
@@ -45,23 +113,64 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
   }
 
   return (
-    <div className="rounded-xl overflow-hidden border border-bg-elevated" style={{ height: 350 }}>
+    <div className="rounded-xl overflow-hidden border border-bg-elevated relative" style={{ height: 350 }}>
       <Map
-        initialViewState={initialViewState}
+        ref={mapRef}
+        initialViewState={{ longitude: -71.06, latitude: 42.36, zoom: 7.5 }}
         style={{ width: '100%', height: '100%' }}
         mapStyle="mapbox://styles/mapbox/outdoors-v12"
         mapboxAccessToken={MAPBOX_TOKEN}
         attributionControl={true}
+        interactiveLayerIds={['cluster-circles']}
+        onClick={handleClusterClick}
       >
-        {/* Built-in Mapbox controls — positioned in map chrome */}
         <FullscreenControl position="top-left" />
         <NavigationControl position="top-right" showCompass={true} />
         <GeolocateControl position="top-right" trackUserLocation={false} />
         <ScaleControl position="bottom-left" />
 
+        {/* Clustered source */}
+        <Source
+          id="parks"
+          type="geojson"
+          data={geojson}
+          cluster={true}
+          clusterMaxZoom={CLUSTER_MAX_ZOOM}
+          clusterRadius={50}
+        >
+          {/* Cluster circles */}
+          <Layer
+            id="cluster-circles"
+            type="circle"
+            filter={['has', 'point_count']}
+            paint={{
+              'circle-color': '#1a1915',
+              'circle-radius': ['step', ['get', 'point_count'], 20, 10, 26, 30, 32],
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#a09a90',
+            }}
+          />
+          {/* Cluster count labels */}
+          <Layer
+            id="cluster-count"
+            type="symbol"
+            filter={['has', 'point_count']}
+            layout={{
+              'text-field': '{point_count_abbreviated}',
+              'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
+              'text-size': 13,
+            }}
+            paint={{
+              'text-color': '#e8e6e1',
+            }}
+          />
+        </Source>
+
+        {/* Individual markers (unclustered) */}
         {parks.map((park) => {
           const trail = getTrailStatus(park);
           const color = STATUS_COLORS[trail.status];
+          const isHighlighted = highlightParkId === park.id;
           return (
             <Marker
               key={park.id}
@@ -75,13 +184,16 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
             >
               <div
                 style={{
-                  width: 18,
-                  height: 18,
+                  width: isHighlighted ? 24 : 18,
+                  height: isHighlighted ? 24 : 18,
                   borderRadius: '50%',
                   backgroundColor: color,
-                  border: '2px solid rgba(255,255,255,0.9)',
-                  boxShadow: `0 0 8px ${color}80`,
+                  border: `2px solid ${isHighlighted ? '#fff' : 'rgba(255,255,255,0.9)'}`,
+                  boxShadow: isHighlighted
+                    ? `0 0 14px ${color}, 0 0 4px rgba(255,255,255,0.5)`
+                    : `0 0 8px ${color}80`,
                   cursor: 'pointer',
+                  transition: 'all 0.3s ease',
                 }}
               />
             </Marker>
@@ -140,6 +252,21 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
           );
         })()}
       </Map>
+
+      {/* Status legend */}
+      <div className="absolute bottom-8 right-2 bg-[#12110e]/90 border border-[#1a1915] rounded-lg px-2.5 py-2 pointer-events-none">
+        <div className="space-y-1">
+          {(['open', 'caution', 'closed'] as const).map((status) => (
+            <div key={status} className="flex items-center gap-2">
+              <div
+                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: STATUS_COLORS[status] }}
+              />
+              <span className="font-mono text-[11px] text-[#e8e6e1] capitalize">{status}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
