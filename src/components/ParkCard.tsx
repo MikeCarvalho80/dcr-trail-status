@@ -94,13 +94,57 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
       >
         {/* Status change badge */}
         {statusChanged && (
-          <div className="font-mono text-[11px] text-status-caution mb-1">
+          <div className="font-mono text-[11px] text-status-caution mb-1.5">
             Changed: {statusChanged.from} → {statusChanged.to}
           </div>
         )}
 
-        {/* Top row: status dot + badges + distance */}
-        <div className="flex items-center gap-2">
+        {/* Row 1: Park name + action icons */}
+        <div className="flex items-start gap-2">
+          <div className="flex-1 min-w-0">
+            <div className="font-mono text-[17px] font-bold text-text-primary leading-tight">
+              {park.name}
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
+            {/* Visit check */}
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(e) => { e.stopPropagation(); onToggleVisited(); }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onToggleVisited(); } }}
+              className="cursor-pointer"
+              aria-label={isVisited ? `Unmark ${park.name} as visited` : `Mark ${park.name} as visited`}
+            >
+              <CheckCircleIcon
+                className={`w-4 h-4 transition-colors duration-200 ${isVisited ? 'text-status-open fill-status-open' : 'text-text-muted/40 hover:text-status-open/60'}`}
+              />
+            </span>
+            {/* Favorite star */}
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onToggleFavorite(); } }}
+              className="cursor-pointer"
+              aria-label={isFavorite ? `Remove ${park.name} from favorites` : `Add ${park.name} to favorites`}
+            >
+              <StarIcon
+                className={`w-4 h-4 transition-colors duration-200 ${isFavorite ? 'text-amber-400 fill-amber-400' : 'text-text-muted hover:text-amber-400/60'}`}
+              />
+            </span>
+            {/* Chevron */}
+            <motion.span
+              animate={{ rotate: isExpanded ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChevronDownIcon className="w-4 h-4 text-text-muted" />
+            </motion.span>
+          </div>
+        </div>
+
+        {/* Row 2: Status + sublabel */}
+        <div className="flex items-center gap-2 mt-1.5">
           <span
             className={`
               w-2 h-2 rounded-full flex-shrink-0 ${config.dot}
@@ -109,79 +153,29 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
             aria-hidden="true"
           />
           <span className="sr-only">{trail.status}</span>
-
-          {/* Status badge */}
           <span
-            className={`${config.badgeBg} ${config.text} font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-2 py-0.5 rounded`}
+            className={`${config.badgeBg} ${config.text} font-mono text-[11px] font-semibold uppercase tracking-[0.05em] px-2 py-0.5 rounded`}
           >
             {trail.label}
           </span>
+          <span className="font-mono text-[11px] text-text-muted truncate">
+            {trail.sublabel}
+          </span>
+        </div>
 
-          {/* Manager tag */}
-          <span className="bg-bg-elevated text-text-secondary font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-2 py-0.5 rounded">
+        {/* Row 3: Metadata pills */}
+        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+          <span className="bg-bg-elevated text-text-secondary font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
             {park.manager}
           </span>
-
-          <div className="flex-1" />
-
-          {/* Distance + miles */}
-          <div className="flex items-center gap-2.5 flex-shrink-0">
-            {distanceMiles != null && (
-              <span className="font-mono text-[12px] text-text-secondary">
-                ~{driveMinutes} min
-              </span>
-            )}
-            <span className="font-mono text-[12px] text-text-muted">
-              {park.miles} mi
+          <span className="font-mono text-[11px] text-text-muted">
+            {park.miles} mi · {park.difficulty.split('-')[0]}
+          </span>
+          {distanceMiles != null && (
+            <span className="font-mono text-[11px] text-text-secondary">
+              ~{distanceMiles} mi · ~{driveMinutes} min
             </span>
-          </div>
-
-          {/* Visit check */}
-          <span
-            role="button"
-            tabIndex={0}
-            onClick={(e) => { e.stopPropagation(); onToggleVisited(); }}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onToggleVisited(); } }}
-            className="flex-shrink-0 cursor-pointer"
-            aria-label={isVisited ? `Unmark ${park.name} as visited` : `Mark ${park.name} as visited`}
-          >
-            <CheckCircleIcon
-              className={`w-4 h-4 transition-colors duration-200 ${isVisited ? 'text-status-open fill-status-open' : 'text-text-muted/40 hover:text-status-open/60'}`}
-            />
-          </span>
-
-          {/* Favorite star */}
-          <span
-            role="button"
-            tabIndex={0}
-            onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onToggleFavorite(); } }}
-            className="flex-shrink-0 cursor-pointer"
-            aria-label={isFavorite ? `Remove ${park.name} from favorites` : `Add ${park.name} to favorites`}
-          >
-            <StarIcon
-              className={`w-4 h-4 transition-colors duration-200 ${isFavorite ? 'text-amber-400 fill-amber-400' : 'text-text-muted hover:text-amber-400/60'}`}
-            />
-          </span>
-
-          {/* Chevron */}
-          <motion.span
-            animate={{ rotate: isExpanded ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex-shrink-0 ml-0.5"
-          >
-            <ChevronDownIcon className="w-4 h-4 text-text-muted" />
-          </motion.span>
-        </div>
-
-        {/* Park name */}
-        <div className="font-mono text-[18px] font-bold text-text-primary mt-1.5 leading-tight">
-          {park.name}
-        </div>
-
-        {/* Sublabel */}
-        <div className="font-mono text-[12px] text-text-muted mt-0.5">
-          {trail.sublabel}
+          )}
         </div>
       </button>
 
