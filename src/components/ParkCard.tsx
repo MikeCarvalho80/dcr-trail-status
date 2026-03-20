@@ -105,7 +105,8 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
   return (
     <div
       className={`
-        bg-bg-secondary ${config.border} border-l-2 border rounded-xl
+        bg-bg-secondary border border-bg-elevated rounded-xl
+        border-l-[3px] ${config.border.replace('/[0.27]', '')}
         transition-colors duration-200
         ${isExpanded ? 'bg-bg-elevated' : 'hover:bg-bg-elevated'}
       `}
@@ -140,11 +141,11 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               tabIndex={0}
               onClick={(e) => { e.stopPropagation(); onToggleVisited(); }}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onToggleVisited(); } }}
-              className="cursor-pointer p-2.5 -m-1.5 rounded-full hover:bg-bg-elevated/50"
+              className={`cursor-pointer p-2.5 -m-1.5 rounded-full transition-colors ${isVisited ? 'bg-status-open/10' : 'hover:bg-status-open/10'}`}
               aria-label={isVisited ? `Unmark ${park.name} as visited` : `Mark ${park.name} as visited`}
             >
               <CheckCircleIcon
-                className={`w-5 h-5 transition-colors duration-200 ${isVisited ? 'text-status-open fill-status-open' : 'text-text-muted/40 hover:text-status-open/60'}`}
+                className={`w-5 h-5 transition-colors duration-200 ${isVisited ? 'text-status-open fill-status-open' : 'text-status-open/30 hover:text-status-open/60'}`}
               />
             </span>
             {/* Favorite star */}
@@ -153,20 +154,20 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               tabIndex={0}
               onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onToggleFavorite(); } }}
-              className="cursor-pointer p-2.5 -m-1.5 rounded-full hover:bg-bg-elevated/50"
+              className={`cursor-pointer p-2.5 -m-1.5 rounded-full transition-colors ${isFavorite ? 'bg-amber-400/10' : 'hover:bg-amber-400/10'}`}
               aria-label={isFavorite ? `Remove ${park.name} from favorites` : `Add ${park.name} to favorites`}
             >
               <StarIcon
-                className={`w-5 h-5 transition-colors duration-200 ${isFavorite ? 'text-amber-400 fill-amber-400' : 'text-text-muted hover:text-amber-400/60'}`}
+                className={`w-5 h-5 transition-colors duration-200 ${isFavorite ? 'text-amber-400 fill-amber-400' : 'text-amber-400/30 hover:text-amber-400/60'}`}
               />
             </span>
             {/* Chevron */}
             <motion.span
               animate={{ rotate: isExpanded ? 180 : 0 }}
               transition={{ duration: 0.2 }}
-              className="p-2 -m-1"
+              className={`p-2 -m-1 rounded-full ${isExpanded ? 'bg-bg-elevated' : ''}`}
             >
-              <ChevronDownIcon className="w-5 h-5 text-text-muted" />
+              <ChevronDownIcon className={`w-5 h-5 ${config.text} opacity-60`} />
             </motion.span>
           </div>
         </div>
@@ -191,17 +192,17 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
 
         {/* Row 3: Feature pills */}
         <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-          <span className="bg-bg-elevated text-text-secondary font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
+          <span className="bg-blue-500/10 text-blue-400 font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
             {park.manager}
           </span>
-          <span className="bg-bg-elevated text-text-primary font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
+          <span className="bg-violet-500/10 text-violet-400 font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
             {park.miles} mi
           </span>
-          <span className="bg-bg-elevated text-status-caution font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
+          <span className="bg-status-caution-bg text-status-caution font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
             {park.difficulty.split('-')[0]}
           </span>
           {distanceMiles != null && (
-            <span className="bg-bg-elevated text-text-secondary font-mono text-[11px] px-2 py-0.5 rounded">
+            <span className="bg-cyan-500/10 text-cyan-400 font-mono text-[11px] px-2 py-0.5 rounded">
               ~{distanceMiles} mi · ~{driveMinutes} min
             </span>
           )}
