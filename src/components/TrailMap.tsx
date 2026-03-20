@@ -1,5 +1,5 @@
-import { useMemo, useCallback } from 'react';
-import Map, { Marker, Popup, NavigationControl } from 'react-map-gl/maplibre';
+import { useMemo, useState, useCallback } from 'react';
+import Map, { Marker, Popup, NavigationControl } from 'react-map-gl/mapbox';
 import type { Park } from '../data/parks';
 import { getTrailStatus } from '../lib/status';
 import { estimateDriveMinutes } from '../lib/geo';
@@ -18,43 +18,25 @@ const STATUS_COLORS: Record<string, string> = {
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
-// Use Mapbox Outdoors style for terrain detail, fallback to free OSM tiles
-const MAP_STYLE = MAPBOX_TOKEN
-  ? `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12?access_token=${MAPBOX_TOKEN}`
-  : 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
-
-import { useState } from 'react';
-
 export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
   const [popupPark, setPopupPark] = useState<Park | null>(null);
 
-  // Compute bounds for initial view
-  const bounds = useMemo(() => {
-    if (parks.length === 0) return null;
+  const initialViewState = useMemo(() => {
+    if (parks.length === 0) return { longitude: -71.06, latitude: 42.36, zoom: 8 };
     const lats = parks.map((p) => p.lat);
     const lngs = parks.map((p) => p.lng);
     return {
-      minLat: Math.min(...lats) - 0.15,
-      maxLat: Math.max(...lats) + 0.15,
-      minLng: Math.min(...lngs) - 0.15,
-      maxLng: Math.max(...lngs) + 0.15,
-    };
-  }, [parks]);
-
-  const initialViewState = useMemo(() => {
-    if (!bounds) return { longitude: -71.06, latitude: 42.36, zoom: 8 };
-    return {
-      longitude: (bounds.minLng + bounds.maxLng) / 2,
-      latitude: (bounds.minLat + bounds.maxLat) / 2,
+      longitude: (Math.min(...lngs) + Math.max(...lngs)) / 2,
+      latitude: (Math.min(...lats) + Math.max(...lats)) / 2,
       zoom: 7.5,
     };
-  }, [bounds]);
+  }, [parks]);
 
   const handleMarkerClick = useCallback((park: Park) => {
     setPopupPark(park);
   }, []);
 
-  if (!MAP_STYLE) {
+  if (!MAPBOX_TOKEN) {
     return (
       <div className="rounded-xl border border-bg-elevated bg-bg-secondary h-[350px] flex items-center justify-center">
         <span className="font-mono text-[12px] text-text-muted">Map requires VITE_MAPBOX_TOKEN</span>
@@ -67,7 +49,8 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
       <Map
         initialViewState={initialViewState}
         style={{ width: '100%', height: '100%' }}
-        mapStyle={MAP_STYLE}
+        mapStyle="mapbox://styles/mapbox/outdoors-v12"
+        mapboxAccessToken={MAPBOX_TOKEN}
         attributionControl={true}
       >
         <NavigationControl position="top-right" showCompass={false} />

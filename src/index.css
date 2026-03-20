@@ -8,8 +8,8 @@
 
 /* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
 
-/* MapLibre GL CSS — imported globally to avoid lazy-load CSS issues */
-@import 'maplibre-gl/dist/maplibre-gl.css';
+/* Mapbox GL CSS — imported globally to avoid lazy-load CSS issues */
+@import 'mapbox-gl/dist/mapbox-gl.css';
 
 :root {
   --bg-primary: #0d0c0a;
