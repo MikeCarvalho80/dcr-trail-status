@@ -53,3 +53,10 @@ body {
     box-shadow: 0 0 14px rgba(232, 230, 225, 0.5);
   }
 }
+@keyframes highlight-card {
+  0% { box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.7); }
+  100% { box-shadow: 0 0 0 0px rgba(46, 204, 113, 0); }
+}
+.animate-highlight-card {
+  animation: highlight-card 1.5s ease-out;
+}

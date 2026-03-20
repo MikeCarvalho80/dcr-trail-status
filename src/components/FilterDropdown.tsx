@@ -6,6 +6,7 @@ interface FilterDropdownProps<T extends string> {
   value: T;
   options: readonly T[];
   getLabel?: (opt: T) => string;
+  getCount?: (opt: T) => number;
   allLabel?: string;
   allValue: T;
   onChange: (val: T) => void;
@@ -16,6 +17,7 @@ export function FilterDropdown<T extends string>({
   value,
   options,
   getLabel,
+  getCount,
   allLabel = 'All',
   allValue,
   onChange,
@@ -99,6 +101,7 @@ export function FilterDropdown<T extends string>({
           {options.map((opt) => {
             const isSelected = value === opt;
             const optLabel = opt === allValue ? allLabel : (getLabel ? getLabel(opt) : opt);
+            const count = getCount ? getCount(opt) : undefined;
             return (
               <button
                 key={opt}
@@ -106,14 +109,17 @@ export function FilterDropdown<T extends string>({
                 aria-selected={isSelected}
                 onClick={() => { onChange(opt); setIsOpen(false); }}
                 className={`
-                  w-full text-left px-3 py-2.5 font-mono text-[12px]
+                  w-full text-left px-3 py-2.5 font-mono text-[12px] flex items-center justify-between
                   transition-colors duration-100
                   ${isSelected
                     ? 'bg-bg-elevated text-text-primary font-semibold'
                     : 'text-text-secondary hover:bg-bg-elevated/50 hover:text-text-primary'}
                 `}
               >
-                {optLabel}
+                <span>{optLabel}</span>
+                {count !== undefined && (
+                  <span className="text-text-muted text-[11px] ml-2">{count}</span>
+                )}
               </button>
             );
           })}

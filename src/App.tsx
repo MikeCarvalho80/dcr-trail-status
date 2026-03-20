@@ -28,6 +28,10 @@ import { getSuggestedRides } from './lib/recommendations';
 import { ShareQR } from './components/ShareQR';
 import { getLastScrapedAt, hasAnyConditions } from './lib/conditions';
 import { getNewParkCount } from './lib/whatsNew';
+import { fuzzyMatch } from './lib/fuzzySearch';
+import { usePwaInstall } from './lib/usePwaInstall';
+import { PwaNudge } from './components/PwaNudge';
+import { ActiveFilterSummary } from './components/ActiveFilterSummary';
 import { MapIcon, ListIcon, CalendarIcon } from 'lucide-react';
 
 import { EmbedCard } from './components/EmbedCard';
@@ -173,12 +177,8 @@ export function App() {
     let filtered = [...parksInRange];
 
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
       filtered = filtered.filter((p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.region.toLowerCase().includes(q) ||
-        p.manager.toLowerCase().includes(q) ||
-        p.parking.toLowerCase().includes(q)
+        fuzzyMatch(searchQuery, p.name, p.region, p.manager, p.parking)
       );
     }
 
@@ -218,17 +218,52 @@ export function App() {
     [parksInRange, distances, now],
   );
 
-  // No auto-scroll on filter change — let the user stay in place.
-  // The list updates in-place without jarring scroll jumps.
+  const pwa = usePwaInstall();
+
+  // Compute total trail miles
+  const totalMiles = useMemo(
+    () => PARKS.reduce((sum, p) => sum + parseMiles(p.miles), 0),
+    [],
+  );
+
+  // Park counts per filter option (for dropdown badges)
+  const regionCounts = useMemo(() => {
+    const map: Record<string, number> = { All: parksInRange.length };
+    for (const p of parksInRange) map[p.region] = (map[p.region] ?? 0) + 1;
+    return (opt: string) => map[opt] ?? 0;
+  }, [parksInRange]);
+
+  const difficultyCounts = useMemo(() => {
+    const map: Record<string, number> = { All: parksInRange.length };
+    for (const opt of DIFFICULTY_OPTIONS) {
+      if (opt === 'All') continue;
+      map[opt] = parksInRange.filter((p) => p.difficulty.includes(opt)).length;
+    }
+    return (opt: string) => map[opt] ?? 0;
+  }, [parksInRange]);
+
+  const lengthCounts = useMemo(() => {
+    const map: Record<string, number> = { All: parksInRange.length };
+    for (const opt of TRAIL_LENGTH_OPTIONS) {
+      if (opt === 'All') continue;
+      map[opt] = parksInRange.filter((p) => matchesLengthRange(parseMiles(p.miles), opt)).length;
+    }
+    return (opt: string) => map[opt] ?? 0;
+  }, [parksInRange]);
 
   const [expandedParkId, setExpandedParkId] = useState<string | null>(null);
 
   function scrollToPark(parkId: string) {
     setExpandedParkId(parkId);
-    // Small delay to let the card render expanded before scrolling
     setTimeout(() => {
       const el = document.getElementById(`park-${parkId}`);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Highlight the card briefly
+        el.classList.remove('animate-highlight-card');
+        void el.offsetWidth; // force reflow
+        el.classList.add('animate-highlight-card');
+      }
     }, 100);
   }
 
@@ -241,7 +276,7 @@ export function App() {
             TrailClear
           </h1>
           <p className="font-mono text-[13px] text-text-secondary mt-1 uppercase tracking-[0.05em]">
-            {dateStr} · {PARKS.length} trails across the Northeast
+            {dateStr} · {PARKS.length} trails · {Math.round(totalMiles / 100) * 100}+ miles across the Northeast
             {visitedSet.size > 0 && (
               <span className="text-status-open"> · {visitedSet.size} visited</span>
             )}
@@ -263,6 +298,11 @@ export function App() {
             Trail status information is derived from publicly available sources and may not reflect real-time conditions. Always verify closures with local land managers before riding. Use at your own risk.
           </p>
         </div>
+
+        {/* PWA install nudge */}
+        {pwa.showNudge && (
+          <PwaNudge onInstall={pwa.install} onDismiss={pwa.dismiss} />
+        )}
 
         {/* Geolocation detecting */}
         {geoDetecting && (
@@ -364,6 +404,7 @@ export function App() {
               value={effectiveRegion}
               options={['All' as FilterOption, ...availableRegions]}
               allValue={'All' as FilterOption}
+              getCount={regionCounts}
               onChange={setActiveRegion}
             />
             <FilterDropdown
@@ -371,6 +412,7 @@ export function App() {
               value={activeDifficulty}
               options={DIFFICULTY_OPTIONS}
               allValue="All"
+              getCount={difficultyCounts}
               onChange={setActiveDifficulty}
             />
             <FilterDropdown
@@ -379,10 +421,30 @@ export function App() {
               options={TRAIL_LENGTH_OPTIONS}
               getLabel={(opt) => TRAIL_LENGTH_LABELS[opt]}
               allValue="All"
+              getCount={lengthCounts}
               onChange={setActiveTrailLength}
             />
           </div>
         </div>
+
+        {/* Active filter summary */}
+        <ActiveFilterSummary
+          count={filteredParks.length}
+          statusFilter={statusFilter}
+          region={effectiveRegion}
+          difficulty={activeDifficulty}
+          trailLength={activeTrailLength}
+          rideableOnly={prefs.showRideableOnly}
+          searchQuery={searchQuery}
+          onClearAll={() => {
+            setStatusFilter(null);
+            setActiveRegion('All');
+            setActiveDifficulty('All');
+            setActiveTrailLength('All');
+            setShowRideableOnly(false);
+            setSearchQuery('');
+          }}
+        />
 
         {/* Keyboard shortcuts hint */}
         <div className="font-mono text-[11px] text-text-muted/50 mb-3 hidden sm:block">

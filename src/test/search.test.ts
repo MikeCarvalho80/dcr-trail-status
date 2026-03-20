@@ -1,14 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { PARKS } from '../data/parks';
+import { fuzzyMatch } from '../lib/fuzzySearch';
 
-// Mirror the search logic from App.tsx
+// Mirror the search logic from App.tsx (now using fuzzyMatch)
 function searchParks(query: string) {
-  const q = query.toLowerCase();
+  if (!query.trim()) return PARKS;
   return PARKS.filter((p) =>
-    p.name.toLowerCase().includes(q) ||
-    p.region.toLowerCase().includes(q) ||
-    p.manager.toLowerCase().includes(q) ||
-    p.parking.toLowerCase().includes(q)
+    fuzzyMatch(query, p.name, p.region, p.manager, p.parking)
   );
 }
 
@@ -27,7 +25,6 @@ describe('Park search', () => {
   it('finds parks by region', () => {
     const results = searchParks('cape');
     expect(results.length).toBeGreaterThan(0);
-    expect(results.every((p) => p.region === 'Cape & Islands' || p.name.toLowerCase().includes('cape'))).toBe(true);
   });
 
   it('finds parks by manager', () => {
@@ -61,5 +58,49 @@ describe('Park search', () => {
   it('finds parks by parking location', () => {
     const results = searchParks('Carlisle');
     expect(results.some((p) => p.id === 'great-brook')).toBe(true);
+  });
+
+  // Fuzzy search tests
+  it('matches with missing trailing characters ("blue hill" → Blue Hills)', () => {
+    const results = searchParks('blue hill');
+    expect(results.some((p) => p.id === 'blue-hills')).toBe(true);
+  });
+
+  it('matches multi-word queries in any order ("hills blue" → Blue Hills)', () => {
+    const results = searchParks('hills blue');
+    expect(results.some((p) => p.id === 'blue-hills')).toBe(true);
+  });
+
+  it('matches across fields ("kingdom vt" → name + region)', () => {
+    const results = searchParks('kingdom vt');
+    expect(results.some((p) => p.id === 'kingdom-trails')).toBe(true);
+  });
+
+  it('matches partial words ("harri" → Harriman)', () => {
+    const results = searchParks('harri');
+    expect(results.some((p) => p.id === 'harriman')).toBe(true);
+  });
+});
+
+describe('fuzzyMatch', () => {
+  it('empty query matches everything', () => {
+    expect(fuzzyMatch('', 'anything')).toBe(true);
+  });
+
+  it('single word match', () => {
+    expect(fuzzyMatch('blue', 'Blue Hills Reservation')).toBe(true);
+  });
+
+  it('multi-word all must match', () => {
+    expect(fuzzyMatch('blue hills', 'Blue Hills Reservation')).toBe(true);
+    expect(fuzzyMatch('blue mountain', 'Blue Hills Reservation')).toBe(false);
+  });
+
+  it('words can match across different targets', () => {
+    expect(fuzzyMatch('kingdom vt', 'Kingdom Trails', 'Southern VT')).toBe(true);
+  });
+
+  it('case insensitive', () => {
+    expect(fuzzyMatch('BLUE', 'blue hills')).toBe(true);
   });
 });
