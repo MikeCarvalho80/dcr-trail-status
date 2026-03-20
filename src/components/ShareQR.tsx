@@ -16,7 +16,7 @@ export function ShareQR() {
   async function handleShare() {
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'MTB Trail Status', url });
+        await navigator.share({ title: 'TrailClear', url });
       } catch { /* cancelled */ }
     } else {
       handleCopy();
@@ -44,7 +44,7 @@ export function ShareQR() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-mono text-[14px] font-bold text-text-primary">Share MTB Trail Status</h2>
+              <h2 className="font-mono text-[14px] font-bold text-text-primary">Share TrailClear</h2>
               <button onClick={() => setIsOpen(false)} className="text-text-muted hover:text-text-primary">
                 <XIcon className="w-4 h-4" />
               </button>

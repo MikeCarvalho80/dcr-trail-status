@@ -1,6 +1,6 @@
-# Trail Status — New England MTB
+# TrailClear
 
-A PWA for tracking mountain bike trail closures and mud season advisories across New England. Set your ZIP code, pick a range, and see which trails are open before you ride.
+Is it clear to ride? TrailClear tracks mountain bike trail closures, mud season advisories, and hunting season alerts across the Northeast US. 119 parks, 11 states. Set your ZIP code, pick a range, and see which trails are open before you ride.
 
 **Live:** [dcr-trail-status.vercel.app](https://dcr-trail-status.vercel.app/)
 

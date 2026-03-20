@@ -237,7 +237,7 @@ export function App() {
         {/* Header */}
         <header className="mb-6">
           <h1 className="font-mono text-[26px] font-bold text-text-primary leading-tight">
-            MTB Trail Status
+            TrailClear
           </h1>
           <p className="font-mono text-[13px] text-text-secondary mt-1 uppercase tracking-[0.05em]">
             {dateStr} · {PARKS.length} trails across the Northeast

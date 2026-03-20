@@ -67,7 +67,7 @@ export function EmbedCard({ parkId }: { parkId: string }) {
               transition-colors duration-200 hover:opacity-80
             `}
           >
-            View on MTB Trail Status
+            View on TrailClear
           </a>
         </div>
       </div>

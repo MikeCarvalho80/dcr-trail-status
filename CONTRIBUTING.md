@@ -1,6 +1,6 @@
-# Contributing to Trail Status
+# Contributing to TrailClear
 
-Thanks for helping keep New England trail data accurate. Here's how to contribute.
+Thanks for helping keep Northeast trail data accurate. Here's how to contribute.
 
 ## Adding a new park or trail system
 

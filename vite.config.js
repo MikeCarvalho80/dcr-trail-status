@@ -15,9 +15,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon.svg', 'icon-maskable.svg'],
       manifest: {
-        name: 'MTB Trail Status — Northeast US',
-        short_name: 'MTB Trail Status',
-        description: 'Mountain bike trail closures, mud season advisories, and hunting season alerts across the Northeast',
+        name: 'TrailClear — Northeast Trail Status',
+        short_name: 'TrailClear',
+        description: 'Mountain bike trail closures, mud season advisories, and hunting season alerts across the Northeast. 119 parks, 11 states.',
         theme_color: '#0d0c0a',
         background_color: '#0d0c0a',
         display: 'standalone',
