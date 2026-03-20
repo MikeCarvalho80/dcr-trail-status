@@ -218,15 +218,8 @@ export function App() {
     [parksInRange, distances, now],
   );
 
-  // Scroll to top of park list when filters change
-  const prevFilterKey = useRef('');
-  useEffect(() => {
-    const key = `${effectiveRegion}|${activeDifficulty}|${activeTrailLength}|${prefs.showRideableOnly}|${statusFilter}|${searchQuery}`;
-    if (prevFilterKey.current && prevFilterKey.current !== key) {
-      listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    prevFilterKey.current = key;
-  }, [effectiveRegion, activeDifficulty, activeTrailLength, prefs.showRideableOnly, statusFilter, searchQuery]);
+  // No auto-scroll on filter change — let the user stay in place.
+  // The list updates in-place without jarring scroll jumps.
 
   const [expandedParkId, setExpandedParkId] = useState<string | null>(null);
 
@@ -357,7 +350,7 @@ export function App() {
         )}
 
         {/* Filters */}
-        <div className="bg-bg-secondary border border-bg-elevated rounded-xl px-4 py-3 mb-4">
+        <div className="bg-bg-secondary border border-bg-elevated rounded-xl px-4 py-3 mb-4 sticky top-0 z-40">
           <div className="flex items-center justify-between mb-3">
             <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-secondary">
               Filters
@@ -397,7 +390,7 @@ export function App() {
         </div>
 
         {/* Park Cards */}
-        <section ref={listRef} aria-label="Trail list" className="space-y-2.5">
+        <section ref={listRef} aria-label="Trail list" className="space-y-2.5 min-h-[50vh]">
           {filteredParks.map((park) => {
             const d = distances.get(park.id);
             const change = statusChanges.get(park.id);
