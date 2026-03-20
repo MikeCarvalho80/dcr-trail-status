@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDownIcon, ExternalLinkIcon, NavigationIcon, StarIcon,
@@ -24,6 +24,8 @@ interface ParkCardProps {
   isVisited: boolean;
   onToggleVisited: () => void;
   statusChanged?: { from: string; to: string };
+  forceExpanded?: boolean;
+  onExpanded?: () => void;
 }
 
 function DetailItem({ label, value }: { label: string; value: string }) {
@@ -46,9 +48,17 @@ function getWeatherUrl(park: Park): string {
   return `https://forecast.weather.gov/MapClick.php?lat=${park.lat}&lon=${park.lng}`;
 }
 
-export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onToggleFavorite, isVisited, onToggleVisited, statusChanged }: ParkCardProps) {
+export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onToggleFavorite, isVisited, onToggleVisited, statusChanged, forceExpanded, onExpanded }: ParkCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [shareMsg, setShareMsg] = useState('');
+
+  // Handle forceExpanded from map/suggested rides clicks
+  useEffect(() => {
+    if (forceExpanded && !isExpanded) {
+      setIsExpanded(true);
+    }
+  }, [forceExpanded]);
+
   const trail = getTrailStatus(park);
   const config = STATUS_CONFIG[trail.status];
 
@@ -92,7 +102,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
       `}
     >
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => { setIsExpanded(!isExpanded); onExpanded?.(); }}
         className="w-full text-left px-4 py-3 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30 focus-visible:ring-inset rounded-xl"
         aria-expanded={isExpanded}
         aria-label={`${park.name}: ${trail.label}. Click to ${isExpanded ? 'collapse' : 'expand'} details.`}

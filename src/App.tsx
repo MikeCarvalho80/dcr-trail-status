@@ -227,9 +227,15 @@ export function App() {
     prevFilterKey.current = key;
   }, [effectiveRegion, activeDifficulty, activeTrailLength, prefs.showRideableOnly, statusFilter, searchQuery]);
 
+  const [expandedParkId, setExpandedParkId] = useState<string | null>(null);
+
   function scrollToPark(parkId: string) {
-    const el = document.getElementById(`park-${parkId}`);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setExpandedParkId(parkId);
+    // Small delay to let the card render expanded before scrolling
+    setTimeout(() => {
+      const el = document.getElementById(`park-${parkId}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   }
 
   return (
@@ -393,6 +399,8 @@ export function App() {
                   isVisited={visitedSet.has(park.id)}
                   onToggleVisited={() => toggleVisited(park.id)}
                   statusChanged={change ? { from: change.from, to: change.to } : undefined}
+                  forceExpanded={expandedParkId === park.id}
+                  onExpanded={() => { if (expandedParkId === park.id) setExpandedParkId(null); }}
                 />
               </div>
             );
