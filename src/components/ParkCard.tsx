@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDownIcon, ExternalLinkIcon, NavigationIcon, StarIcon,
   Share2Icon, CloudSunIcon, CheckCircleIcon, SunriseIcon, SunsetIcon, LinkIcon, BugIcon,
-  ThumbsUpIcon, ThumbsDownIcon, MessageCircleIcon,
+  ThumbsUpIcon, ThumbsDownIcon, MessageCircleIcon, DropletIcon, BikeIcon, MountainIcon,
 } from 'lucide-react';
+import { useWeather } from '../lib/useWeather';
+import { ELEVATION_GAIN } from '../data/elevation';
 import type { Park } from '../data/parks';
 import { PARKS } from '../data/parks';
 import { getTrailStatus, getNavUrl, STATUS_CONFIG } from '../lib/status';
@@ -35,6 +37,9 @@ interface ParkCardProps {
   likes?: { up: number; down: number };
   myVote?: 1 | -1 | null;
   onVote?: (parkId: string, vote: 1 | -1) => void;
+  ridersToday?: number;
+  isRidingToday?: boolean;
+  onToggleRidingToday?: (parkId: string) => void;
 }
 
 function SectionLabel({ children, color = 'text-violet-400' }: { children: React.ReactNode; color?: string }) {
@@ -63,7 +68,7 @@ function getWeatherUrl(park: Park): string {
   return `https://forecast.weather.gov/MapClick.php?lat=${park.lat}&lon=${park.lng}`;
 }
 
-export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onToggleFavorite, isVisited, onToggleVisited, statusChanged, forceExpanded, onExpanded, onNavigateToPark, reportCount, likes, myVote, onVote }: ParkCardProps) {
+export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onToggleFavorite, isVisited, onToggleVisited, statusChanged, forceExpanded, onExpanded, onNavigateToPark, reportCount, likes, myVote, onVote, ridersToday, isRidingToday, onToggleRidingToday }: ParkCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [shareMsg, setShareMsg] = useState('');
 
@@ -76,6 +81,9 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
 
   const trail = getTrailStatus(park);
   const config = STATUS_CONFIG[trail.status];
+
+  const { weather } = useWeather(park.id, park.lat, park.lng, isExpanded);
+  const elevation = ELEVATION_GAIN[park.id];
 
   const sunTimes = getSunTimes(park.lat, park.lng, new Date());
   const connectedIds = getConnectedParks(park.id);
@@ -207,9 +215,23 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
           <span className="bg-status-caution-bg text-status-caution font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
             {park.difficulty.split('-')[0]}
           </span>
+          {elevation && (
+            <span className="bg-emerald-500/10 text-emerald-400 font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
+              <MountainIcon className="w-3 h-3 inline mr-0.5" />{elevation}
+            </span>
+          )}
           {distanceMiles != null && (
             <span className="bg-cyan-500/10 text-cyan-400 font-mono text-[11px] px-2 py-0.5 rounded">
               ~{distanceMiles} mi · ~{driveMinutes} min
+            </span>
+          )}
+          {weather && (
+            <span className={`font-mono text-[11px] font-semibold px-2 py-0.5 rounded ${
+              weather.mudRisk === 'high' ? 'bg-status-closed/10 text-status-closed' :
+              weather.mudRisk === 'medium' ? 'bg-status-caution-bg text-status-caution' :
+              'bg-status-open/10 text-status-open'
+            }`}>
+              <DropletIcon className="w-3 h-3 inline mr-0.5" />Mud: {weather.mudRisk}
             </span>
           )}
         </div>
@@ -230,6 +252,11 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
             <span className="flex items-center gap-2 font-mono text-[11px]">
               <span className="flex items-center gap-0.5 text-status-open"><ThumbsUpIcon className="w-3 h-3" />{likes.up}</span>
               <span className="flex items-center gap-0.5 text-status-closed"><ThumbsDownIcon className="w-3 h-3" />{likes.down}</span>
+            </span>
+          )}
+          {ridersToday != null && ridersToday > 0 && (
+            <span className="flex items-center gap-1 font-mono text-[11px] text-violet-400">
+              <BikeIcon className="w-3 h-3" />{ridersToday} riding today
             </span>
           )}
         </div>
@@ -265,6 +292,73 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                   </div>
                 </div>
               </div>
+
+              {/* ── Weather & Ride Planning ── */}
+              {weather && (
+                <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3 border-l-2 border-cyan-500/40">
+                  <SectionLabel color="text-cyan-400">Weather & Mud Risk</SectionLabel>
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="font-mono text-[20px] font-bold text-text-primary">
+                      {weather.current.temperature}°{weather.current.temperatureUnit}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-mono text-[12px] text-text-primary font-semibold">
+                        {weather.current.shortForecast}
+                      </div>
+                      <div className="font-mono text-[11px] text-text-muted">
+                        Wind {weather.current.windSpeed} {weather.current.windDirection}
+                        {weather.current.precipChance > 0 && ` · ${weather.current.precipChance}% rain`}
+                      </div>
+                    </div>
+                    <div className={`font-mono text-[12px] font-bold px-2.5 py-1 rounded ${
+                      weather.mudRisk === 'high' ? 'bg-status-closed/15 text-status-closed' :
+                      weather.mudRisk === 'medium' ? 'bg-status-caution-bg text-status-caution' :
+                      'bg-status-open/15 text-status-open'
+                    }`}>
+                      <DropletIcon className="w-3.5 h-3.5 inline mr-1" />
+                      {weather.mudRisk === 'high' ? 'Muddy' : weather.mudRisk === 'medium' ? 'Damp' : 'Dry'}
+                    </div>
+                  </div>
+                  {/* Weekend / 3-day forecast */}
+                  {weather.threeDayForecast.length > 0 && (
+                    <div className="flex gap-2 pt-2 border-t border-text-muted/15">
+                      {weather.threeDayForecast.map((day) => {
+                        const isGood = day.precipChance < 30 && !/rain|storm|shower/i.test(day.shortForecast);
+                        return (
+                          <div key={day.name} className="flex-1 text-center">
+                            <div className="font-mono text-[11px] text-text-muted font-semibold">{day.name}</div>
+                            <div className={`font-mono text-[13px] font-bold mt-0.5 ${isGood ? 'text-status-open' : 'text-status-caution'}`}>
+                              {day.temperature}°
+                            </div>
+                            <div className={`w-2 h-2 rounded-full mx-auto mt-1 ${isGood ? 'bg-status-open' : 'bg-status-caution'}`} />
+                            <div className="font-mono text-[10px] text-text-muted mt-0.5">
+                              {day.precipChance > 0 ? `${day.precipChance}%` : 'Dry'}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ── Riding Today ── */}
+              {onToggleRidingToday && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleRidingToday(park.id); }}
+                  className={`w-full flex items-center justify-center gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.05em] px-4 py-2.5 rounded-lg mb-3 border transition-all ${
+                    isRidingToday
+                      ? 'bg-violet-500/20 text-violet-400 border-violet-500/40'
+                      : 'bg-violet-500/5 text-violet-400/70 border-violet-500/15 hover:bg-violet-500/15'
+                  }`}
+                >
+                  <BikeIcon className="w-4 h-4" />
+                  {isRidingToday ? "You're riding here today!" : 'I\'m riding here today'}
+                  {ridersToday != null && ridersToday > 0 && (
+                    <span className="bg-violet-500/20 px-1.5 py-0.5 rounded text-[10px]">{ridersToday}</span>
+                  )}
+                </button>
+              )}
 
               {/* ── Condition Reports (scraped) ── */}
               {conditionReports.length > 0 && (

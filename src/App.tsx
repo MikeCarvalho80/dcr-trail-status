@@ -44,6 +44,7 @@ import { useProgressiveRender } from './lib/useProgressiveRender';
 import { getReportCounts } from './lib/conditionReports';
 import { getAllLikeCounts, getMyVotes, votePark } from './lib/parkLikes';
 import type { ParkLikeCounts } from './lib/parkLikes';
+import { getRidingTodayCounts, getMyRidesToday, toggleRidingToday } from './lib/ridingToday';
 
 const TrailMap = lazy(() => import('./components/TrailMap').then((m) => ({ default: m.TrailMap })));
 const AdminForm = lazy(() => import('./components/AdminForm').then((m) => ({ default: m.AdminForm })));
@@ -303,6 +304,8 @@ export function App() {
   const [likeCounts, setLikeCounts] = useState<Map<string, ParkLikeCounts>>(new Map());
   const [myVotes, setMyVotes] = useState<Map<string, 1 | -1>>(new Map());
   const [weeklyReportCount, setWeeklyReportCount] = useState(0);
+  const [ridingTodayCounts, setRidingTodayCounts] = useState<Map<string, number>>(new Map());
+  const [myRidesToday, setMyRidesToday] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     getReportCounts().then((counts) => {
@@ -313,6 +316,8 @@ export function App() {
     });
     getAllLikeCounts().then(setLikeCounts);
     getMyVotes().then(setMyVotes);
+    getRidingTodayCounts().then(setRidingTodayCounts);
+    getMyRidesToday().then(setMyRidesToday);
   }, []);
 
   function handleVote(parkId: string, vote: 1 | -1) {
@@ -340,6 +345,24 @@ export function App() {
 
     // Fire and forget
     votePark(parkId, vote);
+  }
+
+  function handleToggleRidingToday(parkId: string) {
+    const wasRiding = myRidesToday.has(parkId);
+    // Optimistic update
+    const newMyRides = new Set(myRidesToday);
+    const newCounts = new Map(ridingTodayCounts);
+    if (wasRiding) {
+      newMyRides.delete(parkId);
+      newCounts.set(parkId, Math.max(0, (newCounts.get(parkId) || 0) - 1));
+    } else {
+      newMyRides.add(parkId);
+      newCounts.set(parkId, (newCounts.get(parkId) || 0) + 1);
+    }
+    setMyRidesToday(newMyRides);
+    setRidingTodayCounts(newCounts);
+
+    toggleRidingToday(parkId);
   }
 
   // Progressive rendering for park list
@@ -609,6 +632,9 @@ export function App() {
                   likes={likeCounts.get(park.id)}
                   myVote={myVotes.get(park.id) ?? null}
                   onVote={handleVote}
+                  ridersToday={ridingTodayCounts.get(park.id) ?? 0}
+                  isRidingToday={myRidesToday.has(park.id)}
+                  onToggleRidingToday={handleToggleRidingToday}
                 />
               </div>
             );
