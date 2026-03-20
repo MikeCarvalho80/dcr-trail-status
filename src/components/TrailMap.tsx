@@ -23,9 +23,21 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 // Zoom threshold: above this, show individual markers; below, show clusters
 const CLUSTER_MAX_ZOOM = 12;
 
+type MapStyleKey = 'outdoors' | 'satellite' | 'topo' | 'dark';
+
+const MAP_STYLES: { key: MapStyleKey; label: string; url: string }[] = [
+  { key: 'outdoors', label: 'Terrain', url: 'mapbox://styles/mapbox/outdoors-v12' },
+  { key: 'satellite', label: 'Satellite', url: 'mapbox://styles/mapbox/satellite-streets-v12' },
+  { key: 'topo', label: 'Topo', url: 'mapbox://styles/mapbox/standard' },
+  { key: 'dark', label: 'Dark', url: 'mapbox://styles/mapbox/dark-v11' },
+];
+
 export function TrailMap({ parks, distances, onParkClick, highlightParkId }: TrailMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [popupPark, setPopupPark] = useState<Park | null>(null);
+  const [activeStyle, setActiveStyle] = useState<MapStyleKey>(() => {
+    return (localStorage.getItem('dcr-map-style') as MapStyleKey) || 'outdoors';
+  });
   const prevParksRef = useRef<string>('');
 
   // Build GeoJSON for clustering
@@ -118,7 +130,7 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
         ref={mapRef}
         initialViewState={{ longitude: -71.06, latitude: 42.36, zoom: 7.5 }}
         style={{ width: '100%', height: '100%' }}
-        mapStyle="mapbox://styles/mapbox/outdoors-v12"
+        mapStyle={MAP_STYLES.find((s) => s.key === activeStyle)!.url}
         mapboxAccessToken={MAPBOX_TOKEN}
         attributionControl={true}
         interactiveLayerIds={['cluster-circles']}
@@ -252,6 +264,27 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
           );
         })()}
       </Map>
+
+      {/* Layer switcher */}
+      <div className="absolute top-12 left-2 flex flex-col gap-1">
+        {MAP_STYLES.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => {
+              setActiveStyle(key);
+              localStorage.setItem('dcr-map-style', key);
+            }}
+            className={`
+              font-mono text-[11px] font-semibold px-2.5 py-1.5 rounded-md shadow-sm transition-colors
+              ${activeStyle === key
+                ? 'bg-[#12110e] text-[#e8e6e1] border border-[#a09a90]'
+                : 'bg-white/90 text-gray-700 border border-black/10 hover:bg-white'}
+            `}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
 
       {/* Status legend */}
       <div className="absolute bottom-8 right-2 bg-[#12110e]/90 border border-[#1a1915] rounded-lg px-2.5 py-2 pointer-events-none">
