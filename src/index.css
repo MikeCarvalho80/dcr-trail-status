@@ -61,6 +61,30 @@ body {
   animation: highlight-card 1.5s ease-out;
 }
 
+/* Dark map popups — override Mapbox default white */
+.mapboxgl-popup-content {
+  background: #12110e !important;
+  border: 1px solid #1a1915;
+  border-radius: 10px !important;
+  padding: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+.mapboxgl-popup-tip {
+  border-top-color: #12110e !important;
+  border-bottom-color: #12110e !important;
+}
+.mapboxgl-popup-close-button {
+  color: #a09a90 !important;
+  font-size: 18px !important;
+  padding: 4px 8px !important;
+  right: 2px !important;
+  top: 2px !important;
+}
+.mapboxgl-popup-close-button:hover {
+  color: #e8e6e1 !important;
+  background: transparent !important;
+}
+
 /* Desktop: scale up UI for larger screens */
 @media (min-width: 1024px) {
   .desktop-scale {

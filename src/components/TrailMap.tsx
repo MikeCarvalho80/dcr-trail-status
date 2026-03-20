@@ -101,16 +101,24 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
               closeOnClick={false}
               maxWidth="240px"
             >
-              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, lineHeight: 1.4 }}>
-                <strong>{popupPark.name}</strong>
-                <br />
-                {trail.label} · {popupPark.miles} mi · {popupPark.difficulty.split('-')[0]}
-                {dist != null && <><br />~{Math.round(dist)} mi · ~{estimateDriveMinutes(dist)} min</>}
-                <br />
+              <div style={{
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: 12,
+                lineHeight: 1.5,
+                color: '#e8e6e1',
+              }}>
+                <strong style={{ fontSize: 13 }}>{popupPark.name}</strong>
+                <div style={{ color: color, fontWeight: 600, fontSize: 12, marginTop: 2 }}>
+                  {trail.label}
+                </div>
+                <div style={{ color: '#a8a295', marginTop: 2 }}>
+                  {popupPark.miles} mi · {popupPark.difficulty.split('-')[0]}
+                  {dist != null && <> · ~{Math.round(dist)} mi · ~{estimateDriveMinutes(dist)} min</>}
+                </div>
                 <button
                   onClick={() => onParkClick(popupPark.id)}
                   style={{
-                    marginTop: 6,
+                    marginTop: 8,
                     padding: '8px 12px',
                     fontSize: 12,
                     fontFamily: 'JetBrains Mono, monospace',
