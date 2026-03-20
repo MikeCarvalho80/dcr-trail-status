@@ -20,16 +20,15 @@ const STATUS_COLORS: Record<string, string> = {
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
-// Zoom threshold: above this, show individual markers; below, show clusters
 const CLUSTER_MAX_ZOOM = 12;
 
 type MapStyleKey = 'outdoors' | 'satellite' | 'topo' | 'dark';
 
-const MAP_STYLES: { key: MapStyleKey; label: string; url: string }[] = [
-  { key: 'outdoors', label: 'Terrain', url: 'mapbox://styles/mapbox/outdoors-v12' },
-  { key: 'satellite', label: 'Satellite', url: 'mapbox://styles/mapbox/satellite-streets-v12' },
-  { key: 'topo', label: 'Topo', url: 'mapbox://styles/mapbox/standard' },
-  { key: 'dark', label: 'Dark', url: 'mapbox://styles/mapbox/dark-v11' },
+const MAP_STYLES: { key: MapStyleKey; label: string; icon: string; url: string }[] = [
+  { key: 'outdoors', label: 'Terrain', icon: '⛰', url: 'mapbox://styles/mapbox/outdoors-v12' },
+  { key: 'satellite', label: 'Satellite', icon: '🛰', url: 'mapbox://styles/mapbox/satellite-streets-v12' },
+  { key: 'topo', label: 'Topo', icon: '📍', url: 'mapbox://styles/mapbox/standard' },
+  { key: 'dark', label: 'Dark', icon: '🌙', url: 'mapbox://styles/mapbox/dark-v11' },
 ];
 
 export function TrailMap({ parks, distances, onParkClick, highlightParkId }: TrailMapProps) {
@@ -39,6 +38,16 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
     return (localStorage.getItem('dcr-map-style') as MapStyleKey) || 'outdoors';
   });
   const prevParksRef = useRef<string>('');
+
+  // Force remount when style changes to avoid broken layer state
+  const [styleKey, setStyleKey] = useState(0);
+
+  function handleStyleChange(key: MapStyleKey) {
+    setActiveStyle(key);
+    localStorage.setItem('dcr-map-style', key);
+    setPopupPark(null);
+    setStyleKey((k) => k + 1); // remount map
+  }
 
   // Build GeoJSON for clustering
   const geojson = useMemo(() => ({
@@ -66,7 +75,6 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
     const map = mapRef.current;
     if (!map || parks.length === 0) return;
 
-    // Only refit if the park set actually changed
     const key = parks.map((p) => p.id).sort().join(',');
     if (key === prevParksRef.current) return;
     prevParksRef.current = key;
@@ -85,7 +93,7 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
     }
   }, [parks]);
 
-  // Fly to highlighted park (from list interaction)
+  // Fly to highlighted park
   useEffect(() => {
     if (!highlightParkId || !mapRef.current) return;
     const park = parks.find((p) => p.id === highlightParkId);
@@ -99,7 +107,6 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
     setPopupPark(park);
   }, []);
 
-  // Handle cluster click — zoom in
   const handleClusterClick = useCallback((e: mapboxgl.MapMouseEvent) => {
     const map = mapRef.current;
     if (!map) return;
@@ -116,6 +123,36 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
     });
   }, []);
 
+  // Enable 3D terrain after map loads
+  const handleMapLoad = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+
+    // Add terrain source and enable 3D
+    if (!map.getSource('mapbox-dem')) {
+      map.addSource('mapbox-dem', {
+        type: 'raster-dem',
+        url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+        tileSize: 512,
+        maxzoom: 14,
+      });
+    }
+    map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+
+    // Add sky layer for 3D effect
+    if (!map.getLayer('sky')) {
+      map.addLayer({
+        id: 'sky',
+        type: 'sky',
+        paint: {
+          'sky-type': 'atmosphere',
+          'sky-atmosphere-sun': [0.0, 90.0],
+          'sky-atmosphere-sun-intensity': 15,
+        },
+      });
+    }
+  }, []);
+
   if (!MAPBOX_TOKEN) {
     return (
       <div className="rounded-xl border border-bg-elevated bg-bg-secondary h-[350px] flex items-center justify-center">
@@ -127,19 +164,22 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
   return (
     <div className="rounded-xl overflow-hidden border border-bg-elevated relative" style={{ height: 350 }}>
       <Map
+        key={styleKey}
         ref={mapRef}
-        initialViewState={{ longitude: -71.06, latitude: 42.36, zoom: 7.5 }}
+        initialViewState={{ longitude: -71.06, latitude: 42.36, zoom: 7.5, pitch: 40 }}
         style={{ width: '100%', height: '100%' }}
         mapStyle={MAP_STYLES.find((s) => s.key === activeStyle)!.url}
         mapboxAccessToken={MAPBOX_TOKEN}
         attributionControl={true}
         interactiveLayerIds={['cluster-circles']}
         onClick={handleClusterClick}
+        onLoad={handleMapLoad}
+        maxPitch={60}
       >
         <FullscreenControl position="top-left" />
-        <NavigationControl position="top-right" showCompass={true} />
+        <NavigationControl position="top-right" showCompass={true} visualizePitch={true} />
         <GeolocateControl position="top-right" trackUserLocation={false} />
-        <ScaleControl position="bottom-left" />
+        <ScaleControl position="bottom-left" unit="imperial" />
 
         {/* Clustered source */}
         <Source
@@ -150,7 +190,6 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
           clusterMaxZoom={CLUSTER_MAX_ZOOM}
           clusterRadius={50}
         >
-          {/* Cluster circles */}
           <Layer
             id="cluster-circles"
             type="circle"
@@ -162,7 +201,6 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
               'circle-stroke-color': '#a09a90',
             }}
           />
-          {/* Cluster count labels */}
           <Layer
             id="cluster-count"
             type="symbol"
@@ -178,7 +216,7 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
           />
         </Source>
 
-        {/* Individual markers (unclustered) */}
+        {/* Individual markers */}
         {parks.map((park) => {
           const trail = getTrailStatus(park);
           const color = STATUS_COLORS[trail.status];
@@ -267,13 +305,10 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
 
       {/* Layer switcher */}
       <div className="absolute top-12 left-2 flex flex-col gap-1">
-        {MAP_STYLES.map(({ key, label }) => (
+        {MAP_STYLES.map(({ key, label, icon }) => (
           <button
             key={key}
-            onClick={() => {
-              setActiveStyle(key);
-              localStorage.setItem('dcr-map-style', key);
-            }}
+            onClick={() => handleStyleChange(key)}
             className={`
               font-mono text-[11px] font-semibold px-2.5 py-1.5 rounded-md shadow-sm transition-colors
               ${activeStyle === key
@@ -281,7 +316,7 @@ export function TrailMap({ parks, distances, onParkClick, highlightParkId }: Tra
                 : 'bg-white/90 text-gray-700 border border-black/10 hover:bg-white'}
             `}
           >
-            {label}
+            {icon} {label}
           </button>
         ))}
       </div>
