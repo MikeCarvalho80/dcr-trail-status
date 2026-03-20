@@ -5,7 +5,8 @@ import { SeasonTimeline } from './components/SeasonTimeline';
 import { RegionFilters } from './components/RegionFilters';
 import type { FilterOption } from './components/RegionFilters';
 import { DistanceControls } from './components/DistanceControls';
-import { DifficultyFilters, TrailLengthFilters, RideableToggle } from './components/TrailFilters';
+import { RideableToggle } from './components/TrailFilters';
+import { FilterDropdown } from './components/FilterDropdown';
 import { SearchBox } from './components/SearchBox';
 import { ParkCard } from './components/ParkCard';
 import { SuggestedRides } from './components/SuggestedRides';
@@ -20,7 +21,7 @@ import { useUserPrefs } from './lib/useUserPrefs';
 import { useGeolocation } from './lib/useGeolocation';
 import { useDailyRefresh } from './lib/useDailyRefresh';
 import type { DifficultyFilter, TrailLengthFilter } from './lib/parks-utils';
-import { parseMiles, matchesLengthRange } from './lib/parks-utils';
+import { parseMiles, matchesLengthRange, DIFFICULTY_OPTIONS, TRAIL_LENGTH_OPTIONS, TRAIL_LENGTH_LABELS } from './lib/parks-utils';
 import { readUrlState, useUrlSync } from './lib/useUrlState';
 import { loadSnapshot, saveSnapshot, getChangedParks } from './lib/statusChanges';
 import { getSuggestedRides } from './lib/recommendations';
@@ -364,17 +365,29 @@ export function App() {
             <RideableToggle enabled={prefs.showRideableOnly} onToggle={setShowRideableOnly} />
           </div>
 
-          <RegionFilters
-            activeRegion={effectiveRegion}
-            onRegionChange={setActiveRegion}
-            availableRegions={availableRegions}
-          />
-
-          <div className="border-t border-bg-elevated my-3" />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <DifficultyFilters active={activeDifficulty} onChange={setActiveDifficulty} />
-            <TrailLengthFilters active={activeTrailLength} onChange={setActiveTrailLength} />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <FilterDropdown
+              label="Region"
+              value={effectiveRegion}
+              options={['All' as FilterOption, ...availableRegions]}
+              allValue={'All' as FilterOption}
+              onChange={setActiveRegion}
+            />
+            <FilterDropdown
+              label="Difficulty"
+              value={activeDifficulty}
+              options={DIFFICULTY_OPTIONS}
+              allValue="All"
+              onChange={setActiveDifficulty}
+            />
+            <FilterDropdown
+              label="Length"
+              value={activeTrailLength}
+              options={TRAIL_LENGTH_OPTIONS}
+              getLabel={(opt) => TRAIL_LENGTH_LABELS[opt]}
+              allValue="All"
+              onChange={setActiveTrailLength}
+            />
           </div>
         </div>
 
