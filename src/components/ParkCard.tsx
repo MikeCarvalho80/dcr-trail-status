@@ -421,27 +421,28 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               </div>
 
               {/* ── Section 6: Actions ── */}
-              <div className="space-y-2">
-                {/* Primary action: Navigate — full width */}
+              <div className="space-y-2.5">
+                {/* Primary action: Navigate — full width, bold color */}
                 <a
                   href={getNavUrl(park)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className={`flex items-center justify-center gap-2 font-mono text-[13px] font-semibold uppercase tracking-[0.05em] px-4 py-3 rounded-lg border-2 ${config.border} ${config.text} transition-colors duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30`}
+                  className={`flex items-center justify-center gap-2 font-mono text-[13px] font-bold uppercase tracking-[0.05em] px-4 py-3 rounded-lg ${config.badgeBg} ${config.text} border-2 ${config.border} transition-colors duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30`}
                   aria-label={`Navigate to ${park.name} parking`}
                 >
                   <NavigationIcon className="w-5 h-5" />
                   Navigate to Parking
                 </a>
-                {/* Secondary actions */}
-                <div className="flex flex-wrap gap-2">
+
+                {/* Secondary actions — each with distinct color */}
+                <div className="grid grid-cols-2 gap-2">
                   <a
                     href={park.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                    className="flex items-center justify-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-2.5 rounded-lg bg-blue-500/15 text-blue-400 border border-blue-500/25 transition-colors duration-200 hover:bg-blue-500/25 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-400/30"
                     aria-label={`View ${park.name} official page`}
                   >
                     <ExternalLinkIcon className="w-4 h-4" />
@@ -452,7 +453,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                    className="flex items-center justify-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-2.5 rounded-lg bg-cyan-500/15 text-cyan-400 border border-cyan-500/25 transition-colors duration-200 hover:bg-cyan-500/25 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-400/30"
                     aria-label={`Weather forecast for ${park.name}`}
                   >
                     <CloudSunIcon className="w-4 h-4" />
@@ -460,7 +461,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                   </a>
                   <button
                     onClick={handleShare}
-                    className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                    className="flex items-center justify-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-2.5 rounded-lg bg-violet-500/15 text-violet-400 border border-violet-500/25 transition-colors duration-200 hover:bg-violet-500/25 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-violet-400/30"
                     aria-label={`Share ${park.name} status`}
                   >
                     <Share2Icon className="w-4 h-4" />
@@ -471,43 +472,45 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                    className="flex items-center justify-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-2.5 rounded-lg bg-orange-500/15 text-orange-400 border border-orange-500/25 transition-colors duration-200 hover:bg-orange-500/25 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-400/30"
                     aria-label={`Report issue with ${park.name} data`}
                   >
                     <BugIcon className="w-4 h-4" />
-                    Report
+                    Report Issue
                   </a>
                 </div>
               </div>
 
               {/* ── Section 7: Rate this park ── */}
               {onVote && (
-                <div className="flex items-center gap-3 mt-3 mb-1">
-                  <span className="font-mono text-[12px] text-text-muted uppercase tracking-[0.05em] font-semibold">
-                    Rate
-                  </span>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onVote(park.id, 1); }}
-                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg border font-mono text-[12px] font-semibold transition-all ${
-                      myVote === 1
-                        ? 'bg-status-open/20 text-status-open border-status-open/40'
-                        : 'text-text-muted border-bg-elevated hover:border-text-muted/30 hover:text-text-primary'
-                    }`}
-                  >
-                    <ThumbsUpIcon className={`w-4 h-4 ${myVote === 1 ? 'fill-status-open' : ''}`} />
-                    {likes?.up ?? 0}
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onVote(park.id, -1); }}
-                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg border font-mono text-[12px] font-semibold transition-all ${
-                      myVote === -1
-                        ? 'bg-status-closed/20 text-status-closed border-status-closed/40'
-                        : 'text-text-muted border-bg-elevated hover:border-text-muted/30 hover:text-text-primary'
-                    }`}
-                  >
-                    <ThumbsDownIcon className={`w-4 h-4 ${myVote === -1 ? 'fill-status-closed' : ''}`} />
-                    {likes?.down ?? 0}
-                  </button>
+                <div className="bg-bg-primary/50 rounded-lg px-3 py-3 mt-3">
+                  <div className="font-mono text-[12px] text-text-muted uppercase tracking-[0.05em] font-semibold mb-2">
+                    Rate this trail
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onVote(park.id, 1); }}
+                      className={`flex-1 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg border font-mono text-[13px] font-bold transition-all ${
+                        myVote === 1
+                          ? 'bg-status-open/20 text-status-open border-status-open/40'
+                          : 'bg-status-open/5 text-status-open/70 border-status-open/15 hover:bg-status-open/15'
+                      }`}
+                    >
+                      <ThumbsUpIcon className={`w-5 h-5 ${myVote === 1 ? 'fill-status-open' : ''}`} />
+                      {likes?.up ?? 0}
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onVote(park.id, -1); }}
+                      className={`flex-1 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg border font-mono text-[13px] font-bold transition-all ${
+                        myVote === -1
+                          ? 'bg-status-closed/20 text-status-closed border-status-closed/40'
+                          : 'bg-status-closed/5 text-status-closed/70 border-status-closed/15 hover:bg-status-closed/15'
+                      }`}
+                    >
+                      <ThumbsDownIcon className={`w-5 h-5 ${myVote === -1 ? 'fill-status-closed' : ''}`} />
+                      {likes?.down ?? 0}
+                    </button>
+                  </div>
                 </div>
               )}
 
