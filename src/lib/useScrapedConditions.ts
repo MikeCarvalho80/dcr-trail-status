@@ -1,20 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { fetchLiveConditions, getParkConditions } from './conditions';
 import type { ScrapedConditionReport } from './conditions';
 
 /**
  * Hook that fetches scraped conditions from Supabase, falling back to bundled JSON.
- * Returns conditions and loading state.
+ * Only fetches once per parkId — subsequent activations use cached data.
  */
 export function useScrapedConditions(parkId: string, isActive: boolean) {
   const [conditions, setConditions] = useState<ScrapedConditionReport[]>(() =>
-    // Sync initial value from bundled JSON for instant render
     getParkConditions(parkId)
   );
   const [loading, setLoading] = useState(false);
+  const fetchedRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    if (!isActive) return;
+    // Skip if not active, or already fetched for this parkId
+    if (!isActive || fetchedRef.current.has(parkId)) return;
 
     let cancelled = false;
     setLoading(true);
@@ -23,6 +24,7 @@ export function useScrapedConditions(parkId: string, isActive: boolean) {
       if (!cancelled) {
         setConditions(data);
         setLoading(false);
+        fetchedRef.current.add(parkId);
       }
     });
 
