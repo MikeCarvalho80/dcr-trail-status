@@ -37,12 +37,18 @@ interface ParkCardProps {
   onVote?: (parkId: string, vote: 1 | -1) => void;
 }
 
+function SectionLabel({ children, color = 'text-violet-400' }: { children: React.ReactNode; color?: string }) {
+  return (
+    <div className={`font-mono text-[11px] font-bold uppercase tracking-[0.08em] ${color} mb-1`}>
+      {children}
+    </div>
+  );
+}
+
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-        {label}
-      </div>
+      <SectionLabel>{label}</SectionLabel>
       <div className="font-mono text-[13px] text-text-primary">{value}</div>
     </div>
   );
@@ -243,15 +249,13 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               <div className="border-t border-text-muted/25 my-2.5" />
 
               {/* ── Section 1: At a Glance ── */}
-              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
+              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3 border-l-2 border-violet-500/40">
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                   <DetailItem label="Difficulty" value={park.difficulty} />
                   <DetailItem label="Trail Miles" value={park.miles} />
                   <DetailItem label="NEMBA Chapter" value={park.nemba} />
                   <div>
-                    <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                      Daylight
-                    </div>
+                    <SectionLabel color="text-amber-400">Daylight</SectionLabel>
                     <div className="flex items-center gap-2 font-mono text-[13px] text-text-primary">
                       <SunriseIcon className="w-3.5 h-3.5 text-status-caution" />
                       {sunTimes.sunrise}
@@ -265,9 +269,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               {/* ── Condition Reports (scraped) ── */}
               {conditionReports.length > 0 && (
                 <div className="bg-status-caution-bg/50 border border-status-caution/20 rounded-lg px-3 py-2.5 mb-3">
-                  <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-status-caution mb-1.5">
-                    Active Alerts ({conditionReports.length})
-                  </div>
+                  <SectionLabel color="text-status-caution">Active Alerts ({conditionReports.length})</SectionLabel>
                   <div className="space-y-2">
                     {conditionReports.map((report, i) => (
                       <div key={i}>
@@ -289,13 +291,11 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               )}
 
               {/* ── Section 2: Getting There ── */}
-              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
+              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3 border-l-2 border-cyan-500/40">
                 <div className="grid grid-cols-1 gap-y-2">
                   <DetailItem label="Parking" value={park.parking} />
                   <div>
-                    <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                      Last Verified
-                    </div>
+                    <SectionLabel color="text-cyan-400">Last Verified</SectionLabel>
                     <div className="font-mono text-[13px] text-text-primary flex items-center gap-2">
                       {formatVerifiedDate(park.lastVerified)}
                       {isParkStale(park.id) && (
@@ -311,12 +311,10 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
 
               {/* ── Section 3: Nearby & Connected (conditional) ── */}
               {(connectedParks.length > 0 || nearbyParks.length > 0) && (
-                <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
+                <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3 border-l-2 border-blue-500/40">
                   {connectedParks.length > 0 && (
                     <div className={nearbyParks.length > 0 ? 'mb-2.5' : ''}>
-                      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1.5">
-                        <LinkIcon className="w-3 h-3 inline mr-1" />Connects To
-                      </div>
+                      <SectionLabel color="text-blue-400"><LinkIcon className="w-3 h-3 inline mr-1" />Connects To</SectionLabel>
                       <div className="flex flex-wrap gap-1.5">
                         {connectedParks.map((cp) => {
                           const cpTrail = getTrailStatus(cp);
@@ -336,9 +334,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                   )}
                   {nearbyParks.length > 0 && (
                     <div>
-                      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1.5">
-                        Nearby Parks
-                      </div>
+                      <SectionLabel color="text-blue-400">Nearby Parks</SectionLabel>
                       <div className="space-y-1">
                         {nearbyParks.map(({ park: np, dist }) => {
                           const npTrail = getTrailStatus(np);
@@ -362,20 +358,16 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               )}
 
               {/* ── Section 4: Status & Closures ── */}
-              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3 space-y-2.5">
+              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3 space-y-2.5 border-l-2 border-orange-500/40">
                 <div>
-                  <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                    Why This Status
-                  </div>
+                  <SectionLabel color="text-orange-400">Why This Status</SectionLabel>
                   <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
                     {trail.reason}
                   </p>
                 </div>
 
                 <div className="border-t border-text-muted/25 pt-2">
-                  <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                    Closure Policy
-                  </div>
+                  <SectionLabel color="text-orange-400">Closure Policy</SectionLabel>
                   <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
                     {park.closureRule}
                   </p>
@@ -392,9 +384,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
 
                 {park.source && (
                   <div className="border-t border-text-muted/25 pt-2">
-                    <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                      Source
-                    </div>
+                    <SectionLabel color="text-orange-400">Source</SectionLabel>
                     <p className="font-mono text-[11px] text-text-muted leading-relaxed">
                       {park.source}
                     </p>
@@ -403,7 +393,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               </div>
 
               {/* ── Section 4b: Closure History Chart ── */}
-              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
+              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3 border-l-2 border-rose-500/40">
                 <Suspense fallback={
                   <div className="font-mono text-[11px] text-text-muted animate-pulse">Loading history...</div>
                 }>
@@ -412,10 +402,8 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               </div>
 
               {/* ── Section 5: Notes ── */}
-              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
-                <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
-                  Notes
-                </div>
+              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3 border-l-2 border-emerald-500/40">
+                <SectionLabel color="text-emerald-400">Notes</SectionLabel>
                 <p className="font-mono text-[12px] text-text-secondary leading-relaxed">
                   {park.notes}
                 </p>
@@ -484,10 +472,8 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
 
               {/* ── Section 7: Rate this park ── */}
               {onVote && (
-                <div className="bg-bg-primary/50 rounded-lg px-3 py-3 mt-3">
-                  <div className="font-mono text-[12px] text-text-muted uppercase tracking-[0.05em] font-semibold mb-2">
-                    Rate this trail
-                  </div>
+                <div className="bg-bg-primary/50 rounded-lg px-3 py-3 mt-3 border-l-2 border-amber-500/40">
+                  <SectionLabel color="text-amber-400">Rate this Trail</SectionLabel>
                   <div className="flex gap-2">
                     <button
                       onClick={(e) => { e.stopPropagation(); onVote(park.id, 1); }}

@@ -46,7 +46,7 @@ export function ClosureHistoryChart({ parkId }: ClosureHistoryChartProps) {
 
   return (
     <div>
-      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-1.5">
+      <div className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-rose-400 mb-1.5">
         Status History ({data.length}d)
       </div>
       <div className="overflow-x-auto">
