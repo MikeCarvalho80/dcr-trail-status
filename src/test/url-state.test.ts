@@ -57,6 +57,18 @@ describe('readUrlState', () => {
     expect(state.search).toBe('blue hills');
   });
 
+  it('reads status filter', () => {
+    window.history.replaceState(null, '', '/?status=open');
+    const state = readUrlState();
+    expect(state.status).toBe('open');
+  });
+
+  it('rejects invalid status filter', () => {
+    window.history.replaceState(null, '', '/?status=invalid');
+    const state = readUrlState();
+    expect(state.status).toBeUndefined();
+  });
+
   it('reads rideable flag', () => {
     window.history.replaceState(null, '', '/?rideable=1');
     const state = readUrlState();

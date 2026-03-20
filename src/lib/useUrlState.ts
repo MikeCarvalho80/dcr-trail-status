@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import type { FilterOption } from '../components/RegionFilters';
+import type { StatusFilter } from '../components/SummaryStats';
 import type { DifficultyFilter, TrailLengthFilter } from './parks-utils';
+import type { TrailStatus } from '../data/parks';
 
 interface UrlState {
   zip?: string;
@@ -10,6 +12,7 @@ interface UrlState {
   length?: TrailLengthFilter;
   search?: string;
   rideable?: boolean;
+  status?: StatusFilter;
 }
 
 export function readUrlState(): UrlState {
@@ -32,6 +35,8 @@ export function readUrlState(): UrlState {
   if (search) state.search = search;
   const rideable = params.get('rideable');
   if (rideable === '1') state.rideable = true;
+  const status = params.get('status');
+  if (status && ['open', 'caution', 'closed'].includes(status)) state.status = status as TrailStatus;
   return state;
 }
 
@@ -43,6 +48,7 @@ export function useUrlSync(state: {
   activeTrailLength: TrailLengthFilter;
   searchQuery: string;
   showRideableOnly: boolean;
+  statusFilter: StatusFilter;
 }) {
   useEffect(() => {
     const params = new URLSearchParams();
@@ -53,6 +59,7 @@ export function useUrlSync(state: {
     if (state.activeTrailLength !== 'All') params.set('length', state.activeTrailLength);
     if (state.searchQuery) params.set('search', state.searchQuery);
     if (state.showRideableOnly) params.set('rideable', '1');
+    if (state.statusFilter) params.set('status', state.statusFilter);
 
     const search = params.toString();
     const newUrl = search ? `${window.location.pathname}?${search}` : window.location.pathname;
@@ -67,5 +74,6 @@ export function useUrlSync(state: {
     state.activeTrailLength,
     state.searchQuery,
     state.showRideableOnly,
+    state.statusFilter,
   ]);
 }

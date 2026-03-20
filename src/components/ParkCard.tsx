@@ -110,18 +110,18 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               {park.name}
             </div>
           </div>
-          <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
+          <div className="flex items-center gap-0.5 flex-shrink-0 mt-0.5">
             {/* Visit check */}
             <span
               role="button"
               tabIndex={0}
               onClick={(e) => { e.stopPropagation(); onToggleVisited(); }}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onToggleVisited(); } }}
-              className="cursor-pointer"
+              className="cursor-pointer p-1.5 -m-1 rounded-full hover:bg-bg-elevated/50"
               aria-label={isVisited ? `Unmark ${park.name} as visited` : `Mark ${park.name} as visited`}
             >
               <CheckCircleIcon
-                className={`w-4 h-4 transition-colors duration-200 ${isVisited ? 'text-status-open fill-status-open' : 'text-text-muted/40 hover:text-status-open/60'}`}
+                className={`w-5 h-5 transition-colors duration-200 ${isVisited ? 'text-status-open fill-status-open' : 'text-text-muted/40 hover:text-status-open/60'}`}
               />
             </span>
             {/* Favorite star */}
@@ -130,19 +130,20 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               tabIndex={0}
               onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onToggleFavorite(); } }}
-              className="cursor-pointer"
+              className="cursor-pointer p-1.5 -m-1 rounded-full hover:bg-bg-elevated/50"
               aria-label={isFavorite ? `Remove ${park.name} from favorites` : `Add ${park.name} to favorites`}
             >
               <StarIcon
-                className={`w-4 h-4 transition-colors duration-200 ${isFavorite ? 'text-amber-400 fill-amber-400' : 'text-text-muted hover:text-amber-400/60'}`}
+                className={`w-5 h-5 transition-colors duration-200 ${isFavorite ? 'text-amber-400 fill-amber-400' : 'text-text-muted hover:text-amber-400/60'}`}
               />
             </span>
             {/* Chevron */}
             <motion.span
               animate={{ rotate: isExpanded ? 180 : 0 }}
               transition={{ duration: 0.2 }}
+              className="p-1 -m-0.5"
             >
-              <ChevronDownIcon className="w-4 h-4 text-text-muted" />
+              <ChevronDownIcon className="w-5 h-5 text-text-muted" />
             </motion.span>
           </div>
         </div>

@@ -54,11 +54,13 @@ export function App() {
   const [searchQuery, setSearchQuery] = useState(initialUrl.search ?? '');
   const [showMap, setShowMap] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>(null);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialUrl.status ?? null);
+  const [geoDetecting, setGeoDetecting] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLElement>(null);
 
   // Auto-detect device location on first load
-  useGeolocation(prefs.zipCode, '02136', setZipCode);
+  useGeolocation(prefs.zipCode, '02136', setZipCode, setGeoDetecting);
 
   // Apply URL overrides on first load
   useState(() => {
@@ -124,6 +126,7 @@ export function App() {
     activeTrailLength,
     searchQuery,
     showRideableOnly: prefs.showRideableOnly,
+    statusFilter,
   });
 
   // Compute distances for all parks from origin
@@ -206,6 +209,16 @@ export function App() {
     [parksInRange, distances, now],
   );
 
+  // Scroll to top of park list when filters change
+  const prevFilterKey = useRef('');
+  useEffect(() => {
+    const key = `${effectiveRegion}|${activeDifficulty}|${activeTrailLength}|${prefs.showRideableOnly}|${statusFilter}|${searchQuery}`;
+    if (prevFilterKey.current && prevFilterKey.current !== key) {
+      listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    prevFilterKey.current = key;
+  }, [effectiveRegion, activeDifficulty, activeTrailLength, prefs.showRideableOnly, statusFilter, searchQuery]);
+
   function scrollToPark(parkId: string) {
     const el = document.getElementById(`park-${parkId}`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -239,6 +252,13 @@ export function App() {
             Trail status information is derived from publicly available sources and may not reflect real-time conditions. Always verify closures with local land managers before riding. Use at your own risk.
           </p>
         </div>
+
+        {/* Geolocation detecting */}
+        {geoDetecting && (
+          <div className="font-mono text-[11px] text-text-muted text-center mb-3 animate-pulse">
+            Detecting your location...
+          </div>
+        )}
 
         {/* Distance Controls */}
         <div className="mb-5">
@@ -341,7 +361,7 @@ export function App() {
         </div>
 
         {/* Park Cards */}
-        <section aria-label="Trail list" className="space-y-2.5">
+        <section ref={listRef} aria-label="Trail list" className="space-y-2.5">
           {filteredParks.map((park) => {
             const d = distances.get(park.id);
             const change = statusChanges.get(park.id);
@@ -364,8 +384,30 @@ export function App() {
           {filteredParks.length === 0 && (
             <div className="text-center py-8">
               <p className="font-mono text-[13px] text-text-muted">
-                No parks match your filters. Try adjusting distance, difficulty, or trail length.
+                No parks match your current filters.
               </p>
+              <p className="font-mono text-[11px] text-text-muted/60 mt-1">
+                {statusFilter && `Status: ${statusFilter}. `}
+                {effectiveRegion !== 'All' && `Region: ${effectiveRegion}. `}
+                {activeDifficulty !== 'All' && `Difficulty: ${activeDifficulty}. `}
+                {activeTrailLength !== 'All' && `Length: ${activeTrailLength}. `}
+                {prefs.showRideableOnly && 'Rideable only. '}
+                {searchQuery && `Search: "${searchQuery}". `}
+                Within {prefs.radiusMiles} mi.
+              </p>
+              <button
+                onClick={() => {
+                  setStatusFilter(null);
+                  setActiveRegion('All');
+                  setActiveDifficulty('All');
+                  setActiveTrailLength('All');
+                  setShowRideableOnly(false);
+                  setSearchQuery('');
+                }}
+                className="font-mono text-[12px] text-status-open font-semibold mt-3 hover:underline"
+              >
+                Clear all filters
+              </button>
             </div>
           )}
         </section>

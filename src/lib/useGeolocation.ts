@@ -10,15 +10,17 @@ export function useGeolocation(
   currentZip: string,
   defaultZip: string,
   setZipCode: (zip: string) => void,
+  onDetecting?: (detecting: boolean) => void,
 ) {
   const attempted = useRef(false);
 
   useEffect(() => {
-    // Only auto-detect if user is still on the default ZIP
     if (attempted.current || currentZip !== defaultZip) return;
     attempted.current = true;
 
     if (!navigator.geolocation) return;
+
+    onDetecting?.(true);
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -37,11 +39,12 @@ export function useGeolocation(
         if (bestZip !== defaultZip && bestDist < 50) {
           setZipCode(bestZip);
         }
+        onDetecting?.(false);
       },
       () => {
-        // Permission denied or error — silently stay on default
+        onDetecting?.(false);
       },
       { timeout: 5000, maximumAge: 300000 }
     );
-  }, [currentZip, defaultZip, setZipCode]);
+  }, [currentZip, defaultZip, setZipCode, onDetecting]);
 }
