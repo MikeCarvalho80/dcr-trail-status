@@ -11,7 +11,7 @@ export default {content: [
         'bg-elevated': '#1a1915',
         'text-primary': '#e8e6e1',
         'text-secondary': '#a8a295',
-        'text-muted': '#948f85',
+        'text-muted': '#a09a90',
         'status-open': '#2ecc71',
         'status-open-bg': '#0a2e1a',
         'status-caution': '#f1c40f',
@@ -23,7 +23,7 @@ export default {content: [
         mono: ['"JetBrains Mono"', '"Fira Code"', '"SF Mono"', '"Cascadia Code"', 'ui-monospace', 'monospace'],
       },
       animation: {
-        'pulse-dot': 'pulse-dot 2s ease-in-out infinite',
+        'pulse-dot': 'pulse-dot 3s ease-in-out infinite',
         'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
       },
     },

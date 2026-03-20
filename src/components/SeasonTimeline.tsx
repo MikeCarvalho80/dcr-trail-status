@@ -24,7 +24,7 @@ export function SeasonTimeline() {
             <div className="w-4 h-4 rounded-full bg-text-primary border-2 border-bg-primary animate-glow-pulse" aria-label={`Today: ${dateLabel}`} />
           </div>
         </div>
-        <div className="relative flex font-mono text-[11px] text-text-muted mt-1 h-4">
+        <div className="relative flex font-mono text-[12px] text-text-muted mt-1 h-4">
           <span className="absolute left-0">Mar 1</span>
           <span className="absolute -translate-x-1/2" style={{ left: `${closureEndPct}%` }}>Apr 1</span>
           <span className="absolute -translate-x-1/2" style={{ left: `${cautionEndPct}%` }}>Apr 15</span>
@@ -55,7 +55,7 @@ export function SeasonTimeline() {
             <div className="w-4 h-4 rounded-full bg-text-primary border-2 border-bg-primary animate-glow-pulse" aria-label={`Today: ${dateLabel}`} />
           </div>
         </div>
-        <div className="relative flex font-mono text-[11px] text-text-muted mt-1 h-4">
+        <div className="relative flex font-mono text-[12px] text-text-muted mt-1 h-4">
           <span className="absolute left-0">Oct 1</span>
           <span className="absolute -translate-x-1/2" style={{ left: `${archeryEndPct}%` }}>Nov 1</span>
           <span className="absolute right-0">Dec 31</span>

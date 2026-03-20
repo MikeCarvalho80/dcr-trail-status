@@ -29,7 +29,7 @@ export function ActiveFilterSummary({
   if (searchQuery) parts.push(`"${searchQuery}"`);
 
   return (
-    <div className="flex items-center justify-between gap-2 font-mono text-[11px] text-text-muted mb-3 px-1">
+    <div className="flex items-center justify-between gap-2 font-mono text-[12px] text-text-muted mb-3 px-1">
       <span>
         <span className="text-text-primary font-semibold">{count}</span> park{count !== 1 ? 's' : ''} · {parts.join(' · ')}
       </span>

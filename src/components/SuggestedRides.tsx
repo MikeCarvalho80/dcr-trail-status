@@ -29,7 +29,7 @@ export function SuggestedRides({ parks, distances, onParkClick }: SuggestedRides
             <button
               key={park.id}
               onClick={() => onParkClick(park.id)}
-              className="flex-shrink-0 bg-bg-secondary border border-bg-elevated rounded-lg px-3 py-2 text-left hover:bg-bg-elevated transition-colors duration-200 max-w-[200px]"
+              className="flex-shrink-0 bg-bg-secondary border border-bg-elevated rounded-lg px-3.5 py-3 text-left hover:bg-bg-elevated transition-colors duration-200 max-w-[200px]"
             >
               <div className="flex items-center gap-1.5 mb-1">
                 <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />

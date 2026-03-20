@@ -93,7 +93,7 @@ export function DistanceControls({
                 onClick={() => { onRadiusChange(r); setCustomRadius(''); }}
                 className={`
                   font-mono text-[13px] font-semibold
-                  py-2 px-4 rounded-lg
+                  py-2.5 px-4 rounded-lg min-w-[52px]
                   transition-all duration-200
                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-primary/50
                   ${isActive
@@ -116,7 +116,7 @@ export function DistanceControls({
               onFocus={() => { if (!customRadius && isCustom) setCustomRadius(String(radiusMiles)); }}
               placeholder="Custom"
               className={`
-                w-[70px] px-2 py-2 rounded-lg font-mono text-[13px] font-semibold text-center
+                w-[70px] px-2 py-2.5 rounded-lg font-mono text-[13px] font-semibold text-center
                 transition-all duration-200
                 focus:outline-none focus:ring-2 focus:ring-text-primary/50
                 ${isCustom

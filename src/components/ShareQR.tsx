@@ -66,14 +66,14 @@ export function ShareQR() {
             <div className="flex gap-2">
               <button
                 onClick={handleCopy}
-                className="flex-1 flex items-center justify-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-2 rounded-lg border border-bg-elevated text-text-secondary hover:text-text-primary transition-colors duration-200"
+                className="flex-1 flex items-center justify-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2.5 rounded-lg border border-bg-elevated text-text-secondary hover:text-text-primary transition-colors duration-200"
               >
                 <CopyIcon className="w-3.5 h-3.5" />
                 {copied ? 'Copied!' : 'Copy Link'}
               </button>
               <button
                 onClick={handleShare}
-                className="flex-1 flex items-center justify-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-2 rounded-lg bg-text-primary text-bg-primary transition-colors duration-200"
+                className="flex-1 flex items-center justify-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2.5 rounded-lg bg-text-primary text-bg-primary transition-colors duration-200"
               >
                 <Share2Icon className="w-3.5 h-3.5" />
                 Share

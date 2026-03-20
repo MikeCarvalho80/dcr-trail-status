@@ -70,7 +70,7 @@ export function FilterDropdown<T extends string>({
         aria-selected={isSelected}
         onClick={() => { onChange(opt); setIsOpen(false); }}
         className={`
-          w-full text-left px-3 py-2.5 font-mono text-[12px] flex items-center justify-between
+          w-full text-left px-3 py-3 font-mono text-[12px] flex items-center justify-between
           transition-colors duration-100
           ${isSelected
             ? 'bg-bg-elevated text-text-primary font-semibold'
@@ -92,7 +92,7 @@ export function FilterDropdown<T extends string>({
         className={`
           w-full flex items-center justify-between gap-2
           font-mono text-[12px] font-semibold
-          px-3 py-2.5 rounded-lg border
+          px-3 py-3 rounded-lg border
           transition-colors duration-200
           focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/50
           ${isFiltered

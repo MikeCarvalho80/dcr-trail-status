@@ -1,6 +1,5 @@
-import { useMemo, useState, useCallback, useEffect } from 'react';
-import Map, { Marker, Popup, NavigationControl, FullscreenControl } from 'react-map-gl/mapbox';
-import { MaximizeIcon, MinimizeIcon } from 'lucide-react';
+import { useMemo, useState, useCallback } from 'react';
+import Map, { Marker, Popup, NavigationControl, FullscreenControl, GeolocateControl, ScaleControl } from 'react-map-gl/mapbox';
 import type { Park } from '../data/parks';
 import { getTrailStatus } from '../lib/status';
 import { estimateDriveMinutes } from '../lib/geo';
@@ -21,22 +20,6 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
 export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
   const [popupPark, setPopupPark] = useState<Park | null>(null);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  // Close fullscreen on Escape
-  useEffect(() => {
-    if (!isFullscreen) return;
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setIsFullscreen(false);
-    }
-    document.addEventListener('keydown', handleKey);
-    // Prevent body scroll while fullscreen
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', handleKey);
-      document.body.style.overflow = '';
-    };
-  }, [isFullscreen]);
 
   const initialViewState = useMemo(() => {
     if (parks.length === 0) return { longitude: -71.06, latitude: 42.36, zoom: 8 };
@@ -61,24 +44,8 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
     );
   }
 
-  const containerClass = isFullscreen
-    ? 'fixed inset-0 z-50'
-    : 'rounded-xl overflow-hidden border border-bg-elevated';
-
   return (
-    <div className={containerClass} style={isFullscreen ? undefined : { height: 350 }}>
-      {/* Fullscreen toggle button */}
-      <button
-        onClick={() => setIsFullscreen(!isFullscreen)}
-        className="absolute top-3 left-3 z-10 bg-white/90 hover:bg-white border border-black/10 rounded-md p-1.5 shadow-sm transition-colors"
-        aria-label={isFullscreen ? 'Exit fullscreen map' : 'Fullscreen map'}
-      >
-        {isFullscreen
-          ? <MinimizeIcon className="w-4 h-4 text-gray-700" />
-          : <MaximizeIcon className="w-4 h-4 text-gray-700" />
-        }
-      </button>
-
+    <div className="rounded-xl overflow-hidden border border-bg-elevated" style={{ height: 350 }}>
       <Map
         initialViewState={initialViewState}
         style={{ width: '100%', height: '100%' }}
@@ -86,7 +53,11 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
         mapboxAccessToken={MAPBOX_TOKEN}
         attributionControl={true}
       >
-        <NavigationControl position="top-right" showCompass={false} />
+        {/* Built-in Mapbox controls — positioned in map chrome */}
+        <FullscreenControl position="top-left" />
+        <NavigationControl position="top-right" showCompass={true} />
+        <GeolocateControl position="top-right" trackUserLocation={false} />
+        <ScaleControl position="bottom-left" />
 
         {parks.map((park) => {
           const trail = getTrailStatus(park);
@@ -104,12 +75,12 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
             >
               <div
                 style={{
-                  width: 14,
-                  height: 14,
+                  width: 18,
+                  height: 18,
                   borderRadius: '50%',
                   backgroundColor: color,
-                  border: '2px solid rgba(255,255,255,0.8)',
-                  boxShadow: `0 0 6px ${color}80`,
+                  border: '2px solid rgba(255,255,255,0.9)',
+                  boxShadow: `0 0 8px ${color}80`,
                   cursor: 'pointer',
                 }}
               />
@@ -140,8 +111,8 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
                   onClick={() => onParkClick(popupPark.id)}
                   style={{
                     marginTop: 6,
-                    padding: '5px 12px',
-                    fontSize: 11,
+                    padding: '8px 12px',
+                    fontSize: 12,
                     fontFamily: 'JetBrains Mono, monospace',
                     fontWeight: 600,
                     textTransform: 'uppercase',
@@ -149,7 +120,7 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
                     background: color,
                     color: '#0d0c0a',
                     border: 'none',
-                    borderRadius: 4,
+                    borderRadius: 6,
                     cursor: 'pointer',
                     width: '100%',
                   }}

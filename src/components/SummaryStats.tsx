@@ -46,7 +46,7 @@ function StatBlock({ count, label, status, isActive, onClick }: StatBlockProps) 
       <div className={`${colors.text} font-mono text-[32px] font-bold leading-none`}>
         {count}
       </div>
-      <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-secondary mt-1.5">
+      <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-secondary mt-1.5">
         {label}
       </div>
     </button>

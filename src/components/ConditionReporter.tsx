@@ -102,16 +102,16 @@ export function ConditionReporter({ parkId, parkName }: ConditionReporterProps) 
   }
 
   return (
-    <div className="mt-2">
-      {/* Toggle button */}
+    <div className="mt-3">
+      {/* Toggle button — pill style for visibility */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 font-mono text-[11px] text-text-muted hover:text-text-primary transition-colors"
+        className="flex items-center gap-2 font-mono text-[12px] font-semibold text-text-secondary border border-bg-elevated hover:border-text-muted/30 hover:text-text-primary px-4 py-2.5 rounded-lg transition-colors"
       >
-        <MessageCircleIcon className="w-3.5 h-3.5" />
-        Report conditions
+        <MessageCircleIcon className="w-4 h-4" />
+        Report Conditions
         {reports && reports.total > 0 && (
-          <span className="bg-bg-elevated rounded-full px-1.5 py-0.5 text-[12px]">
+          <span className="bg-bg-elevated rounded-full px-2 py-0.5 text-[12px]">
             {reports.total}
           </span>
         )}
@@ -167,14 +167,14 @@ export function ConditionReporter({ parkId, parkName }: ConditionReporterProps) 
                       key={value}
                       onClick={() => setSelectedStatus(value)}
                       className={`
-                        flex items-center gap-1 px-3 py-1.5 rounded-lg border font-mono text-[11px] font-semibold
+                        flex-1 flex items-center justify-center gap-1.5 px-3 py-3 rounded-lg border font-mono text-[12px] font-semibold
                         transition-all duration-150
                         ${selectedStatus === value
                           ? `${color} border-current bg-bg-elevated`
                           : 'text-text-muted border-bg-elevated hover:border-text-muted/30'}
                       `}
                     >
-                      <Icon className="w-3.5 h-3.5" />
+                      <Icon className="w-4 h-4" />
                       {label}
                     </button>
                   ))}
@@ -189,14 +189,14 @@ export function ConditionReporter({ parkId, parkName }: ConditionReporterProps) 
                       onChange={(e) => setNote(e.target.value)}
                       placeholder="Optional note (e.g., 'muddy but rideable')"
                       maxLength={140}
-                      className="flex-1 bg-bg-secondary border border-bg-elevated rounded-lg px-3 py-1.5 font-mono text-[11px] text-text-primary placeholder-text-muted focus:outline-none focus:ring-1 focus:ring-text-primary/30"
+                      className="flex-1 bg-bg-secondary border border-bg-elevated rounded-lg px-3 py-2.5 font-mono text-[12px] text-text-primary placeholder-text-muted focus:outline-none focus:ring-1 focus:ring-text-primary/30"
                     />
                     <button
                       onClick={handleSubmit}
                       disabled={submitting}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-status-open/20 text-status-open font-mono text-[11px] font-semibold hover:bg-status-open/30 disabled:opacity-50 transition-colors"
+                      className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-status-open/20 text-status-open font-mono text-[12px] font-semibold hover:bg-status-open/30 disabled:opacity-50 transition-colors"
                     >
-                      <SendIcon className="w-3.5 h-3.5" />
+                      <SendIcon className="w-4 h-4" />
                       {submitting ? '...' : 'Send'}
                     </button>
                   </div>

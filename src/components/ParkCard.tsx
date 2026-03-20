@@ -128,14 +128,14 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               )}
             </div>
           </div>
-          <div className="flex items-center gap-0.5 flex-shrink-0 mt-0.5">
+          <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
             {/* Visit check */}
             <span
               role="button"
               tabIndex={0}
               onClick={(e) => { e.stopPropagation(); onToggleVisited(); }}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onToggleVisited(); } }}
-              className="cursor-pointer p-1.5 -m-1 rounded-full hover:bg-bg-elevated/50"
+              className="cursor-pointer p-2.5 -m-1.5 rounded-full hover:bg-bg-elevated/50"
               aria-label={isVisited ? `Unmark ${park.name} as visited` : `Mark ${park.name} as visited`}
             >
               <CheckCircleIcon
@@ -148,7 +148,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               tabIndex={0}
               onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onToggleFavorite(); } }}
-              className="cursor-pointer p-1.5 -m-1 rounded-full hover:bg-bg-elevated/50"
+              className="cursor-pointer p-2.5 -m-1.5 rounded-full hover:bg-bg-elevated/50"
               aria-label={isFavorite ? `Remove ${park.name} from favorites` : `Add ${park.name} to favorites`}
             >
               <StarIcon
@@ -159,7 +159,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
             <motion.span
               animate={{ rotate: isExpanded ? 180 : 0 }}
               transition={{ duration: 0.2 }}
-              className="p-1 -m-0.5"
+              className="p-2 -m-1"
             >
               <ChevronDownIcon className="w-5 h-5 text-text-muted" />
             </motion.span>
@@ -177,25 +177,25 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
           />
           <span className="sr-only">{trail.status}</span>
           <span
-            className={`${config.badgeBg} ${config.text} font-mono text-[11px] font-semibold uppercase tracking-[0.05em] px-2 py-0.5 rounded`}
+            className={`${config.badgeBg} ${config.text} font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-2.5 py-1 rounded`}
           >
             {trail.label}
           </span>
-          <span className="font-mono text-[11px] text-text-muted truncate">
+          <span className="font-mono text-[12px] text-text-muted truncate">
             {trail.sublabel}
           </span>
         </div>
 
         {/* Row 3: Metadata pills */}
         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-          <span className="bg-bg-elevated text-text-secondary font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
+          <span className="bg-bg-elevated text-text-secondary font-mono text-[12px] font-semibold px-2.5 py-0.5 rounded">
             {park.manager}
           </span>
-          <span className="font-mono text-[11px] text-text-muted">
+          <span className="font-mono text-[12px] text-text-muted">
             {park.miles} mi · {park.difficulty.split('-')[0]}
           </span>
           {distanceMiles != null && (
-            <span className="font-mono text-[11px] text-text-secondary">
+            <span className="font-mono text-[12px] text-text-secondary">
               ~{distanceMiles} mi · ~{driveMinutes} min
             </span>
           )}
@@ -395,59 +395,63 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               </div>
 
               {/* ── Section 6: Actions ── */}
-              <div className="flex flex-wrap gap-2">
+              <div className="space-y-2">
+                {/* Primary action: Navigate — full width */}
                 <a
                   href={getNavUrl(park)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className={`inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2 rounded-md border ${config.border} ${config.text} transition-colors duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30`}
+                  className={`flex items-center justify-center gap-2 font-mono text-[13px] font-semibold uppercase tracking-[0.05em] px-4 py-3 rounded-lg border-2 ${config.border} ${config.text} transition-colors duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30`}
                   aria-label={`Navigate to ${park.name} parking`}
                 >
-                  <NavigationIcon className="w-4 h-4" />
-                  Navigate
+                  <NavigationIcon className="w-5 h-5" />
+                  Navigate to Parking
                 </a>
-                <a
-                  href={park.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
-                  aria-label={`View ${park.name} official page`}
-                >
-                  <ExternalLinkIcon className="w-4 h-4" />
-                  Park Info
-                </a>
-                <a
-                  href={getWeatherUrl(park)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
-                  aria-label={`Weather forecast for ${park.name}`}
-                >
-                  <CloudSunIcon className="w-4 h-4" />
-                  Weather
-                </a>
-                <button
-                  onClick={handleShare}
-                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
-                  aria-label={`Share ${park.name} status`}
-                >
-                  <Share2Icon className="w-4 h-4" />
-                  {shareMsg || 'Share'}
-                </button>
-                <a
-                  href={`https://github.com/zeesalt/dcr-trail-status/issues/new?title=${encodeURIComponent(`[${park.name}] Data correction`)}&body=${encodeURIComponent(`**Park:** ${park.name}\n**Current data:** ${park.closureRule}\n**What's wrong:**\n\n**Source:**\n`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
-                  aria-label={`Report issue with ${park.name} data`}
-                >
-                  <BugIcon className="w-4 h-4" />
-                  Report
-                </a>
+                {/* Secondary actions */}
+                <div className="flex flex-wrap gap-2">
+                  <a
+                    href={park.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                    aria-label={`View ${park.name} official page`}
+                  >
+                    <ExternalLinkIcon className="w-4 h-4" />
+                    Park Info
+                  </a>
+                  <a
+                    href={getWeatherUrl(park)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                    aria-label={`Weather forecast for ${park.name}`}
+                  >
+                    <CloudSunIcon className="w-4 h-4" />
+                    Weather
+                  </a>
+                  <button
+                    onClick={handleShare}
+                    className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                    aria-label={`Share ${park.name} status`}
+                  >
+                    <Share2Icon className="w-4 h-4" />
+                    {shareMsg || 'Share'}
+                  </button>
+                  <a
+                    href={`https://github.com/zeesalt/dcr-trail-status/issues/new?title=${encodeURIComponent(`[${park.name}] Data correction`)}&body=${encodeURIComponent(`**Park:** ${park.name}\n**Current data:** ${park.closureRule}\n**What's wrong:**\n\n**Source:**\n`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                    aria-label={`Report issue with ${park.name} data`}
+                  >
+                    <BugIcon className="w-4 h-4" />
+                    Report
+                  </a>
+                </div>
               </div>
 
               {/* ── Section 7: Community Condition Reports ── */}
