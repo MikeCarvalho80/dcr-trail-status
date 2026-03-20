@@ -8,6 +8,9 @@
 
 /* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
 
+/* Leaflet map CSS — imported globally to avoid lazy-load CSS issues */
+@import 'leaflet/dist/leaflet.css';
+
 :root {
   --bg-primary: #0d0c0a;
   --bg-secondary: #12110e;

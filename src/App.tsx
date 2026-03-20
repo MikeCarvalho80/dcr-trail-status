@@ -30,6 +30,7 @@ import { getNewParkCount } from './lib/whatsNew';
 import { MapIcon, ListIcon, CalendarIcon } from 'lucide-react';
 
 import { EmbedCard } from './components/EmbedCard';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const TrailMap = lazy(() => import('./components/TrailMap').then((m) => ({ default: m.TrailMap })));
 
@@ -325,13 +326,19 @@ export function App() {
         {/* Map View */}
         {showMap && (
           <div className="mb-5">
-            <Suspense fallback={
+            <ErrorBoundary fallback={
               <div className="rounded-xl border border-bg-elevated bg-bg-secondary h-[300px] flex items-center justify-center">
-                <span className="font-mono text-[12px] text-text-muted">Loading map...</span>
+                <span className="font-mono text-[12px] text-text-muted">Map failed to load. Try refreshing.</span>
               </div>
             }>
-              <TrailMap parks={filteredParks} distances={distances} onParkClick={scrollToPark} />
-            </Suspense>
+              <Suspense fallback={
+                <div className="rounded-xl border border-bg-elevated bg-bg-secondary h-[300px] flex items-center justify-center">
+                  <span className="font-mono text-[12px] text-text-muted">Loading map...</span>
+                </div>
+              }>
+                <TrailMap parks={filteredParks} distances={distances} onParkClick={scrollToPark} />
+              </Suspense>
+            </ErrorBoundary>
           </div>
         )}
 

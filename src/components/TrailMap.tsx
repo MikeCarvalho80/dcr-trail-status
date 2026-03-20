@@ -1,9 +1,8 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
 import type { Park } from '../data/parks';
 import { getTrailStatus } from '../lib/status';
 import { estimateDriveMinutes } from '../lib/geo';
-import 'leaflet/dist/leaflet.css';
 
 interface TrailMapProps {
   parks: Park[];
@@ -17,8 +16,15 @@ const STATUS_COLORS: Record<string, string> = {
   closed: '#f25c4d',
 };
 
-function FitBounds({ parks }: { parks: Park[] }) {
+function MapController({ parks }: { parks: Park[] }) {
   const map = useMap();
+
+  // Invalidate size on mount (fixes blank tiles when toggled into view)
+  useEffect(() => {
+    setTimeout(() => map.invalidateSize(), 100);
+  }, [map]);
+
+  // Fit bounds when parks change
   useMemo(() => {
     if (parks.length === 0) return;
     const lats = parks.map((p) => p.lat);
@@ -29,6 +35,7 @@ function FitBounds({ parks }: { parks: Park[] }) {
     ];
     map.fitBounds(bounds, { padding: [20, 20] });
   }, [parks, map]);
+
   return null;
 }
 
@@ -48,7 +55,7 @@ export function TrailMap({ parks, distances, onParkClick }: TrailMapProps) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <FitBounds parks={parks} />
+        <MapController parks={parks} />
         {parks.map((park) => {
           const trail = getTrailStatus(park);
           const color = STATUS_COLORS[trail.status];
