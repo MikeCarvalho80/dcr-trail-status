@@ -303,6 +303,30 @@ export const PARKS: Park[] = [
     nemba: "Blackstone Valley",
     lastVerified: "2026-03-19",
   },
+  {
+    id: "west-hill-dam",
+    name: "West Hill Dam",
+    region: "Central MA",
+    state: "MA",
+    manager: "US Army Corps of Engineers / Blackstone Valley NEMBA",
+    url: "https://www.nae.usace.army.mil/Missions/Recreation/West-Hill-Dam/",
+    lat: 42.0970,
+    lng: -71.6240,
+    parking: "518 East Hartford Ave, Uxbridge (free, abundant parking)",
+    closureType: "advisory",
+    closureRule: "No formal closure — federal land, open year-round. Avoid riding when trails are wet.",
+    closureStart: null,
+    closureEnd: null,
+    additionalClosures: [
+      { label: "Hunting Season", type: "advisory", start: { month: 10, day: 1 }, end: { month: 12, day: 31 }, rule: "Hunting permitted per MA state law — wear blaze orange" },
+    ],
+    notes: "1,401-acre USACE flood control project with 15+ miles of trails named using NATO alphabet (Alpha through Kilo). Beginner/intermediate friendly with skills park. B-lines around technical features. Hosts annual 'Best Dam Ride' event. ~14 mi SE of Worcester.",
+    difficulty: "Beginner-Intermediate",
+    miles: "15+",
+    nemba: "Blackstone Valley",
+    source: "USACE New England District recreation page (nae.usace.army.mil)",
+    lastVerified: "2026-03-20",
+  },
 
   // ─────────────────────────────────────────────
   // NEW MASSACHUSETTS PARKS
