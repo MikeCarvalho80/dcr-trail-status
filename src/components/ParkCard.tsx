@@ -171,8 +171,8 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
           </div>
         </div>
 
-        {/* Row 2: Status + sublabel */}
-        <div className="flex items-center gap-2 mt-1.5">
+        {/* Row 2: Status bar */}
+        <div className={`${config.badgeBg} rounded-lg px-2.5 py-1.5 mt-2 flex items-center gap-2`}>
           <span
             className={`
               w-2.5 h-2.5 rounded-full flex-shrink-0 ${config.dot}
@@ -181,45 +181,48 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
             aria-hidden="true"
           />
           <span className="sr-only">{trail.status}</span>
-          <span
-            className={`${config.badgeBg} ${config.text} font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-2.5 py-1 rounded`}
-          >
+          <span className={`${config.text} font-mono text-[12px] font-bold uppercase tracking-[0.05em]`}>
             {trail.label}
           </span>
-          <span className="font-mono text-[12px] text-text-muted truncate">
+          <span className="font-mono text-[12px] text-text-secondary truncate">
             {trail.sublabel}
           </span>
         </div>
 
-        {/* Row 3: Metadata pills */}
-        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-          <span className="bg-bg-elevated text-text-secondary font-mono text-[12px] font-semibold px-2.5 py-0.5 rounded">
+        {/* Row 3: Feature pills */}
+        <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+          <span className="bg-bg-elevated text-text-secondary font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
             {park.manager}
           </span>
-          <span className="font-mono text-[12px] text-text-muted">
-            {park.miles} mi · {park.difficulty.split('-')[0]}
+          <span className="bg-bg-elevated text-text-primary font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
+            {park.miles} mi
+          </span>
+          <span className="bg-bg-elevated text-status-caution font-mono text-[11px] font-semibold px-2 py-0.5 rounded">
+            {park.difficulty.split('-')[0]}
           </span>
           {distanceMiles != null && (
-            <span className="font-mono text-[12px] text-text-secondary">
+            <span className="bg-bg-elevated text-text-secondary font-mono text-[11px] px-2 py-0.5 rounded">
               ~{distanceMiles} mi · ~{driveMinutes} min
             </span>
           )}
-          {/* Report count badge */}
+        </div>
+
+        {/* Row 4: Community signals */}
+        <div className="flex items-center gap-3 mt-1.5">
           {reportCount != null && reportCount > 0 && (
-            <span className="flex items-center gap-1 font-mono text-[11px] text-text-muted">
-              <MessageCircleIcon className="w-3 h-3" />{reportCount}
+            <span className="flex items-center gap-1 font-mono text-[11px] text-status-open">
+              <MessageCircleIcon className="w-3 h-3" />{reportCount} report{reportCount !== 1 ? 's' : ''}
             </span>
           )}
           {reportCount === 0 && (
-            <span className="font-mono text-[11px] text-text-muted/50 italic">
+            <span className="font-mono text-[11px] text-text-muted/60 italic">
               Be first to report
             </span>
           )}
-          {/* Thumbs up/down */}
           {likes && (likes.up > 0 || likes.down > 0) && (
-            <span className="flex items-center gap-1.5 font-mono text-[11px] text-text-muted">
-              <span className="flex items-center gap-0.5"><ThumbsUpIcon className="w-3 h-3" />{likes.up}</span>
-              <span className="flex items-center gap-0.5"><ThumbsDownIcon className="w-3 h-3" />{likes.down}</span>
+            <span className="flex items-center gap-2 font-mono text-[11px]">
+              <span className="flex items-center gap-0.5 text-status-open"><ThumbsUpIcon className="w-3 h-3" />{likes.up}</span>
+              <span className="flex items-center gap-0.5 text-status-closed"><ThumbsDownIcon className="w-3 h-3" />{likes.down}</span>
             </span>
           )}
         </div>
