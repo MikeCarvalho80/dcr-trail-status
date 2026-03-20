@@ -23,5 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# Portfolio writeup (not part of the project)
+# Personal files (not part of the project)
 PORTFOLIO.md
+FACEBOOK_POST.md
