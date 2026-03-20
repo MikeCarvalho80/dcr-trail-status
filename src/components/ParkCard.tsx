@@ -11,7 +11,7 @@ import { getSunTimes } from '../lib/sun';
 import { getConnectedParks } from '../lib/connectivity';
 import { haversineDistance, estimateDriveMinutes } from '../lib/geo';
 import { getParkConditions } from '../lib/conditions';
-import type { ConditionReport } from '../lib/conditions';
+import { isParkStale, isParkUrlBroken } from '../lib/dataHealth';
 
 interface ParkCardProps {
   park: Park;
@@ -246,7 +246,20 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
               <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
                 <div className="grid grid-cols-1 gap-y-2">
                   <DetailItem label="Parking" value={park.parking} />
-                  <DetailItem label="Last Verified" value={formatVerifiedDate(park.lastVerified)} />
+                  <div>
+                    <div className="font-mono text-[13px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
+                      Last Verified
+                    </div>
+                    <div className="font-mono text-[13px] text-text-primary flex items-center gap-2">
+                      {formatVerifiedDate(park.lastVerified)}
+                      {isParkStale(park.id) && (
+                        <span className="font-mono text-[10px] text-status-caution bg-status-caution-bg px-1.5 py-0.5 rounded uppercase">Needs review</span>
+                      )}
+                      {isParkUrlBroken(park.id) && (
+                        <span className="font-mono text-[10px] text-status-closed bg-status-closed-bg px-1.5 py-0.5 rounded uppercase">Link broken</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 

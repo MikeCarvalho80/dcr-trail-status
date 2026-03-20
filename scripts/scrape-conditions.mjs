@@ -1,14 +1,8 @@
 #!/usr/bin/env node
 /**
  * Scrapes trail condition data from public sources and writes to src/data/conditions.json.
+ * Also checks park source URLs for health (404s) and writes to src/data/health.json.
  * Run via: node scripts/scrape-conditions.mjs
- *
- * Sources:
- * 1. mass.gov DCR park alerts — HTML fragments at /alerts/page/{ID}
- *
- * Architecture: Each source module exports an async function that returns
- * an array of ConditionReport objects. New sources are added by writing
- * a new scraper function and adding it to the SOURCES array.
  */
 
 import { load } from 'cheerio';
@@ -17,30 +11,41 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUTPUT_PATH = join(__dirname, '..', 'src', 'data', 'conditions.json');
-
-// ─────────────────────────────────────────────
-// Types & helpers
-// ─────────────────────────────────────────────
-
-/**
- * @typedef {{ parkId: string, source: string, title: string, body: string, date: string, severity: string, scrapedAt: string }} ConditionReport
- */
+const CONDITIONS_PATH = join(__dirname, '..', 'src', 'data', 'conditions.json');
+const HEALTH_PATH = join(__dirname, '..', 'src', 'data', 'health.json');
+const PARKS_PATH = join(__dirname, '..', 'src', 'data', 'parks.ts');
 
 async function fetchText(url) {
-  const res = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MTBTrailStatus/1.0)' },
-  });
-  if (!res.ok) return null;
-  return res.text();
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MTBTrailStatus/1.0)' },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return null;
+    return res.text();
+  } catch {
+    return null;
+  }
+}
+
+async function fetchStatus(url) {
+  try {
+    const res = await fetch(url, {
+      method: 'HEAD',
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MTBTrailStatus/1.0)' },
+      signal: AbortSignal.timeout(10000),
+      redirect: 'follow',
+    });
+    return res.status;
+  } catch {
+    return 0; // network error
+  }
 }
 
 // ─────────────────────────────────────────────
-// Source: mass.gov DCR alerts
+// Source 1: mass.gov DCR park alerts
 // ─────────────────────────────────────────────
 
-// Map park IDs in our app → mass.gov location slugs
-// We'll discover the alert page IDs dynamically from each location page
 const DCR_PARKS = [
   { parkId: 'blue-hills', slug: 'blue-hills-reservation' },
   { parkId: 'fells', slug: 'middlesex-fells-reservation' },
@@ -72,14 +77,13 @@ const DCR_PARKS = [
 async function getAlertPageId(slug) {
   const html = await fetchText(`https://www.mass.gov/locations/${slug}`);
   if (!html) return null;
-  // Look for prefetch_alerts("/alerts/page/{ID}")
   const match = html.match(/prefetch_alerts\("\/alerts\/page\/(\d+)"\)/);
   return match ? match[1] : null;
 }
 
-async function scrapeAlerts(pageId, parkId) {
+async function scrapeAlerts(pageId, parkId, source) {
   const html = await fetchText(`https://www.mass.gov/alerts/page/${pageId}`);
-  if (!html || html.trim().length < 10) return []; // No alerts
+  if (!html || html.trim().length < 10) return [];
 
   const $ = load(html);
   const reports = [];
@@ -91,15 +95,13 @@ async function scrapeAlerts(pageId, parkId) {
     const severity = $(el).find('.ma__action-step__icon .ma__visually-hidden').text().trim() || 'notice';
 
     if (title) {
-      // Parse date like "Updated Jun. 3, 2025, 10:18 am"
       const dateMatch = dateStr.match(/Updated\s+(.+)/i);
       const date = dateMatch ? dateMatch[1].trim() : dateStr;
-
       reports.push({
         parkId,
-        source: 'mass.gov',
+        source: source || 'mass.gov',
         title,
-        body: body.slice(0, 500), // Truncate long descriptions
+        body: body.slice(0, 500),
         date,
         severity,
         scrapedAt: new Date().toISOString(),
@@ -113,36 +115,131 @@ async function scrapeAlerts(pageId, parkId) {
 async function scrapeDCR() {
   console.log(`Scraping DCR alerts for ${DCR_PARKS.length} parks...`);
   const allReports = [];
-
   for (const { parkId, slug } of DCR_PARKS) {
     try {
       const pageId = await getAlertPageId(slug);
-      if (!pageId) {
-        console.log(`  ${parkId}: no alert page ID found`);
-        continue;
-      }
-      const reports = await scrapeAlerts(pageId, parkId);
-      if (reports.length > 0) {
-        console.log(`  ${parkId}: ${reports.length} alert(s)`);
-        allReports.push(...reports);
-      } else {
-        console.log(`  ${parkId}: no alerts`);
-      }
-    } catch (err) {
-      console.error(`  ${parkId}: error — ${err.message}`);
-    }
-    // Rate limit: 500ms between requests
+      if (!pageId) { console.log(`  ${parkId}: no alert page ID`); continue; }
+      const reports = await scrapeAlerts(pageId, parkId, 'mass.gov');
+      console.log(`  ${parkId}: ${reports.length || 'no'} alert(s)`);
+      allReports.push(...reports);
+    } catch (err) { console.error(`  ${parkId}: error — ${err.message}`); }
     await new Promise((r) => setTimeout(r, 500));
   }
-
   return allReports;
 }
 
 // ─────────────────────────────────────────────
-// Source: NH State Parks (placeholder for future)
+// Source 2: NH State Parks alerts
 // ─────────────────────────────────────────────
 
-// async function scrapeNHStateParks() { ... }
+const NH_PARKS = [
+  { parkId: 'bear-brook', url: 'https://www.nhstateparks.org/find-parks-trails/bear-brook-state-park' },
+  { parkId: 'pawtuckaway', url: 'https://www.nhstateparks.org/find-parks-trails/pawtuckaway-state-park' },
+  { parkId: 'ahern', url: 'https://www.nhstateparks.org/find-parks-trails/ahern-state-park' },
+  { parkId: 'pisgah', url: 'https://www.nhstateparks.org/find-parks-trails/pisgah-state-park' },
+];
+
+async function scrapeNH() {
+  console.log(`Scraping NH State Parks for ${NH_PARKS.length} parks...`);
+  const allReports = [];
+  for (const { parkId, url } of NH_PARKS) {
+    try {
+      const html = await fetchText(url);
+      if (!html) { console.log(`  ${parkId}: fetch failed`); continue; }
+      const $ = load(html);
+      // NH State Parks puts alerts in .alert or .park-alert sections
+      const alerts = [];
+      $('.alert, .park-alert, .field--name-field-park-alerts').each((_, el) => {
+        const text = $(el).text().trim();
+        if (text && text.length > 10) {
+          alerts.push({
+            parkId,
+            source: 'nhstateparks.org',
+            title: text.slice(0, 100),
+            body: text.slice(0, 500),
+            date: '',
+            severity: 'notice',
+            scrapedAt: new Date().toISOString(),
+          });
+        }
+      });
+      console.log(`  ${parkId}: ${alerts.length || 'no'} alert(s)`);
+      allReports.push(...alerts);
+    } catch (err) { console.error(`  ${parkId}: error — ${err.message}`); }
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  return allReports;
+}
+
+// ─────────────────────────────────────────────
+// Source 3: NY State Parks alerts
+// ─────────────────────────────────────────────
+
+const NY_PARKS = [
+  { parkId: 'harriman', url: 'https://parks.ny.gov/visit/state-parks/harriman-state-park' },
+  { parkId: 'sterling-forest', url: 'https://parks.ny.gov/parks/74/' },
+  { parkId: 'grafton-lakes', url: 'https://parks.ny.gov/parks/53/' },
+];
+
+async function scrapeNY() {
+  console.log(`Scraping NY State Parks for ${NY_PARKS.length} parks...`);
+  const allReports = [];
+  for (const { parkId, url } of NY_PARKS) {
+    try {
+      const html = await fetchText(url);
+      if (!html) { console.log(`  ${parkId}: fetch failed`); continue; }
+      const $ = load(html);
+      const alerts = [];
+      // NY State Parks puts alerts in .alert-banner or .park-alert-message
+      $('.alert-banner, .park-alert-message, .alert-box, [class*="alert"]').each((_, el) => {
+        const text = $(el).text().trim();
+        if (text && text.length > 10 && !text.includes('JavaScript')) {
+          alerts.push({
+            parkId,
+            source: 'parks.ny.gov',
+            title: text.slice(0, 100),
+            body: text.slice(0, 500),
+            date: '',
+            severity: 'notice',
+            scrapedAt: new Date().toISOString(),
+          });
+        }
+      });
+      console.log(`  ${parkId}: ${alerts.length || 'no'} alert(s)`);
+      allReports.push(...alerts);
+    } catch (err) { console.error(`  ${parkId}: error — ${err.message}`); }
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  return allReports;
+}
+
+// ─────────────────────────────────────────────
+// URL Health Check
+// ─────────────────────────────────────────────
+
+async function checkUrlHealth() {
+  // Extract park URLs from parks.ts
+  const parksTs = readFileSync(PARKS_PATH, 'utf8');
+  const urlMatches = [...parksTs.matchAll(/id:\s*"([^"]+)"[\s\S]*?url:\s*"([^"]+)"/g)];
+
+  console.log(`\nChecking URL health for ${urlMatches.length} parks...`);
+  const health = {};
+  let broken = 0;
+
+  for (const [, parkId, url] of urlMatches) {
+    const status = await fetchStatus(url);
+    if (status === 0 || status >= 400) {
+      console.log(`  ${parkId}: ${url} → ${status || 'UNREACHABLE'}`);
+      health[parkId] = { url, status, checkedAt: new Date().toISOString() };
+      broken++;
+    }
+    await new Promise((r) => setTimeout(r, 300));
+  }
+
+  console.log(`  ${broken} broken URL(s) of ${urlMatches.length} checked`);
+  writeFileSync(HEALTH_PATH, JSON.stringify(health, null, 2) + '\n');
+  return health;
+}
 
 // ─────────────────────────────────────────────
 // Main
@@ -150,47 +247,38 @@ async function scrapeDCR() {
 
 const SOURCES = [
   { name: 'DCR (mass.gov)', fn: scrapeDCR },
+  { name: 'NH State Parks', fn: scrapeNH },
+  { name: 'NY State Parks', fn: scrapeNY },
 ];
 
 async function main() {
   console.log('MTB Trail Status — Condition Scraper');
-  console.log(`Running at ${new Date().toISOString()}`);
-  console.log('');
+  console.log(`Running at ${new Date().toISOString()}\n`);
 
   const allReports = [];
 
   for (const { name, fn } of SOURCES) {
-    console.log(`\n── ${name} ──`);
+    console.log(`── ${name} ──`);
     try {
       const reports = await fn();
       allReports.push(...reports);
-      console.log(`  Total: ${reports.length} reports`);
+      console.log(`  Total: ${reports.length} reports\n`);
     } catch (err) {
-      console.error(`  Source error: ${err.message}`);
+      console.error(`  Source error: ${err.message}\n`);
     }
   }
 
-  // Load existing conditions and merge (keep non-expired entries from other sources)
+  // Merge with existing (keep non-scraped sources)
   let existing = [];
-  try {
-    existing = JSON.parse(readFileSync(OUTPUT_PATH, 'utf8'));
-  } catch {
-    // First run, no existing file
-  }
-
-  // Keep conditions from sources we didn't scrape this run (future-proofing)
-  const scrapedSources = new Set(SOURCES.map((s) => s.name));
-  const preserved = existing.filter(
-    (r) => !scrapedSources.has(r.source === 'mass.gov' ? 'DCR (mass.gov)' : r.source)
-  );
-
+  try { existing = JSON.parse(readFileSync(CONDITIONS_PATH, 'utf8')); } catch {}
+  const scrapedSourceNames = new Set(['mass.gov', 'nhstateparks.org', 'parks.ny.gov']);
+  const preserved = existing.filter((r) => !scrapedSourceNames.has(r.source));
   const output = [...allReports, ...preserved];
+  writeFileSync(CONDITIONS_PATH, JSON.stringify(output, null, 2) + '\n');
+  console.log(`Wrote ${output.length} conditions to conditions.json`);
 
-  writeFileSync(OUTPUT_PATH, JSON.stringify(output, null, 2) + '\n');
-  console.log(`\nWrote ${output.length} conditions to ${OUTPUT_PATH}`);
+  // URL health check
+  await checkUrlHealth();
 }
 
-main().catch((err) => {
-  console.error('Fatal:', err);
-  process.exit(1);
-});
+main().catch((err) => { console.error('Fatal:', err); process.exit(1); });

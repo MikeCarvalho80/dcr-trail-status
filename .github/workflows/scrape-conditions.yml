@@ -28,13 +28,13 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
-          git diff --quiet src/data/conditions.json && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+          git diff --quiet src/data/conditions.json src/data/health.json && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit and push
         if: steps.changes.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/data/conditions.json
-          git commit -m "Update trail conditions [automated]"
+          git add src/data/conditions.json src/data/health.json
+          git commit -m "Update trail conditions and URL health [automated]"
           git push
