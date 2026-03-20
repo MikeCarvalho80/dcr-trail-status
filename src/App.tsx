@@ -38,7 +38,12 @@ import { MapIcon, ListIcon, CalendarIcon } from 'lucide-react';
 import { EmbedCard } from './components/EmbedCard';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { StaleDataBanner } from './components/StaleDataBanner';
+import { ActivityFeed } from './components/ActivityFeed';
+import { QuickReportFAB } from './components/QuickReportFAB';
 import { useProgressiveRender } from './lib/useProgressiveRender';
+import { getReportCounts } from './lib/conditionReports';
+import { getAllLikeCounts, getMyVotes, votePark } from './lib/parkLikes';
+import type { ParkLikeCounts } from './lib/parkLikes';
 
 const TrailMap = lazy(() => import('./components/TrailMap').then((m) => ({ default: m.TrailMap })));
 const AdminForm = lazy(() => import('./components/AdminForm').then((m) => ({ default: m.AdminForm })));
@@ -293,6 +298,50 @@ export function App() {
   const [expandedParkId, setExpandedParkId] = useState<string | null>(null);
   const [mapHighlightId, setMapHighlightId] = useState<string | null>(null);
 
+  // Community data: report counts, likes, weekly stats
+  const [reportCounts, setReportCounts] = useState<Map<string, number>>(new Map());
+  const [likeCounts, setLikeCounts] = useState<Map<string, ParkLikeCounts>>(new Map());
+  const [myVotes, setMyVotes] = useState<Map<string, 1 | -1>>(new Map());
+  const [weeklyReportCount, setWeeklyReportCount] = useState(0);
+
+  useEffect(() => {
+    getReportCounts().then((counts) => {
+      setReportCounts(counts);
+      let total = 0;
+      counts.forEach((c) => { total += c; });
+      setWeeklyReportCount(total);
+    });
+    getAllLikeCounts().then(setLikeCounts);
+    getMyVotes().then(setMyVotes);
+  }, []);
+
+  function handleVote(parkId: string, vote: 1 | -1) {
+    const prevVote = myVotes.get(parkId) ?? null;
+    const prevLikes = likeCounts.get(parkId) ?? { up: 0, down: 0 };
+
+    // Optimistic update
+    const newVotes = new Map(myVotes);
+    const newLikes = new Map(likeCounts);
+    const updated = { ...prevLikes };
+
+    if (prevVote === vote) {
+      // Toggle off
+      newVotes.delete(parkId);
+      if (vote === 1) updated.up = Math.max(0, updated.up - 1);
+      else updated.down = Math.max(0, updated.down - 1);
+    } else {
+      newVotes.set(parkId, vote);
+      if (vote === 1) { updated.up++; if (prevVote === -1) updated.down = Math.max(0, updated.down - 1); }
+      else { updated.down++; if (prevVote === 1) updated.up = Math.max(0, updated.up - 1); }
+    }
+    newLikes.set(parkId, updated);
+    setMyVotes(newVotes);
+    setLikeCounts(newLikes);
+
+    // Fire and forget
+    votePark(parkId, vote);
+  }
+
   // Progressive rendering for park list
   const renderCount = useProgressiveRender(filteredParks.length, 20, 20);
 
@@ -353,6 +402,9 @@ export function App() {
             {getNewParkCount() > 0 && (
               <span className="text-status-caution"> · {getNewParkCount()} new</span>
             )}
+            {weeklyReportCount > 0 && (
+              <span className="text-status-open"> · {weeklyReportCount} rider reports</span>
+            )}
           </p>
         </header>
 
@@ -402,6 +454,9 @@ export function App() {
           distances={distances}
           onParkClick={scrollToPark}
         />
+
+        {/* Community Activity Feed */}
+        <ActivityFeed onParkClick={scrollToPark} totalReportsThisWeek={weeklyReportCount} />
 
         {/* Summary Stats */}
         <div className="mb-5">
@@ -550,6 +605,10 @@ export function App() {
                   forceExpanded={expandedParkId === park.id}
                   onExpanded={() => handleCardExpanded(park.id)}
                   onNavigateToPark={scrollToPark}
+                  reportCount={reportCounts.get(park.id) ?? 0}
+                  likes={likeCounts.get(park.id)}
+                  myVote={myVotes.get(park.id) ?? null}
+                  onVote={handleVote}
                 />
               </div>
             );
@@ -612,6 +671,8 @@ export function App() {
           )}
         </footer>
       </div>
+      {/* Floating action button for quick reports */}
+      <QuickReportFAB />
     </main>
   );
 }
