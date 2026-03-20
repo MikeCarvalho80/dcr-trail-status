@@ -15,13 +15,13 @@ export function SeasonTimeline() {
           Spring Mud Season Timeline
         </div>
         <div className="relative">
-          <div className="flex h-2.5 rounded-full overflow-hidden">
-            <div className="bg-status-closed/60" style={{ width: `${closureEndPct}%` }} aria-label="Closed: March" />
-            <div className="bg-status-caution/60" style={{ width: `${cautionEndPct - closureEndPct}%` }} aria-label="Caution: early April" />
-            <div className="bg-status-open/60" style={{ width: `${100 - cautionEndPct}%` }} aria-label="Open: mid April onward" />
+          <div className="flex h-3 rounded-full overflow-hidden">
+            <div className="bg-status-closed/80" style={{ width: `${closureEndPct}%` }} aria-label="Closed: March" />
+            <div className="bg-status-caution/80" style={{ width: `${cautionEndPct - closureEndPct}%` }} aria-label="Caution: early April" />
+            <div className="bg-status-open/80" style={{ width: `${100 - cautionEndPct}%` }} aria-label="Open: mid April onward" />
           </div>
           <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2" style={{ left: `${pct}%` }}>
-            <div className="w-3.5 h-3.5 rounded-full bg-text-primary border-2 border-bg-primary animate-glow-pulse" aria-label={`Today: ${dateLabel}`} />
+            <div className="w-4 h-4 rounded-full bg-text-primary border-2 border-bg-primary animate-glow-pulse" aria-label={`Today: ${dateLabel}`} />
           </div>
         </div>
         <div className="relative flex font-mono text-[11px] text-text-muted mt-1 h-4">
@@ -47,12 +47,12 @@ export function SeasonTimeline() {
           Fall Hunting Season Timeline
         </div>
         <div className="relative">
-          <div className="flex h-2.5 rounded-full overflow-hidden">
-            <div className="bg-status-caution/60" style={{ width: `${archeryEndPct}%` }} aria-label="Archery season: October" />
-            <div className="bg-status-closed/60" style={{ width: `${100 - archeryEndPct}%` }} aria-label="Firearm season: Nov-Dec" />
+          <div className="flex h-3 rounded-full overflow-hidden">
+            <div className="bg-status-caution/80" style={{ width: `${archeryEndPct}%` }} aria-label="Archery season: October" />
+            <div className="bg-status-closed/80" style={{ width: `${100 - archeryEndPct}%` }} aria-label="Firearm season: Nov-Dec" />
           </div>
           <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2" style={{ left: `${pct}%` }}>
-            <div className="w-3.5 h-3.5 rounded-full bg-text-primary border-2 border-bg-primary animate-glow-pulse" aria-label={`Today: ${dateLabel}`} />
+            <div className="w-4 h-4 rounded-full bg-text-primary border-2 border-bg-primary animate-glow-pulse" aria-label={`Today: ${dateLabel}`} />
           </div>
         </div>
         <div className="relative flex font-mono text-[11px] text-text-muted mt-1 h-4">
@@ -79,8 +79,8 @@ export function SeasonTimeline() {
         {seasonLabel}
       </div>
       <div className="relative">
-        <div className="flex h-2.5 rounded-full overflow-hidden">
-          <div className={`${info.season === 'summer' ? 'bg-status-open/60' : 'bg-status-caution/60'} w-full`} />
+        <div className="flex h-3 rounded-full overflow-hidden">
+          <div className={`${info.season === 'summer' ? 'bg-status-open/80' : 'bg-status-caution/80'} w-full`} />
         </div>
       </div>
       <div className="font-mono text-[11px] text-text-secondary mt-1">

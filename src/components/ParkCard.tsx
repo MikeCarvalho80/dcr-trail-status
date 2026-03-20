@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDownIcon, ExternalLinkIcon, NavigationIcon, StarIcon,
@@ -11,9 +11,12 @@ import { getSunTimes } from '../lib/sun';
 import { getConnectedParks } from '../lib/connectivity';
 import { estimateDriveMinutes } from '../lib/geo';
 import { getNearbyParks } from '../lib/proximityCache';
-import { getParkConditions } from '../lib/conditions';
+import { useScrapedConditions } from '../lib/useScrapedConditions';
 import { isParkStale, isParkUrlBroken } from '../lib/dataHealth';
 import { isParkNew } from '../lib/whatsNew';
+import { ConditionReporter } from './ConditionReporter';
+
+const ClosureHistoryChart = lazy(() => import('./ClosureHistoryChart').then((m) => ({ default: m.ClosureHistoryChart })));
 
 interface ParkCardProps {
   park: Park;
@@ -69,7 +72,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
     .map((id) => PARKS.find((p) => p.id === id))
     .filter(Boolean) as Park[];
 
-  const conditionReports = getParkConditions(park.id);
+  const { conditions: conditionReports } = useScrapedConditions(park.id, isExpanded);
 
   // Nearby parks from precomputed cache (excludes connected)
   const nearbyParks = getNearbyParks(park.id)
@@ -121,7 +124,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
             <div className="font-mono text-[17px] font-bold text-text-primary leading-tight flex items-center gap-2">
               {park.name}
               {isParkNew(park.id) && (
-                <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.05em] bg-status-open-bg text-status-open px-1.5 py-0.5 rounded flex-shrink-0">New</span>
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.05em] bg-status-open-bg text-status-open px-1.5 py-0.5 rounded flex-shrink-0">New</span>
               )}
             </div>
           </div>
@@ -167,7 +170,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
         <div className="flex items-center gap-2 mt-1.5">
           <span
             className={`
-              w-2 h-2 rounded-full flex-shrink-0 ${config.dot}
+              w-2.5 h-2.5 rounded-full flex-shrink-0 ${config.dot}
               ${trail.status === 'closed' ? 'animate-pulse-dot' : ''}
             `}
             aria-hidden="true"
@@ -210,7 +213,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
             className="overflow-hidden"
           >
             <div className="px-4 pb-4">
-              <div className="border-t border-bg-elevated my-2.5" />
+              <div className="border-t border-text-muted/25 my-2.5" />
 
               {/* ── Section 1: At a Glance ── */}
               <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
@@ -249,7 +252,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                             {report.body.length > 200 ? report.body.slice(0, 200) + '...' : report.body}
                           </p>
                         )}
-                        <p className="font-mono text-[10px] text-text-muted mt-0.5">
+                        <p className="font-mono text-[12px] text-text-muted mt-0.5">
                           {report.date} · via {report.source}
                         </p>
                       </div>
@@ -269,10 +272,10 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                     <div className="font-mono text-[13px] text-text-primary flex items-center gap-2">
                       {formatVerifiedDate(park.lastVerified)}
                       {isParkStale(park.id) && (
-                        <span className="font-mono text-[10px] text-status-caution bg-status-caution-bg px-1.5 py-0.5 rounded uppercase">Needs review</span>
+                        <span className="font-mono text-[12px] text-status-caution bg-status-caution-bg px-1.5 py-0.5 rounded uppercase">Needs review</span>
                       )}
                       {isParkUrlBroken(park.id) && (
-                        <span className="font-mono text-[10px] text-status-closed bg-status-closed-bg px-1.5 py-0.5 rounded uppercase">Link broken</span>
+                        <span className="font-mono text-[12px] text-status-closed bg-status-closed-bg px-1.5 py-0.5 rounded uppercase">Link broken</span>
                       )}
                     </div>
                   </div>
@@ -319,7 +322,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                               onClick={(e) => { e.stopPropagation(); onNavigateToPark?.(np.id); }}
                               className="flex items-center gap-2 font-mono text-[12px] w-full text-left py-1.5 px-2 -mx-2 rounded-md hover:bg-bg-elevated/50 transition-colors duration-200 cursor-pointer"
                             >
-                              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${npConfig.dot}`} />
+                              <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${npConfig.dot}`} />
                               <span className="text-text-primary">{np.name}</span>
                               <span className="text-text-muted ml-auto flex-shrink-0">~{Math.round(dist)} mi · ~{estimateDriveMinutes(dist)} min</span>
                             </button>
@@ -342,7 +345,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                   </p>
                 </div>
 
-                <div className="border-t border-bg-elevated/50 pt-2">
+                <div className="border-t border-text-muted/25 pt-2">
                   <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
                     Closure Policy
                   </div>
@@ -361,7 +364,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                 </div>
 
                 {park.source && (
-                  <div className="border-t border-bg-elevated/50 pt-2">
+                  <div className="border-t border-text-muted/25 pt-2">
                     <div className="font-mono text-[12px] font-semibold uppercase tracking-[0.05em] text-text-muted mb-0.5">
                       Source
                     </div>
@@ -370,6 +373,15 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* ── Section 4b: Closure History Chart ── */}
+              <div className="bg-bg-primary/50 rounded-lg px-3 py-2.5 mb-3">
+                <Suspense fallback={
+                  <div className="font-mono text-[11px] text-text-muted animate-pulse">Loading history...</div>
+                }>
+                  <ClosureHistoryChart parkId={park.id} />
+                </Suspense>
               </div>
 
               {/* ── Section 5: Notes ── */}
@@ -389,7 +401,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className={`inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-1.5 rounded-md border ${config.border} ${config.text} transition-colors duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30`}
+                  className={`inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2 rounded-md border ${config.border} ${config.text} transition-colors duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30`}
                   aria-label={`Navigate to ${park.name} parking`}
                 >
                   <NavigationIcon className="w-4 h-4" />
@@ -400,7 +412,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-1.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
                   aria-label={`View ${park.name} official page`}
                 >
                   <ExternalLinkIcon className="w-4 h-4" />
@@ -411,7 +423,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-1.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
                   aria-label={`Weather forecast for ${park.name}`}
                 >
                   <CloudSunIcon className="w-4 h-4" />
@@ -419,7 +431,7 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                 </a>
                 <button
                   onClick={handleShare}
-                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-1.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
                   aria-label={`Share ${park.name} status`}
                 >
                   <Share2Icon className="w-4 h-4" />
@@ -430,13 +442,16 @@ export function ParkCard({ park, distanceMiles, driveMinutes, isFavorite, onTogg
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-3 py-1.5 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
+                  className="inline-flex items-center gap-1.5 font-mono text-[12px] font-semibold uppercase tracking-[0.05em] px-4 py-2 rounded-md border border-bg-elevated text-text-secondary transition-colors duration-200 hover:text-text-primary hover:border-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/30"
                   aria-label={`Report issue with ${park.name} data`}
                 >
                   <BugIcon className="w-4 h-4" />
                   Report
                 </a>
               </div>
+
+              {/* ── Section 7: Community Condition Reports ── */}
+              <ConditionReporter parkId={park.id} parkName={park.name} />
             </div>
           </motion.div>
         )}

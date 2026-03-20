@@ -9,11 +9,19 @@ import { load } from 'cheerio';
 import { writeFileSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { createClient } from '@supabase/supabase-js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONDITIONS_PATH = join(__dirname, '..', 'src', 'data', 'conditions.json');
 const HEALTH_PATH = join(__dirname, '..', 'src', 'data', 'health.json');
 const PARKS_PATH = join(__dirname, '..', 'src', 'data', 'parks.ts');
+
+// Supabase client (service role for writes) — optional
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = SUPABASE_URL && SUPABASE_KEY
+  ? createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
 
 async function fetchText(url) {
   try {
@@ -276,6 +284,33 @@ async function main() {
   const output = [...allReports, ...preserved];
   writeFileSync(CONDITIONS_PATH, JSON.stringify(output, null, 2) + '\n');
   console.log(`Wrote ${output.length} conditions to conditions.json`);
+
+  // Upsert to Supabase if configured
+  if (supabase && allReports.length > 0) {
+    console.log(`\nUpserting ${allReports.length} conditions to Supabase...`);
+    const rows = allReports.map((r) => ({
+      park_id: r.parkId,
+      source: r.source,
+      title: r.title,
+      body: r.body || '',
+      alert_date: r.date || '',
+      severity: r.severity || 'notice',
+      scraped_at: r.scrapedAt,
+    }));
+
+    // Delete old scraped data for these sources, then insert fresh
+    for (const source of scrapedSourceNames) {
+      await supabase.from('scraped_conditions').delete().eq('source', source);
+    }
+    const { error } = await supabase.from('scraped_conditions').insert(rows);
+    if (error) {
+      console.error('  Supabase insert error:', error.message);
+    } else {
+      console.log(`  Supabase: inserted ${rows.length} rows`);
+    }
+  } else if (!supabase) {
+    console.log('\nSupabase not configured (set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY to enable)');
+  }
 
   // URL health check
   await checkUrlHealth();

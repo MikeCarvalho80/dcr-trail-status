@@ -111,7 +111,7 @@ export function ClosureCalendar() {
             </thead>
             <tbody>
               {parksWithClosures.map(({ park, label, type, months: activeMonths }, i) => (
-                <tr key={`${park.id}-${label}-${i}`} className="border-t border-bg-elevated/50">
+                <tr key={`${park.id}-${label}-${i}`} className="border-t border-text-muted/25">
                   <td className="font-mono text-[11px] text-text-primary py-1 pr-3 whitespace-nowrap max-w-[140px] truncate" title={park.name}>
                     {park.name}
                     <span className="text-text-muted ml-1">({label})</span>

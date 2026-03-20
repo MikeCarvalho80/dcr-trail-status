@@ -7,11 +7,12 @@ import type { FilterOption } from './components/RegionFilters';
 import { DistanceControls } from './components/DistanceControls';
 import { RideableToggle } from './components/TrailFilters';
 import { FilterDropdown } from './components/FilterDropdown';
+import type { OptionGroup } from './components/FilterDropdown';
 import { SearchBox } from './components/SearchBox';
 import { ParkCard } from './components/ParkCard';
 import { SuggestedRides } from './components/SuggestedRides';
 import { StatusChangeBanner } from './components/StatusChangeBanner';
-import { ClosureCalendar } from './components/ClosureCalendar';
+const ClosureCalendar = lazy(() => import('./components/ClosureCalendar').then((m) => ({ default: m.ClosureCalendar })));
 import { PARKS } from './data/parks';
 import type { Region, TrailStatus } from './data/parks';
 import { getZipCoords } from './data/zipcodes';
@@ -38,24 +39,49 @@ import { EmbedCard } from './components/EmbedCard';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 const TrailMap = lazy(() => import('./components/TrailMap').then((m) => ({ default: m.TrailMap })));
+const AdminForm = lazy(() => import('./components/AdminForm').then((m) => ({ default: m.AdminForm })));
+const AdminReview = lazy(() => import('./components/AdminReview').then((m) => ({ default: m.AdminReview })));
 
-// Stable region display order
-const REGION_ORDER: Region[] = [
-  'Greater Boston', 'South Shore', 'North Shore', 'MetroWest',
-  'Central MA', 'Pioneer Valley', 'Berkshires', 'Cape & Islands',
-  'Southern NH', 'Rhode Island', 'Connecticut', 'Southern VT',
-  'Southern Maine', 'Midcoast Maine', 'Western Maine',
-  'Central VT', 'Central NH', 'Western NH',
-  'Hudson Valley', 'Upstate NY', 'NYC & Long Island',
-  'Northern NJ', 'Central NJ',
-  'Eastern PA', 'Central PA', 'Poconos',
-  'Maryland', 'Delaware',
-];
+// Stable region display order, grouped by state
+import type { State } from './data/parks';
+
+const STATE_LABELS: Record<State, string> = {
+  MA: 'Massachusetts', NH: 'New Hampshire', VT: 'Vermont', ME: 'Maine',
+  RI: 'Rhode Island', CT: 'Connecticut', NY: 'New York', NJ: 'New Jersey',
+  PA: 'Pennsylvania', MD: 'Maryland', DE: 'Delaware',
+};
+
+const STATE_ORDER: State[] = ['MA', 'NH', 'VT', 'ME', 'RI', 'CT', 'NY', 'NJ', 'PA', 'MD', 'DE'];
+
+const REGIONS_BY_STATE: Record<State, Region[]> = {
+  MA: ['Greater Boston', 'South Shore', 'North Shore', 'MetroWest', 'Central MA', 'Pioneer Valley', 'Berkshires', 'Cape & Islands'],
+  NH: ['Southern NH', 'Central NH', 'Western NH'],
+  VT: ['Southern VT', 'Central VT'],
+  ME: ['Southern Maine', 'Midcoast Maine', 'Western Maine'],
+  RI: ['Rhode Island'],
+  CT: ['Connecticut'],
+  NY: ['Hudson Valley', 'Upstate NY', 'NYC & Long Island'],
+  NJ: ['Northern NJ', 'Central NJ'],
+  PA: ['Eastern PA', 'Central PA', 'Poconos'],
+  MD: ['Maryland'],
+  DE: ['Delaware'],
+};
+
+const REGION_ORDER: Region[] = STATE_ORDER.flatMap((s) => REGIONS_BY_STATE[s]);
 
 // Read URL params once on load
 const initialUrl = readUrlState();
 
 export function App() {
+  // Admin mode: ?admin renders the park data entry form, ?admin=review renders review dashboard
+  const adminParam = new URLSearchParams(window.location.search).get('admin');
+  const isAdmin = adminParam !== null;
+  if (isAdmin) return (
+    <Suspense fallback={<div className="min-h-screen bg-bg-primary flex items-center justify-center"><span className="font-mono text-[12px] text-text-muted">Loading admin...</span></div>}>
+      {adminParam === 'review' ? <AdminReview /> : <AdminForm />}
+    </Suspense>
+  );
+
   // Embed mode: ?embed=parkId renders a standalone card
   const embedId = new URLSearchParams(window.location.search).get('embed');
   if (embedId) return <EmbedCard parkId={embedId} />;
@@ -163,6 +189,17 @@ export function App() {
     const regionSet = new Set(parksInRange.map((p) => p.region));
     return REGION_ORDER.filter((r) => regionSet.has(r));
   }, [parksInRange]);
+
+  // Group available regions by state for hierarchical dropdown
+  const regionGroups = useMemo((): OptionGroup<FilterOption>[] => {
+    const regionSet = new Set<string>(availableRegions);
+    return STATE_ORDER
+      .map((state) => ({
+        label: STATE_LABELS[state],
+        options: (REGIONS_BY_STATE[state] || []).filter((r) => regionSet.has(r)) as FilterOption[],
+      }))
+      .filter((g) => g.options.length > 0);
+  }, [availableRegions]);
 
   const effectiveRegion: FilterOption =
     activeRegion !== 'All' && !availableRegions.includes(activeRegion as Region)
@@ -385,7 +422,13 @@ export function App() {
         {/* Closure Calendar */}
         {showCalendar && (
           <div className="mb-5">
-            <ClosureCalendar />
+            <Suspense fallback={
+              <div className="rounded-xl border border-bg-elevated bg-bg-secondary h-[200px] flex items-center justify-center">
+                <span className="font-mono text-[12px] text-text-muted">Loading calendar...</span>
+              </div>
+            }>
+              <ClosureCalendar />
+            </Suspense>
           </div>
         )}
 
@@ -403,6 +446,7 @@ export function App() {
               label="Region"
               value={effectiveRegion}
               options={['All' as FilterOption, ...availableRegions]}
+              groups={regionGroups}
               allValue={'All' as FilterOption}
               getCount={regionCounts}
               onChange={setActiveRegion}
@@ -517,12 +561,12 @@ export function App() {
         </div>
 
         {/* Footer */}
-        <footer className="mt-8 pt-4 border-t border-bg-elevated">
+        <footer className="mt-8 pt-4 border-t border-text-muted/25">
           <p className="font-mono text-[11px] text-text-muted text-center">
             Ride responsibly · Respect closures · Stay off wet trails · Support your local trail org
           </p>
           {hasAnyConditions() && (
-            <p className="font-mono text-[10px] text-text-muted/50 text-center mt-1">
+            <p className="font-mono text-[12px] text-text-muted/50 text-center mt-1">
               Conditions last updated: {new Date(getLastScrapedAt()!).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
             </p>
           )}

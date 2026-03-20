@@ -1,10 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, XIcon } from 'lucide-react';
 
+export interface OptionGroup<T extends string> {
+  label: string;
+  options: T[];
+}
+
 interface FilterDropdownProps<T extends string> {
   label: string;
   value: T;
   options: readonly T[];
+  groups?: OptionGroup<T>[];
   getLabel?: (opt: T) => string;
   getCount?: (opt: T) => number;
   allLabel?: string;
@@ -16,6 +22,7 @@ export function FilterDropdown<T extends string>({
   label,
   value,
   options,
+  groups,
   getLabel,
   getCount,
   allLabel = 'All',
@@ -52,6 +59,32 @@ export function FilterDropdown<T extends string>({
     return () => document.removeEventListener('keydown', handleKey);
   }, [isOpen]);
 
+  function renderOption(opt: T) {
+    const isSelected = value === opt;
+    const optLabel = opt === allValue ? allLabel : (getLabel ? getLabel(opt) : opt);
+    const count = getCount ? getCount(opt) : undefined;
+    return (
+      <button
+        key={opt}
+        role="option"
+        aria-selected={isSelected}
+        onClick={() => { onChange(opt); setIsOpen(false); }}
+        className={`
+          w-full text-left px-3 py-2.5 font-mono text-[12px] flex items-center justify-between
+          transition-colors duration-100
+          ${isSelected
+            ? 'bg-bg-elevated text-text-primary font-semibold'
+            : 'text-text-secondary hover:bg-bg-elevated/50 hover:text-text-primary'}
+        `}
+      >
+        <span>{optLabel}</span>
+        {count !== undefined && (
+          <span className="text-text-muted text-[11px] ml-2">{count}</span>
+        )}
+      </button>
+    );
+  }
+
   return (
     <div ref={ref} className="relative">
       <button
@@ -70,7 +103,7 @@ export function FilterDropdown<T extends string>({
         aria-haspopup="listbox"
       >
         <span className="flex items-center gap-2 min-w-0">
-          <span className="text-text-muted uppercase tracking-[0.05em] text-[10px] flex-shrink-0">
+          <span className="text-text-muted uppercase tracking-[0.05em] text-[12px] flex-shrink-0">
             {label}
           </span>
           <span className="truncate">
@@ -85,7 +118,7 @@ export function FilterDropdown<T extends string>({
               className="p-0.5 rounded hover:bg-bg-elevated/80"
               aria-label={`Clear ${label} filter`}
             >
-              <XIcon className="w-3 h-3 text-text-muted" />
+              <XIcon className="w-3.5 h-3.5 text-text-muted" />
             </span>
           )}
           <ChevronDownIcon className={`w-3.5 h-3.5 text-text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
@@ -98,31 +131,26 @@ export function FilterDropdown<T extends string>({
           role="listbox"
           aria-label={label}
         >
-          {options.map((opt) => {
-            const isSelected = value === opt;
-            const optLabel = opt === allValue ? allLabel : (getLabel ? getLabel(opt) : opt);
-            const count = getCount ? getCount(opt) : undefined;
-            return (
-              <button
-                key={opt}
-                role="option"
-                aria-selected={isSelected}
-                onClick={() => { onChange(opt); setIsOpen(false); }}
-                className={`
-                  w-full text-left px-3 py-2.5 font-mono text-[12px] flex items-center justify-between
-                  transition-colors duration-100
-                  ${isSelected
-                    ? 'bg-bg-elevated text-text-primary font-semibold'
-                    : 'text-text-secondary hover:bg-bg-elevated/50 hover:text-text-primary'}
-                `}
-              >
-                <span>{optLabel}</span>
-                {count !== undefined && (
-                  <span className="text-text-muted text-[11px] ml-2">{count}</span>
-                )}
-              </button>
-            );
-          })}
+          {/* Always render the "All" option first */}
+          {renderOption(allValue)}
+
+          {groups ? (
+            // Grouped rendering with state headers
+            groups.map((group) => {
+              if (group.options.length === 0) return null;
+              return (
+                <div key={group.label}>
+                  <div className="px-3 pt-3 pb-1 font-mono text-[12px] font-bold uppercase tracking-[0.08em] text-text-muted/60 border-t border-text-muted/25">
+                    {group.label}
+                  </div>
+                  {group.options.map((opt) => renderOption(opt))}
+                </div>
+              );
+            })
+          ) : (
+            // Flat rendering (skip allValue since it's already rendered above)
+            options.filter((opt) => opt !== allValue).map((opt) => renderOption(opt))
+          )}
         </div>
       )}
     </div>

@@ -133,7 +133,7 @@ export function DistanceControls({
       </div>
 
       {/* Summary line */}
-      <div className="font-mono text-[12px] text-text-muted pt-1 border-t border-bg-elevated">
+      <div className="font-mono text-[12px] text-text-muted pt-1 border-t border-text-muted/25">
         Showing <span className="text-text-primary font-semibold">{parkCount}</span> park{parkCount !== 1 ? 's' : ''} within{' '}
         <span className="text-text-primary font-semibold">{radiusMiles} mi</span> of{' '}
         <span className="text-text-primary font-semibold">{isValidZip ? zipCode : '—'}</span>

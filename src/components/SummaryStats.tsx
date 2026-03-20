@@ -12,19 +12,19 @@ const colorMap: Record<TrailStatus, { text: string; bg: string; border: string; 
   open: {
     text: 'text-status-open',
     bg: 'bg-status-open-bg',
-    border: 'border-status-open/[0.27]',
+    border: 'border-status-open/[0.40]',
     activeBorder: 'border-status-open',
   },
   caution: {
     text: 'text-status-caution',
     bg: 'bg-status-caution-bg',
-    border: 'border-status-caution/[0.27]',
+    border: 'border-status-caution/[0.40]',
     activeBorder: 'border-status-caution',
   },
   closed: {
     text: 'text-status-closed',
     bg: 'bg-status-closed-bg',
-    border: 'border-status-closed/[0.27]',
+    border: 'border-status-closed/[0.40]',
     activeBorder: 'border-status-closed',
   },
 };

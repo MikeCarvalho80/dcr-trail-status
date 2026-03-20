@@ -27,7 +27,7 @@ export function EmbedCard({ parkId }: { parkId: string }) {
         <div className="px-4 py-3">
           {/* Status */}
           <div className="flex items-center gap-2 mb-2">
-            <span className={`w-2 h-2 rounded-full ${config.dot} ${trail.status === 'closed' ? 'animate-pulse-dot' : ''}`} />
+            <span className={`w-2.5 h-2.5 rounded-full ${config.dot} ${trail.status === 'closed' ? 'animate-pulse-dot' : ''}`} />
             <span className={`${config.badgeBg} ${config.text} font-mono text-[11px] font-semibold uppercase tracking-[0.05em] px-2 py-0.5 rounded`}>
               {trail.label}
             </span>
@@ -62,7 +62,7 @@ export function EmbedCard({ parkId }: { parkId: string }) {
             rel="noopener noreferrer"
             className={`
               block text-center font-mono text-[11px] font-semibold uppercase tracking-[0.05em]
-              mt-3 px-3 py-1.5 rounded-md
+              mt-3 px-4 py-2 rounded-md
               ${config.badgeBg} ${config.text}
               transition-colors duration-200 hover:opacity-80
             `}

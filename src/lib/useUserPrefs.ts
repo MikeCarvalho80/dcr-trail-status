@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { syncUserPrefs, pushPrefsDebounced } from './syncPrefs';
 
 export interface UserPrefs {
   zipCode: string;
@@ -37,29 +38,64 @@ function save(prefs: UserPrefs) {
 
 export function useUserPrefs() {
   const [prefs, setPrefs] = useState<UserPrefs>(load);
+  const syncedRef = useRef(false);
+  const pushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Save to localStorage on every change
   useEffect(() => {
     save(prefs);
   }, [prefs]);
 
+  // On mount: pull remote prefs and merge
+  useEffect(() => {
+    if (syncedRef.current) return;
+    syncedRef.current = true;
+
+    syncUserPrefs(load()).then((merged) => {
+      if (merged) {
+        setPrefs((current) => ({
+          ...current,
+          favorites: [...new Set([...current.favorites, ...merged.favorites])],
+          visited: [...new Set([...current.visited, ...merged.visited])],
+        }));
+      }
+    });
+  }, []);
+
+  // Debounced push to Supabase on favorites/visited changes
+  const pushToRemote = useCallback((updated: UserPrefs) => {
+    if (pushTimerRef.current) clearTimeout(pushTimerRef.current);
+    pushTimerRef.current = setTimeout(() => {
+      pushPrefsDebounced(updated);
+    }, 500);
+  }, []);
+
   const setZipCode = (zipCode: string) => setPrefs((p) => ({ ...p, zipCode }));
   const setRadius = (radiusMiles: number) => setPrefs((p) => ({ ...p, radiusMiles }));
   const toggleFavorite = (parkId: string) =>
-    setPrefs((p) => ({
-      ...p,
-      favorites: p.favorites.includes(parkId)
-        ? p.favorites.filter((id) => id !== parkId)
-        : [...p.favorites, parkId],
-    }));
+    setPrefs((p) => {
+      const updated = {
+        ...p,
+        favorites: p.favorites.includes(parkId)
+          ? p.favorites.filter((id) => id !== parkId)
+          : [...p.favorites, parkId],
+      };
+      pushToRemote(updated);
+      return updated;
+    });
   const setShowRideableOnly = (showRideableOnly: boolean) =>
     setPrefs((p) => ({ ...p, showRideableOnly }));
   const toggleVisited = (parkId: string) =>
-    setPrefs((p) => ({
-      ...p,
-      visited: p.visited.includes(parkId)
-        ? p.visited.filter((id) => id !== parkId)
-        : [...p.visited, parkId],
-    }));
+    setPrefs((p) => {
+      const updated = {
+        ...p,
+        visited: p.visited.includes(parkId)
+          ? p.visited.filter((id) => id !== parkId)
+          : [...p.visited, parkId],
+      };
+      pushToRemote(updated);
+      return updated;
+    });
 
   return { prefs, setZipCode, setRadius, toggleFavorite, setShowRideableOnly, toggleVisited };
 }

@@ -24,7 +24,7 @@ function FilterRow<T extends string>({ label, active, options, getLabel, onChang
               onClick={() => onChange(opt)}
               className={`
                 font-mono text-[12px] font-semibold uppercase tracking-[0.05em]
-                py-1.5 px-3 rounded-full whitespace-nowrap
+                py-2 px-3.5 rounded-full whitespace-nowrap
                 transition-colors duration-200
                 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/50
                 ${isActive ? 'bg-bg-elevated text-text-primary' : 'bg-transparent text-text-secondary hover:text-text-primary/70'}
@@ -84,7 +84,7 @@ export function RideableToggle({ enabled, onToggle }: RideableToggleProps) {
       onClick={() => onToggle(!enabled)}
       className={`
         font-mono text-[12px] font-semibold uppercase tracking-[0.05em]
-        py-1.5 px-3 rounded-full whitespace-nowrap
+        py-2 px-3.5 rounded-full whitespace-nowrap
         transition-colors duration-200
         focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text-primary/50
         ${enabled ? 'bg-status-open-bg text-status-open' : 'bg-transparent text-text-secondary hover:text-text-primary/70'}
